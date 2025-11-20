@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.VisualStudio.Compose">
+  <PropertyGroup>
+    <DockerComposeProjectPath>docker-compose.yml</DockerComposeProjectPath>
+  </PropertyGroup>
+</Project>
+

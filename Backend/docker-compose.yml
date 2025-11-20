@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  gateway:
+    image: ${DOCKER_REGISTRY-}gateway
+    build:
+      context: .
+      dockerfile: Gateway/Dockerfile
+    ports:
+      - "5207:8080"
+      - "7215:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    networks:
+      - jessica-network
+
+  jessicamanager:
+    image: ${DOCKER_REGISTRY-}jessicamanager
+    build:
+      context: .
+      dockerfile: JessicaManager/Dockerfile
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    networks:
+      - jessica-network
+
+  tileserver:
+    image: maptiler/tileserver-gl:latest
+    container_name: tileserver-gl
+    ports:
+      - "8080:80"
+    volumes:
+      - ./tilesStorage:/data
+    environment:
+      - NODE_ENV=production
+    networks:
+      - jessica-network
+    restart: unless-stopped
+
+networks:
+  jessica-network:
+    driver: bridge

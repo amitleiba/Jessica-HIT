@@ -1,0 +1,17 @@
+<Solution>
+<Folder Name="/Solution.Items/">
+<File Path=".editorconfig" />
+<File Path="Directory.Build.props" />
+<File Path="Directory.Packages.props" />
+</Folder>
+<Folder Name="/Common/">
+<Project Path="Common/Common.csproj" />
+</Folder>
+<Folder Name="/Aspire/">
+<Project Path="Aspire/Aspire.AppHost/Aspire.AppHost.csproj" />
+<Project Path="Aspire/Aspire.ServiceDefaults/Aspire.ServiceDefaults.csproj" />
+</Folder>
+<Project Path="Gateway/Gateway.csproj" />
+<Project Path="JessicaManager/JessicaManager.csproj" />
+<Project Path="docker-compose.dcproj" />
+</Solution>
