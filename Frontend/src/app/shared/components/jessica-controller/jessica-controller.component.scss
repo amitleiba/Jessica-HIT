@@ -1,0 +1,21 @@
+.jessica-controller-container {
+  background-color: var(--surface-ground);
+  transition: background-color 0.3s ease;
+  overflow: hidden;
+}
+
+.media-section {
+  overflow: hidden;
+  min-height: 0; // Allow flexbox to shrink
+}
+
+.control-section {
+  background-color: var(--surface-card);
+  transition: background-color 0.3s ease;
+  overflow: hidden;
+  min-height: 0; // Allow flexbox to shrink
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+

@@ -1,0 +1,8 @@
+<app-circular-button
+  [icon]="themeService.currentTheme() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
+  size="small"
+  severity="secondary"
+  (buttonClick)="themeService.toggleTheme()"
+></app-circular-button>
+
+

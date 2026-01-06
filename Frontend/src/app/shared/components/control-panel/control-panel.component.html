@@ -1,0 +1,68 @@
+<div class="control-panel-container">
+  <div class="control-grid">
+    <!-- D-pad with Start/Stop in center -->
+    <div class="d-pad-container">
+      <!-- Up Button -->
+      @if (onUp) {
+      <app-circular-button
+        icon="pi pi-arrow-up"
+        size="medium"
+        severity="secondary"
+        (buttonClick)="onUp!()"
+        class="d-pad-btn up-btn"
+      ></app-circular-button>
+      }
+
+      <!-- Middle Row: Left, Start/Stop, Right -->
+      <div class="middle-row">
+        @if (onLeft) {
+        <app-circular-button
+          icon="pi pi-arrow-left"
+          size="medium"
+          severity="secondary"
+          (buttonClick)="onLeft!()"
+          class="d-pad-btn left-btn"
+        ></app-circular-button>
+        }
+
+        <!-- Start/Stop Button in Center (Circular) -->
+        @if (onStart && !isRunning) {
+        <app-circular-button
+          icon="pi pi-play"
+          size="medium"
+          severity="success"
+          (buttonClick)="onStartStopClick()"
+          class="d-pad-btn center-btn"
+        ></app-circular-button>
+        } @if (onStop && isRunning) {
+        <app-circular-button
+          icon="pi pi-stop"
+          size="medium"
+          severity="danger"
+          (buttonClick)="onStartStopClick()"
+          class="d-pad-btn center-btn"
+        ></app-circular-button>
+        } @if (onRight) {
+        <app-circular-button
+          icon="pi pi-arrow-right"
+          size="medium"
+          severity="secondary"
+          (buttonClick)="onRight!()"
+          class="d-pad-btn right-btn"
+        ></app-circular-button>
+        }
+      </div>
+
+      <!-- Down Button -->
+      @if (onDown) {
+      <app-circular-button
+        icon="pi pi-arrow-down"
+        size="medium"
+        severity="secondary"
+        (buttonClick)="onDown!()"
+        class="d-pad-btn down-btn"
+      ></app-circular-button>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+<button
+  type="button"
+  class="circular-button"
+  [class]="sizeClass + ' ' + severityClass"
+  (click)="onClick()"
+>
+  @if (icon) {
+    <i [class]="icon"></i>
+  }
+  @if (text && !icon) {
+    <span>{{ text }}</span>
+  }
+</button>

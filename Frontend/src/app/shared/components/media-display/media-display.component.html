@@ -1,0 +1,20 @@
+<div
+  class="media-display-container w-full h-full flex align-items-center justify-content-center"
+>
+  <div
+    class="media-wrapper w-full h-full flex align-items-center justify-content-center"
+  >
+    @if (mediaData) { @if (mediaType === 'image') {
+    <img [src]="mediaData" alt="Media display" class="media-content" />
+    } @else {
+    <video [src]="mediaData" class="media-content" controls></video>
+    } } @else {
+    <div
+      class="no-media w-full h-full flex flex-column align-items-center justify-content-center"
+    >
+      <i class="pi pi-image no-media-icon"></i>
+      <p class="no-media-text">No media to display</p>
+    </div>
+    }
+  </div>
+</div>
