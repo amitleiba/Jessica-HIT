@@ -1,3 +1,16 @@
-<div class="register-container">
-  <h2>Register</h2>
+<div class="glass-container">
+  <div class="register-header">
+    <h1>Welcome</h1>
+    <p>Register to continue</p>
+  </div>
+
+  <div class="input-group">
+    <app-general-input-component title="Username:"></app-general-input-component>
+  </div>
+
+  <div class="input-group">
+    <app-general-input-component title="Password:"></app-general-input-component>
+  </div>
+
+  <button type="submit" (click)="onSubmit()" class=" register-btn">Sign Up</button>
 </div>

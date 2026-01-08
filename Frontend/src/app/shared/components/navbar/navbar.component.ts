@@ -17,4 +17,8 @@ export class NavbarComponent {
   navigateToLogin(): void {
     this.router.navigate(["/login"]);
   }
+
+  navigateToRegister(): void {
+    this.router.navigate(["/register"]);
+  }
 }

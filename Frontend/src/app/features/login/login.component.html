@@ -1,3 +1,16 @@
-<div class="login-container">
-  <h2>Login</h2>
+<div class="glass-container">
+  <div class="login-header">
+    <h1>Welcome Back</h1>
+    <p>Sign in to your account to continue</p>
+  </div>
+
+  <div class="input-group">
+    <app-general-input-component title="Username:"></app-general-input-component>
+  </div>
+
+  <div class="input-group">
+    <app-general-input-component title="Password:"></app-general-input-component>
+  </div>
+
+  <button type="submit" (click)="onSubmit()" class="login-btn">Sign In</button>
 </div>
