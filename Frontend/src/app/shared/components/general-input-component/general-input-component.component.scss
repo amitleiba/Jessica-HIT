@@ -1,0 +1,19 @@
+
+.general-input {
+	display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 3vh;
+    margin-left: 1.2vw;
+}
+
+.general-input .input {
+	width: 9vw;
+    margin-left: 0.7vw;
+}
+
+.general-input .title {
+	margin: 0;
+	font-weight: 600;
+}
+
