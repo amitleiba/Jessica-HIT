@@ -22,6 +22,8 @@
     "@ngrx/store": "^18.0.0",
     "@ngrx/store-devtools": "^18.0.0",
     "@primeng/themes": "^21.0.2",
+    "@types/leaflet": "^1.9.21",
+    "leaflet": "^1.9.4",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^18.0.2",

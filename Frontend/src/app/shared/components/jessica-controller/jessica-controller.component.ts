@@ -1,38 +1,39 @@
-import { Component } from "@angular/core";
-import { MediaDisplayComponent } from "../media-display/media-display.component";
+import { Component, ViewChild } from "@angular/core";
+import { MapDisplayComponent } from "../map-display/map-display.component";
 import { ControlPanelComponent } from "../control-panel/control-panel.component";
 
 @Component({
   selector: "app-jessica-controller",
   standalone: true,
-  imports: [MediaDisplayComponent, ControlPanelComponent],
+  imports: [MapDisplayComponent, ControlPanelComponent],
   templateUrl: "./jessica-controller.component.html",
   styleUrl: "./jessica-controller.component.scss",
 })
 export class JessicaControllerComponent {
-  mediaData: string | null = null; // Will receive from WebSocket
-  mediaType: "image" | "video" = "image";
+  // ViewChild allows us to access the map component and call its methods
+  @ViewChild(MapDisplayComponent) mapDisplay!: MapDisplayComponent;
+
   isRunning = false;
 
-  // Callback functions for control panel
+  // Callback functions for control panel - now connected to the map!
   onUp = (): void => {
     console.log("[Jessica Controller] Up clicked");
-    // TODO: Send up command via WebSocket
+    this.mapDisplay.moveUp();  // Move the car up on the map
   };
 
   onDown = (): void => {
     console.log("[Jessica Controller] Down clicked");
-    // TODO: Send down command via WebSocket
+    this.mapDisplay.moveDown();  // Move the car down on the map
   };
 
   onLeft = (): void => {
     console.log("[Jessica Controller] Left clicked");
-    // TODO: Send left command via WebSocket
+    this.mapDisplay.moveLeft();  // Move the car left on the map
   };
 
   onRight = (): void => {
     console.log("[Jessica Controller] Right clicked");
-    // TODO: Send right command via WebSocket
+    this.mapDisplay.moveRight();  // Move the car right on the map
   };
 
   onStart = (): void => {
@@ -47,4 +48,3 @@ export class JessicaControllerComponent {
     // TODO: Send stop command via WebSocket
   };
 }
-

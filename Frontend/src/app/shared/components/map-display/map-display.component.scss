@@ -1,0 +1,31 @@
+// Styles for the map display component
+
+// Host element needs to fill its container
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.map-display-container {
+    // Make the container fill its parent
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.map {
+    // Make the map fill the container
+    width: 100%;
+    height: 100%;
+    min-height: 300px; // Minimum height so map is always visible
+
+    // Add a nice border radius for modern look
+    border-radius: 8px;
+
+    // Add a subtle shadow
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    // Ensure the map is visible
+    background-color: #e0e0e0;
+}
