@@ -1,10 +1,10 @@
 import { createAction, props } from "@ngrx/store";
-import { User } from "../reducers/auth.reducer";
+import { User } from "../../core/dto";
 
 // Login flow actions
 export const login = createAction(
   "[Auth] Login",
-  props<{ email: string; password: string }>()
+  props<{ username: string; password: string }>()
 );
 
 export const loginSuccess = createAction(
@@ -22,6 +22,24 @@ export const logout = createAction("[Auth] Logout");
 export const loadUser = createAction(
   "[Auth] Load User",
   props<{ token: string }>()
+);
+
+export const initAuth = createAction("[Auth] Init Auth");
+
+// Register flow actions
+export const register = createAction(
+  "[Auth] Register",
+  props<{ username: string; email: string; password: string; firstName: string; lastName: string }>()
+);
+
+export const registerSuccess = createAction(
+  "[Auth] Register Success",
+  props<{ message: string }>()
+);
+
+export const registerFailure = createAction(
+  "[Auth] Register Failure",
+  props<{ error: string }>()
 );
 
 // Direct state setters

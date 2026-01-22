@@ -1,0 +1,86 @@
+<!-- Error Message -->
+@if (error$ | async; as error) {
+  <p-message severity="error" [text]="error" styleClass="w-full mb-3" />
+}
+
+<!-- Register Form -->
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-4">
+
+<!-- Username Field -->
+<app-form-input
+  label="Username"
+  type="text"
+  [control]="registerForm.get('username')!"
+  placeholder="Enter your username"
+  autocomplete="username"
+/>
+
+<!-- Email Field -->
+<app-form-input
+  label="Email"
+  type="email"
+  [control]="registerForm.get('email')!"
+  placeholder="Enter your email"
+  autocomplete="email"
+/>
+
+<!-- First Name & Last Name (Row) -->
+<div class="flex gap-3 flex-column md:flex-row">
+  <app-form-input
+    label="First Name"
+    type="text"
+    [control]="registerForm.get('firstName')!"
+    placeholder="First name"
+    autocomplete="given-name"
+  />
+
+  <app-form-input
+    label="Last Name"
+    type="text"
+    [control]="registerForm.get('lastName')!"
+    placeholder="Last name"
+    autocomplete="family-name"
+  />
+</div>
+
+<!-- Password Field -->
+<app-form-input
+  label="Password"
+  type="password"
+  [control]="registerForm.get('password')!"
+  placeholder="Enter password (min 8 characters)"
+  autocomplete="new-password"
+  [showPasswordStrength]="true"
+  [toggleMask]="true"
+/>
+
+<!-- Confirm Password Field -->
+<app-form-input
+  label="Confirm Password"
+  type="password"
+  [control]="registerForm.get('confirmPassword')!"
+  placeholder="Confirm your password"
+  autocomplete="new-password"
+  [toggleMask]="true"
+/>
+
+<!-- Submit Button -->
+<p-button
+  type="submit"
+  label="Create Account"
+  [loading]="isLoading$ | async"
+  [disabled]="registerForm.invalid || (isLoading$ | async)"
+  icon="pi pi-user-plus"
+  styleClass="w-full mt-2"
+  severity="success"
+  size="large"
+/>
+</form>
+
+<!-- Loading State Indicator -->
+@if (isLoading$ | async) {
+  <div class="flex align-items-center justify-content-center gap-3 mt-3 p-3 border-round surface-100">
+    <i class="pi pi-spin pi-spinner text-xl text-success"></i>
+    <span class="font-medium text-success">Creating your account...</span>
+  </div>
+}

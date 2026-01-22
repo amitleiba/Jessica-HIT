@@ -9,7 +9,4 @@ import { JessicaControllerComponent } from "../../shared/components/jessica-cont
   styleUrl: "./home.component.scss",
 })
 export class HomeComponent {
-  constructor() {
-    console.log("[Home Component] Initialized");
-  }
 }

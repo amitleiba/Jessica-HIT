@@ -4,8 +4,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Packages actually used by projects -->
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.0.1" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="1.6.22" />
   </ItemGroup>
 </Project>

@@ -31,70 +31,109 @@ services:
     networks:
       - jessica-network
 
-  tileserver:
-    image: maptiler/tileserver-gl:latest
-    container_name: tileserver-gl
-    ports:
-      - "8080:80"
-    volumes:
-      - ./tilesStorage:/data
-    environment:
-      - NODE_ENV=production
-    networks:
-      - jessica-network
-    restart: unless-stopped
+  # ============================================
+  # KAFKA - COMMENTED OUT (Not needed for now)
+  # ============================================
+  # kafka:
+  #   image: confluentinc/cp-kafka:latest
+  #   container_name: kafka
+  #   ports:
+  #     - "9092:9092"
+  #   environment:
+  #     - KAFKA_NODE_ID=1
+  #     - KAFKA_PROCESS_ROLES=broker,controller
+  #     - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:29093
+  #     - KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:29093,EXTERNAL://:9094
+  #     - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+  #     - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+  #     - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+  #     - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+  #     - KAFKA_LOG_DIRS=/var/lib/kafka/data
+  #     - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+  #     - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+  #     - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+  #     - CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk
+  #   volumes:
+  #     - kafka-data:/var/lib/kafka/data
+  #   networks:
+  #     - jessica-network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD-SHELL",
+  #         "kafka-broker-api-versions.sh --bootstrap-server localhost:9092 || exit 1",
+  #       ]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 60s
 
-  kafka:
-    image: confluentinc/cp-kafka:latest
-    container_name: kafka
-    ports:
-      - "9092:9092"
+  # kafka-ui:
+  #   image: provectuslabs/kafka-ui:latest
+  #   container_name: kafka-ui
+  #   ports:
+  #     - "8081:8080"
+  #   environment:
+  #     - KAFKA_CLUSTERS_0_NAME=local
+  #     - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+  #   networks:
+  #     - jessica-network
+  #   depends_on:
+  #     - kafka
+  #   restart: unless-stopped
+
+  postgres-keycloak:
+    image: postgres:16-alpine
+    container_name: postgres-keycloak
     environment:
-      - KAFKA_NODE_ID=1
-      - KAFKA_PROCESS_ROLES=broker,controller
-      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:29093
-      - KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:29093,EXTERNAL://:9094
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_LOG_DIRS=/var/lib/kafka/data
-      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
-      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
-      - CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak_password
     volumes:
-      - kafka-data:/var/lib/kafka/data
+      - postgres-keycloak-data:/var/lib/postgresql/data
     networks:
       - jessica-network
     restart: unless-stopped
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "kafka-broker-api-versions.sh --bootstrap-server localhost:9092 || exit 1",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak_password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY: edge
+    ports:
+      - "8082:8080"
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+    networks:
+      - jessica-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e 'GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n' >&3;if [ $? -eq 0 ]; then echo 'Healthcheck Successful';exit 0;else echo 'Healthcheck Failed';exit 1;fi;"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
 
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    container_name: kafka-ui
-    ports:
-      - "8081:8080"
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-    networks:
-      - jessica-network
-    depends_on:
-      - kafka
-    restart: unless-stopped
-
 volumes:
-  kafka-data:
+  # kafka-data:  # Commented out - Kafka not in use
+  postgres-keycloak-data:
 
 networks:
   jessica-network:

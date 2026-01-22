@@ -1,0 +1,44 @@
+<div class="flex flex-column gap-2">
+  <label [for]="inputId" class="font-semibold text-color">
+    {{ label }}
+  </label>
+
+  <!-- Text/Email Input -->
+  @if (type !== 'password') {
+    <input
+      pInputText
+      [id]="inputId"
+      [type]="type"
+      [formControl]="formControl"
+      [placeholder]="placeholder"
+      [autocomplete]="autocomplete"
+      [class.ng-invalid]="hasError"
+      [class.ng-dirty]="control.touched"
+      class="w-full"
+    />
+  }
+
+  <!-- Password Input -->
+  @if (type === 'password') {
+    <p-password
+      [id]="inputId"
+      [formControl]="formControl"
+      [placeholder]="placeholder"
+      [autocomplete]="autocomplete"
+      [feedback]="showPasswordStrength"
+      [toggleMask]="toggleMask"
+      [class.ng-invalid]="hasError"
+      [class.ng-dirty]="control.touched"
+      styleClass="w-full"
+      inputStyleClass="w-full"
+      weakLabel="Weak"
+      mediumLabel="Medium"
+      strongLabel="Strong"
+    />
+  }
+
+  <!-- Error Message -->
+  @if (hasError) {
+    <small class="p-error">{{ errorMessage }}</small>
+  }
+</div>

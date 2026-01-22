@@ -1,0 +1,47 @@
+<!-- Error Message -->
+@if (error$ | async; as error) {
+  <p-message severity="error" [text]="error" styleClass="w-full mb-3" />
+}
+
+<!-- Login Form -->
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-4">
+
+<!-- Username Field -->
+<app-form-input
+  label="Username or Email"
+  type="text"
+  [control]="loginForm.get('username')!"
+  placeholder="Enter your username or email"
+  autocomplete="username"
+/>
+
+<!-- Password Field -->
+<app-form-input
+  label="Password"
+  type="password"
+  [control]="loginForm.get('password')!"
+  placeholder="Enter your password"
+  autocomplete="current-password"
+  [toggleMask]="true"
+/>
+
+<!-- Submit Button -->
+<p-button
+  type="submit"
+  label="Sign In"
+  [loading]="isLoggingIn$ | async"
+  [disabled]="loginForm.invalid || (isLoggingIn$ | async)"
+  icon="pi pi-sign-in"
+  styleClass="w-full mt-2"
+  severity="primary"
+  size="large"
+/>
+</form>
+
+<!-- Loading State Indicator -->
+@if (isLoggingIn$ | async) {
+  <div class="flex align-items-center justify-content-center gap-3 mt-3 p-3 border-round surface-100">
+    <i class="pi pi-spin pi-spinner text-xl text-primary"></i>
+    <span class="font-medium text-primary">Authenticating...</span>
+  </div>
+}

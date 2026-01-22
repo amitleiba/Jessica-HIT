@@ -139,4 +139,22 @@ volumes
 
 lidor_file_TODO_remove_this_before_commit.txt
 
+# Environment and secrets
 .env
+.env.local
+.env.*.local
+*.env
+
+# User secrets (already stored in AppData, but just in case)
+secrets.json
+appsettings.secrets.json
+appsettings.*.secrets.json
+
+# Keycloak and sensitive configs (if you create separate files)
+**/appsettings.Production.json
+**/appsettings.Staging.json
+keycloak-secrets.json
+
+# Docker volumes and data
+docker-compose.override.yml
+volumes/

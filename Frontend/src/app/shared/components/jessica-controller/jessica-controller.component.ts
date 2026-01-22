@@ -14,37 +14,31 @@ export class JessicaControllerComponent {
   mediaType: "image" | "video" = "image";
   isRunning = false;
 
-  // Callback functions for control panel
   onUp = (): void => {
-    console.log("[Jessica Controller] Up clicked");
     // TODO: Send up command via WebSocket
   };
 
   onDown = (): void => {
-    console.log("[Jessica Controller] Down clicked");
     // TODO: Send down command via WebSocket
   };
 
   onLeft = (): void => {
-    console.log("[Jessica Controller] Left clicked");
     // TODO: Send left command via WebSocket
   };
 
   onRight = (): void => {
-    console.log("[Jessica Controller] Right clicked");
     // TODO: Send right command via WebSocket
   };
 
   onStart = (): void => {
-    console.log("[Jessica Controller] Start clicked");
     this.isRunning = true;
     // TODO: Send start command via WebSocket
   };
 
   onStop = (): void => {
-    console.log("[Jessica Controller] Stop clicked");
     this.isRunning = false;
     // TODO: Send stop command via WebSocket
   };
 }
+
 

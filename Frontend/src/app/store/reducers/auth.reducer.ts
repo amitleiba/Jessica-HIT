@@ -1,5 +1,6 @@
-import { createFeature, createReducer, on } from "@ngrx/store";
+import { createFeature, createReducer, createSelector, on } from "@ngrx/store";
 import * as AuthActions from "../actions/auth.actions";
+import { User } from "../../core/dto";
 
 // Auth State Interface
 export interface AuthState {
@@ -8,12 +9,6 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
 }
 
 export const initialAuthState: AuthState = {
@@ -29,7 +24,7 @@ export const authReducer = createReducer(
 
   // Login flow
   on(AuthActions.login, (state) => {
-    console.log("[Auth Reducer] Login action - setting loading state");
+    console.log('Auth Reducer: Login action');
     return {
       ...state,
       isLoading: true,
@@ -38,10 +33,7 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.loginSuccess, (state, { user, token }) => {
-    console.log(
-      "[Auth Reducer] Login success - updating state with user:",
-      user.email
-    );
+    console.log('Auth Reducer: Login success');
     return {
       ...state,
       user,
@@ -53,7 +45,7 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.loginFailure, (state, { error }) => {
-    console.error("[Auth Reducer] Login failure - error:", error);
+    console.log('Auth Reducer: Login failure -', error);
     return {
       ...state,
       isLoading: false,
@@ -63,13 +55,40 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.logout, () => {
-    console.log("[Auth Reducer] Logout - resetting to initial state");
+    console.log('Auth Reducer: Logout');
     return initialAuthState;
+  }),
+
+  // Register flow
+  on(AuthActions.register, (state) => {
+    console.log('Auth Reducer: Register action');
+    return {
+      ...state,
+      isLoading: true,
+      error: null,
+    };
+  }),
+
+  on(AuthActions.registerSuccess, (state, { message }) => {
+    console.log('Auth Reducer: Register success');
+    return {
+      ...state,
+      isLoading: false,
+      error: null,
+    };
+  }),
+
+  on(AuthActions.registerFailure, (state, { error }) => {
+    console.log('Auth Reducer: Register failure -', error);
+    return {
+      ...state,
+      isLoading: false,
+      error,
+    };
   }),
 
   // Direct state setters
   on(AuthActions.setUser, (state, { user }) => {
-    console.log("[Auth Reducer] Set user:", user?.email || "null");
     return {
       ...state,
       user,
@@ -77,7 +96,6 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.setToken, (state, { token }) => {
-    console.log("[Auth Reducer] Set token");
     return {
       ...state,
       token,
@@ -85,7 +103,6 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.setAuthenticated, (state, { isAuthenticated }) => {
-    console.log("[Auth Reducer] Set authenticated:", isAuthenticated);
     return {
       ...state,
       isAuthenticated,
@@ -93,7 +110,6 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.setLoading, (state, { isLoading }) => {
-    console.log("[Auth Reducer] Set loading:", isLoading);
     return {
       ...state,
       isLoading,
@@ -101,7 +117,6 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.setError, (state, { error }) => {
-    console.log("[Auth Reducer] Set error:", error);
     return {
       ...state,
       error,
@@ -109,7 +124,7 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.setAuthState, (state, payload) => {
-    console.log("[Auth Reducer] Set auth state with payload:", payload);
+    console.log('Auth Reducer: Setting auth state');
     return {
       ...state,
       ...payload,
@@ -117,9 +132,19 @@ export const authReducer = createReducer(
   })
 );
 
-// Create feature with automatic default selectors
-// This automatically creates selectors for all state properties:
-// authFeature.selectUser, authFeature.selectToken, authFeature.selectIsAuthenticated, etc.
+/**
+ * Auth Feature with Auto-Generated Selectors
+ * 
+ * createFeature automatically generates selectors for all state properties:
+ * - authFeature.selectUser
+ * - authFeature.selectToken
+ * - authFeature.selectIsAuthenticated
+ * - authFeature.selectIsLoading
+ * - authFeature.selectError
+ * - authFeature.selectAuthState (entire state)
+ * 
+ * Custom/derived selectors are defined in auth.selectors.ts for better organization
+ */
 export const authFeature = createFeature({
   name: "auth",
   reducer: authReducer,

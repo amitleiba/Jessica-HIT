@@ -1,0 +1,50 @@
+<div class="flex align-items-center justify-content-center min-h-screen p-3 surface-ground">
+  <div class="w-full" style="max-width: 32rem;">
+    <p-card styleClass="w-full">
+      <!-- Header Section -->
+      <ng-template pTemplate="header">
+        @if (mode === 'login') {
+          <div class="text-center p-5">
+            <i class="pi pi-sign-in text-6xl mb-3"></i>
+            <h1 class="m-0 text-4xl font-bold">Jessica HIT</h1>
+            <p class="m-0 mt-2 text-base opacity-90">Sign in to your account</p>
+          </div>
+        } @else {
+          <div class="text-center p-5">
+            <i class="pi pi-user-plus text-6xl mb-3"></i>
+            <h1 class="m-0 text-4xl font-bold">Create Account</h1>
+            <p class="m-0 mt-2 text-base opacity-90">Join Jessica HIT today</p>
+          </div>
+        }
+      </ng-template>
+
+      <!-- Form Content -->
+      <ng-template pTemplate="content">
+        <div class="p-4">
+          @if (mode === 'login') {
+            <app-login-form />
+          } @else {
+            <app-register-form />
+          }
+        </div>
+      </ng-template>
+
+      <!-- Footer -->
+      <ng-template pTemplate="footer">
+        <div class="text-center px-4 py-3">
+          @if (mode === 'login') {
+            <p class="m-0 text-color-secondary">
+              Don't have an account? 
+              <a (click)="switchToRegister()" class="text-primary font-semibold no-underline hover:underline cursor-pointer">Register</a>
+            </p>
+          } @else {
+            <p class="m-0 text-color-secondary">
+              Already have an account? 
+              <a (click)="switchToLogin()" class="text-primary font-semibold no-underline hover:underline cursor-pointer">Sign In</a>
+            </p>
+          }
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+</div>
