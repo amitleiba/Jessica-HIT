@@ -5,6 +5,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="Microsoft.OpenApi" />
+    <PackageReference Include="Keycloak.Net.Core" />
   </ItemGroup>
   
   <ItemGroup>

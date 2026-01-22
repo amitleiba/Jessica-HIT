@@ -9,5 +9,6 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
     <PackageVersion Include="Microsoft.OpenApi" Version="1.6.22" />
+    <PackageVersion Include="Keycloak.Net.Core" Version="1.0.34" />
   </ItemGroup>
 </Project>
