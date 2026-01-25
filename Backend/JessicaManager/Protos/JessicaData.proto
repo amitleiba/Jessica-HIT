@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option csharp_namespace = "JessicaManager";
+
+service JessicaMoveController {
+  rpc MoveJessica (MoveRequest) returns (MoveResponse);
+}
+
+enum JessicaMoveAction {
+  START = 0;
+  STOP = 1;
+  FORWARD = 2;
+  BACKWARD = 3;
+  LEFT = 4;
+  RIGHT = 5;
+}
+
+message MoveRequest {
+  JessicaMoveAction action = 1;
+}
+
+message MoveResponse {
+  string response = 1; //need to change incase of 
+}
