@@ -1,3 +1,4 @@
+using JessicaManager.Services;
 using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 
 // Add services to the container
+builder.Services.AddGrpc();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -19,6 +21,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapGrpcService<JessicaMoveService>();
 
 app.UseAuthorization();
 
@@ -26,4 +29,3 @@ app.MapControllers();
 app.MapDefaultEndpoints();
 
 app.Run();
-
