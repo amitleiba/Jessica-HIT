@@ -1,6 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
+    <None Remove="Protos\JessicaData.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" />
+    <PackageReference Include="Grpc.AspNetCore" />
+    <PackageReference Include="Grpc.AspNetCore.Server" />
+    <PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" />
+    <PackageReference Include="Grpc.Core.Api" />
+    <PackageReference Include="Grpc.Net.Client" />
+    <PackageReference Include="Grpc.Net.ClientFactory" />
+    <PackageReference Include="Grpc.Net.Common" />
+    <PackageReference Include="Grpc.Tools">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
@@ -8,6 +24,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Aspire\Aspire.ServiceDefaults\Aspire.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protos\JessicaData.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>
