@@ -1,26 +1,12 @@
 <div class="jessica-controller-container flex flex-column h-screen">
   <!-- Top Half: Media Display -->
   <div class="media-section flex-1 flex">
-    <app-media-display
-      [mediaData]="mediaData"
-      [mediaType]="mediaType"
-    ></app-media-display>
+    <app-media-display [mediaData]="mediaData" [mediaType]="mediaType"></app-media-display>
   </div>
 
   <!-- Bottom Half: Control Panel -->
-  <div
-    class="control-section flex-1 flex align-items-center justify-content-center"
-  >
-    <app-control-panel
-      [onUp]="onUp"
-      [onDown]="onDown"
-      [onLeft]="onLeft"
-      [onRight]="onRight"
-      [onStart]="onStart"
-      [onStop]="onStop"
-      [isRunning]="isRunning"
-    ></app-control-panel>
+  <div class="control-section flex-1 flex align-items-center justify-content-center">
+    <app-control-panel [onStart]="onStart" [onStop]="onStop" [isRunning]="isRunning"
+      (directionChange)="onDirectionChange($event)"></app-control-panel>
   </div>
 </div>
-
-

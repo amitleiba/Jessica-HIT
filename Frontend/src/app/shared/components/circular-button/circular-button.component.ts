@@ -13,6 +13,7 @@ export class CircularButtonComponent {
   @Input() text?: string;
   @Input() size: "small" | "medium" | "large" = "medium";
   @Input() severity: "primary" | "secondary" | "success" | "danger" = "secondary";
+  @Input() isActive: boolean = false;
   @Output() buttonClick = new EventEmitter<void>();
 
   onClick(): void {

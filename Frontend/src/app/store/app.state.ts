@@ -1,6 +1,8 @@
 import { AuthState } from "./reducers/auth.reducer";
+import { CarState } from "./reducers/car.reducer";
 
-// AppState interface - the 'auth' key matches the feature name from createFeature
+// AppState interface - each key matches its feature name from createFeature
 export interface AppState {
   auth: AuthState;
+  car: CarState;
 }

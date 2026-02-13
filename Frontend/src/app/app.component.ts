@@ -3,6 +3,7 @@ import { RouterOutlet } from "@angular/router";
 import { NavbarComponent } from "./shared/components/navbar/navbar.component";
 import { Store } from "@ngrx/store";
 import * as AuthActions from "./store/actions/auth.actions";
+import { SignalManagerService } from "./core/services/signal-manager.service";
 
 @Component({
   selector: "app-root",
@@ -13,8 +14,11 @@ import * as AuthActions from "./store/actions/auth.actions";
 })
 export class AppComponent {
   private readonly store = inject(Store);
+  private readonly signalManager = inject(SignalManagerService);
 
   constructor() {
     this.store.dispatch(AuthActions.initAuth());
+    this.signalManager.connect();
+    console.log('[AppComponent] Initialized — SignalR connecting');
   }
 }

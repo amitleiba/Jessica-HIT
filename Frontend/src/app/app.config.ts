@@ -10,13 +10,14 @@ import Aura from "@primeng/themes/aura";
 import { routes } from "./app.routes";
 import { appReducer } from "./store";
 import { AuthEffects } from "./store/effects/auth.effects";
+import { CarEffects } from "./store/effects/car.effects";
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(withInterceptorsFromDi()),  // Add HttpClient
     provideStore(appReducer),
-    provideEffects([AuthEffects]),  // Register Auth Effects
+    provideEffects([AuthEffects, CarEffects]),  // Register Auth + Car Effects
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

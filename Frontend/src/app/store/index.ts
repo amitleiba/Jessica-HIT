@@ -1,10 +1,10 @@
 import { ActionReducerMap } from "@ngrx/store";
 import { AppState } from "./app.state";
 import { authFeature } from "./reducers/auth.reducer";
+import { carFeature } from "./reducers/car.reducer";
 
-// Use the feature's name and reducer from createFeature
-// This registers the auth feature in the global store
-// The feature name is 'auth', so this creates: { auth: authReducer }
+// Register all feature reducers in the global store
 export const appReducer: ActionReducerMap<AppState> = {
   [authFeature.name]: authFeature.reducer,
+  [carFeature.name]: carFeature.reducer,
 } as ActionReducerMap<AppState>;

@@ -22,8 +22,12 @@
     z-index: 2;
   }
 
-  &:active {
+  &:active,
+  &.active {
     transform: scale(0.95);
+    box-shadow: 0 0 16px rgba(156, 39, 176, 0.5);
+    outline: 2px solid var(--primary-color, #9c27b0);
+    outline-offset: 2px;
   }
 
   i {
