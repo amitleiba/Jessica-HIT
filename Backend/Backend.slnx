@@ -13,5 +13,6 @@
 </Folder>
 <Project Path="Gateway/Gateway.csproj" />
 <Project Path="JessicaManager/JessicaManager.csproj" />
+<Project Path="AuthService/AuthService.csproj" />
 <Project Path="docker-compose.dcproj" />
 </Solution>

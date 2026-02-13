@@ -3,15 +3,15 @@ using Microsoft.OpenApi.Models;
 
 namespace Gateway.Extensions;
 
+/// <summary>
+/// Configures Swagger/OpenAPI with JWT Bearer authentication.
+/// Simplified after removing Keycloak OAuth2 setup.
+/// </summary>
 public static class SwaggerExtensions
 {
-    /// <summary>
-    /// Configures Swagger/OpenAPI with Keycloak OAuth2 authentication
-    /// </summary>
-    public static IServiceCollection AddSwaggerWithKeycloak(
+    public static IServiceCollection AddSwaggerWithJwt(
         this IServiceCollection services,
         SwaggerConfig swaggerConfig,
-        KeycloakConfig keycloakConfig,
         ILogger logger)
     {
         if (!swaggerConfig.Enabled)
@@ -19,15 +19,13 @@ public static class SwaggerExtensions
             return services;
         }
 
-        logger.LogInformation("Configuring Swagger with Keycloak OAuth2");
+        logger.LogInformation("Configuring Swagger with JWT Bearer auth");
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
-            // Fix for nested class names (e.g., Request+DTO becomes Request-DTO)
             options.CustomSchemaIds(id => id.FullName!.Replace('+', '-'));
 
-            // Swagger document configuration
             options.SwaggerDoc(swaggerConfig.Version, new OpenApiInfo
             {
                 Title = swaggerConfig.Title,
@@ -35,27 +33,17 @@ public static class SwaggerExtensions
                 Description = swaggerConfig.Description
             });
 
-            // Configure OAuth2 with Keycloak
-            options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            // Configure JWT Bearer auth for Swagger UI
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows
-                {
-                    AuthorizationCode = new OpenApiOAuthFlow
-                    {
-                        AuthorizationUrl = new Uri($"{keycloakConfig.Authority}/protocol/openid-connect/auth"),
-                        TokenUrl = new Uri($"{keycloakConfig.Authority}/protocol/openid-connect/token"),
-                        Scopes = new Dictionary<string, string>
-                        {
-                            { "openid", "OpenID Connect scope" },
-                            { "profile", "User profile information" },
-                            { "email", "User email address" }
-                        }
-                    }
-                }
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter your JWT access token"
             });
 
-            // Require OAuth2 for all operations
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {
@@ -64,13 +52,10 @@ public static class SwaggerExtensions
                         Reference = new OpenApiReference
                         {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "oauth2"
-                        },
-                        Scheme = "Bearer",
-                        In = ParameterLocation.Header,
-                        Name = "Authorization"
+                            Id = "Bearer"
+                        }
                     },
-                    new[] { "openid", "profile", "email" }
+                    Array.Empty<string>()
                 }
             });
         });
@@ -80,13 +65,9 @@ public static class SwaggerExtensions
         return services;
     }
 
-    /// <summary>
-    /// Configures Swagger UI middleware with Keycloak OAuth2
-    /// </summary>
-    public static IApplicationBuilder UseSwaggerWithKeycloak(
+    public static IApplicationBuilder UseSwaggerWithJwt(
         this IApplicationBuilder app,
         SwaggerConfig swaggerConfig,
-        KeycloakConfig keycloakConfig,
         ILogger logger)
     {
         if (!swaggerConfig.Enabled)
@@ -100,14 +81,7 @@ public static class SwaggerExtensions
             options.SwaggerEndpoint(
                 $"/swagger/{swaggerConfig.Version}/swagger.json",
                 $"{swaggerConfig.Title} {swaggerConfig.Version}");
-            options.RoutePrefix = "swagger"; // Access at /swagger
-
-            // Configure OAuth2 for Swagger UI
-            options.OAuthClientId(keycloakConfig.ClientId);
-            options.OAuthClientSecret(keycloakConfig.ClientSecret);
-            options.OAuthUsePkce();
-            options.OAuthScopes("openid", "profile", "email");
-            options.OAuthAppName("Jessica Gateway API");
+            options.RoutePrefix = "swagger";
         });
 
         logger.LogInformation("Swagger UI available at: http://localhost:5207/swagger");

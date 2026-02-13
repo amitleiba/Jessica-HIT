@@ -19,6 +19,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Gateway\Gateway.csproj" />
     <ProjectReference Include="..\..\JessicaManager\JessicaManager.csproj" />
+    <ProjectReference Include="..\..\AuthService\AuthService.csproj" />
   </ItemGroup>
 
 </Project>

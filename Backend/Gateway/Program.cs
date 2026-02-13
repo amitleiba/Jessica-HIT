@@ -12,18 +12,19 @@ var logger = LoggerFactory.Create(config => config.AddConsole()).CreateLogger("G
 
 builder.Services.AddConfigurationOptions(builder.Configuration);
 
-var keycloakConfig = builder.Configuration.GetKeycloakConfig();
+var jwtConfig = builder.Configuration.GetJwtConfig();
 var swaggerConfig = builder.Configuration.GetSwaggerConfig();
 var corsConfig = builder.Configuration.GetCorsConfig();
 
-// Clean Architecture - Register Application and Infrastructure layers
+// Clean Architecture - Register Application services
 builder.Services.AddApplicationServices(builder.Configuration);
 
-builder.Services.AddKeycloakAuthentication(keycloakConfig, logger);
+// JWT Bearer authentication (validates tokens from AuthService)
+builder.Services.AddJwtAuthentication(jwtConfig, logger);
 builder.Services.AddAuthorizationPolicies();
 builder.Services.AddControllers();
 
-// Add CORS for SignalR
+// CORS for SignalR and frontend
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("SignalRCorsPolicy", policy =>
@@ -47,18 +48,18 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddSignalR();  // Add SignalR
-builder.Services.AddSwaggerWithKeycloak(swaggerConfig, keycloakConfig, logger);
+builder.Services.AddSignalR();
+builder.Services.AddSwaggerWithJwt(swaggerConfig, logger);
 builder.Services.AddReverseProxyWithUserForwarding(builder.Configuration);
 
 var app = builder.Build();
 
-app.UseSwaggerWithKeycloak(swaggerConfig, keycloakConfig, logger);
-app.UseCors("SignalRCorsPolicy");  // Enable CORS for SignalR
+app.UseSwaggerWithJwt(swaggerConfig, logger);
+app.UseCors("SignalRCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapHub<Gateway.API.Hubs.JessicaHub>("/hubs/jessica");  // Map SignalR hub
+app.MapHub<Gateway.API.Hubs.JessicaHub>("/hubs/jessica");
 app.MapReverseProxy();
 app.MapDefaultEndpoints();
 

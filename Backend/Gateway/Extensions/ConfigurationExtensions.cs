@@ -5,12 +5,12 @@ namespace Gateway.Extensions;
 public static class ConfigurationExtensions
 {
     /// <summary>
-    /// Configures and validates all application configuration options
+    /// Configures and validates all application configuration options.
     /// </summary>
     public static IServiceCollection AddConfigurationOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddOptions<KeycloakConfig>()
-            .Bind(configuration.GetSection(KeycloakConfig.SectionName))
+        services.AddOptions<JwtConfig>()
+            .Bind(configuration.GetSection(JwtConfig.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
@@ -33,16 +33,16 @@ public static class ConfigurationExtensions
     }
 
     /// <summary>
-    /// Gets Keycloak configuration from settings
+    /// Gets JWT configuration from settings.
     /// </summary>
-    public static KeycloakConfig GetKeycloakConfig(this IConfiguration configuration)
+    public static JwtConfig GetJwtConfig(this IConfiguration configuration)
     {
-        return configuration.GetSection(KeycloakConfig.SectionName).Get<KeycloakConfig>()
-            ?? throw new InvalidOperationException("Keycloak configuration is missing or invalid");
+        return configuration.GetSection(JwtConfig.SectionName).Get<JwtConfig>()
+            ?? throw new InvalidOperationException("JWT configuration is missing or invalid");
     }
 
     /// <summary>
-    /// Gets Swagger configuration from settings with fallback to defaults
+    /// Gets Swagger configuration from settings with fallback to defaults.
     /// </summary>
     public static SwaggerConfig GetSwaggerConfig(this IConfiguration configuration)
     {
@@ -51,7 +51,7 @@ public static class ConfigurationExtensions
     }
 
     /// <summary>
-    /// Gets CORS configuration from settings
+    /// Gets CORS configuration from settings.
     /// </summary>
     public static CorsConfig GetCorsConfig(this IConfiguration configuration)
     {

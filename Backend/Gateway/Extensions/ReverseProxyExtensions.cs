@@ -13,15 +13,18 @@ public static class ReverseProxyExtensions
     {
         services.AddReverseProxy()
             .LoadFromConfig(configuration.GetSection("ReverseProxy"))
+            .AddServiceDiscoveryDestinationResolver()   // Aspire service discovery — resolves http://authservice → localhost:random_port
             .AddTransforms(builderContext =>
             {
-                builderContext.AddRequestTransform(async transformContext =>
+                builderContext.AddRequestTransform(transformContext =>
                 {
                     var username = transformContext.HttpContext.User?.Identity?.Name;
                     if (!string.IsNullOrEmpty(username))
                     {
                         transformContext.ProxyRequest.Headers.Add("X-Forwarded-User", username);
                     }
+
+                    return ValueTask.CompletedTask;
                 });
             });
 
