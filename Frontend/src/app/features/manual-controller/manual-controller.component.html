@@ -1,0 +1,14 @@
+<div class="manual-controller-container">
+  <div class="dashboard-panel">
+    <!-- Left: Jessica Controller (screen + D-pad) -->
+    <div class="panel-left">
+      <app-jessica-controller></app-jessica-controller>
+    </div>
+
+    <!-- Right: Sensor Data Panel (speed dial + future sensors) -->
+    <div class="panel-right">
+      <app-sensor-data-panel [speed]="speed" (speedChange)="onSpeedChange($event)"></app-sensor-data-panel>
+    </div>
+  </div>
+</div>
+

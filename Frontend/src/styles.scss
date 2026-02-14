@@ -21,6 +21,14 @@
   --text-color: #ffffff;
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Prevent page-level scrollbar — pages scroll internally if needed */
+}
+
 body {
   background-color: var(--surface-ground);
   color: var(--text-color);

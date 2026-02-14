@@ -17,6 +17,12 @@
 export const RouteSegments = {
   /** Home page segment */
   HOME: 'home',
+
+  /** Manual controller page segment */
+  MANUAL_CONTROLLER: 'manual-controller',
+
+  /** Recorder panel page segment */
+  RECORDER: 'recorder',
   
   /** Login page segment */
   LOGIN: 'login',
@@ -35,6 +41,12 @@ export const AppRoutes = {
   
   /** Home page - main dashboard/landing page */
   HOME: `/${RouteSegments.HOME}`,
+
+  /** Manual controller - drive the car with D-pad + speed dial */
+  MANUAL_CONTROLLER: `/${RouteSegments.MANUAL_CONTROLLER}`,
+
+  /** Recorder panel - create, replay, delete recordings */
+  RECORDER: `/${RouteSegments.RECORDER}`,
   
   /** Login page - user authentication */
   LOGIN: `/${RouteSegments.LOGIN}`,

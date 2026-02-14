@@ -1,0 +1,72 @@
+<div class="delete-recording-container">
+  <h3 class="section-title">
+    <i class="pi pi-trash"></i>
+    Delete Recordings
+  </h3>
+
+  <!-- Loading -->
+  @if (isLoading) {
+  <div class="loading-state">
+    <i class="pi pi-spin pi-spinner"></i>
+    <span>Loading recordings…</span>
+  </div>
+  }
+
+  <!-- Empty state -->
+  @if (!isLoading && recordings.length === 0) {
+  <div class="empty-state">
+    <i class="pi pi-inbox empty-icon"></i>
+    <p>No recordings yet. Create one in the "Create" tab!</p>
+  </div>
+  }
+
+  <!-- Recordings list -->
+  @if (!isLoading && recordings.length > 0) {
+  <div class="recordings-list">
+    @for (rec of recordings; track rec.id) {
+    <div class="recording-card" [class.confirm-mode]="confirmDeleteId === rec.id">
+      <div class="recording-info">
+        <span class="recording-name">{{ rec.name }}</span>
+        <div class="recording-meta">
+          <span><i class="pi pi-bolt"></i> Speed {{ rec.speed }}</span>
+          <span><i class="pi pi-clock"></i> {{ formatDuration(rec.durationMs) }}</span>
+          <span><i class="pi pi-calendar"></i> {{ formatDate(rec.createdAt) }}</span>
+        </div>
+      </div>
+
+      <div class="recording-actions">
+        @if (confirmDeleteId !== rec.id) {
+        <!-- Normal state: delete button -->
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          [text]="true"
+          [rounded]="true"
+          (onClick)="onDeleteClick(rec.id)"
+          pTooltip="Delete"
+        ></p-button>
+        } @else {
+        <!-- Confirm state: confirm + cancel -->
+        <span class="confirm-text">Delete?</span>
+        <p-button
+          icon="pi pi-check"
+          severity="danger"
+          size="small"
+          (onClick)="onConfirmDelete(rec.id)"
+          label="Yes"
+        ></p-button>
+        <p-button
+          icon="pi pi-times"
+          severity="secondary"
+          size="small"
+          [text]="true"
+          (onClick)="onCancelDelete()"
+          label="No"
+        ></p-button>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

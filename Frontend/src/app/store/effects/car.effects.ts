@@ -29,33 +29,53 @@ export class CarEffects {
     private readonly signalManager = inject(SignalManagerService);
 
     /**
-     * Direction Change → send via hub only when running AND direction actually changed.
+     * Direction Change → send via hub only when the car is running.
      *
-     * `withLatestFrom` reads the state BEFORE the reducer updates for this action,
-     * so `prevDirection` is the old value — perfect for a "changed?" check.
+     * Dedup is already handled by the reducer (returns same state ref if unchanged)
+     * and by the ControlPanel (only emits on actual transitions).
      */
     directionChange$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(CarActions.changeDirection),
                 withLatestFrom(
-                    this.store.select(carFeature.selectIsRunning),
-                    this.store.select(carFeature.selectCurrentDirection)
+                    this.store.select(carFeature.selectIsRunning)
                 ),
-                tap(([action, isRunning, prevDirection]) => {
-                    // Safety dedup: skip if direction hasn't actually changed
-                    if (action.direction === prevDirection) {
-                        return;
-                    }
-
+                tap(([action, isRunning]) => {
                     if (isRunning) {
                         console.log(
-                            `[CarEffect] ✅ Running → sending "${action.direction}" to hub (was "${prevDirection}")`
+                            `[CarEffect] ✅ Running → sending "${action.direction}" to hub`
                         );
                         this.signalManager.send('CarDirectionChange', { direction: action.direction });
                     } else {
                         console.log(
                             `[CarEffect] ⛔ STOPPED → "${action.direction}" NOT sent`
+                        );
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     * Speed Change → send via hub only when the car is running.
+     */
+    speedChange$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CarActions.changeSpeed),
+                withLatestFrom(
+                    this.store.select(carFeature.selectIsRunning)
+                ),
+                tap(([action, isRunning]) => {
+                    if (isRunning) {
+                        console.log(
+                            `[CarEffect] ✅ Running → sending speed ${action.speed} to hub`
+                        );
+                        this.signalManager.send('CarSpeedChange', { speed: action.speed });
+                    } else {
+                        console.log(
+                            `[CarEffect] ⛔ STOPPED → speed ${action.speed} NOT sent`
                         );
                     }
                 })

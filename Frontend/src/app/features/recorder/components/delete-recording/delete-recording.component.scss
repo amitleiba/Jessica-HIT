@@ -1,0 +1,134 @@
+.delete-recording-container {
+  padding: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-title {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i {
+    color: #e74c3c;
+  }
+}
+
+// ── Loading & Empty states ──
+
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 200px;
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+}
+
+// ── Recordings list ──
+
+.recordings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.recording-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  background-color: var(--surface-card);
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--primary-color);
+  }
+
+  &.confirm-mode {
+    border-color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.05);
+  }
+}
+
+.recording-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.recording-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recording-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: var(--text-color);
+  opacity: 0.6;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  i {
+    font-size: 0.7rem;
+  }
+}
+
+.recording-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.confirm-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e74c3c;
+}
+
+// ── Responsive ──
+
+@media (max-width: 500px) {
+  .recording-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .recording-actions {
+    margin-left: 0;
+    align-self: flex-end;
+  }
+
+  .recording-meta {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}

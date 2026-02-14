@@ -31,10 +31,13 @@ services:
       # YARP cluster addresses — use docker-compose service names
       ReverseProxy__Clusters__auth-service-cluster__Destinations__destination1__Address: "http://authservice:8080"
       ReverseProxy__Clusters__jessica-manager-cluster__Destinations__destination1__Address: "http://jessicamanager:8080"
+      ReverseProxy__Clusters__recording-manager-cluster__Destinations__destination1__Address: "http://recordingmanager:8080"
     depends_on:
       authservice:
         condition: service_started
       jessicamanager:
+        condition: service_started
+      recordingmanager:
         condition: service_started
     networks:
       - jessica-network
@@ -76,6 +79,26 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: "8080"
       ASPNETCORE_HTTPS_PORTS: "8081"
+    networks:
+      - jessica-network
+
+  # ============================================
+  # RECORDING MANAGER — Recording CRUD service
+  # ============================================
+  recordingmanager:
+    image: ${DOCKER_REGISTRY-}recordingmanager
+    build:
+      context: .
+      dockerfile: RecordingManager/Dockerfile
+    ports:
+      - "5300:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__RecordingDb: "Host=postgres-recording;Port=5432;Database=jessica_recordings;Username=recording_user;Password=recording_password"
+    depends_on:
+      postgres-recording:
+        condition: service_healthy
     networks:
       - jessica-network
 
@@ -132,6 +155,29 @@ services:
   #   restart: unless-stopped
 
   # ============================================
+  # POSTGRES — RecordingManager database
+  # ============================================
+  postgres-recording:
+    image: postgres:16-alpine
+    container_name: postgres-recording
+    environment:
+      POSTGRES_DB: jessica_recordings
+      POSTGRES_USER: recording_user
+      POSTGRES_PASSWORD: recording_password
+    volumes:
+      - postgres-recording-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - jessica-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U recording_user -d jessica_recordings" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
   # POSTGRES — AuthService database
   # ============================================
   postgres-auth:
@@ -149,7 +195,7 @@ services:
       - jessica-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U auth_user -d jessica_auth"]
+      test: [ "CMD-SHELL", "pg_isready -U auth_user -d jessica_auth" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -157,6 +203,8 @@ services:
 volumes:
   # kafka-data:  # Commented out - Kafka not in use
   postgres-auth-data:
+  postgres-recording-data:
+
 
 networks:
   jessica-network:

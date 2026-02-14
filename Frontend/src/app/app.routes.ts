@@ -24,6 +24,18 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: RouteSegments.MANUAL_CONTROLLER,
+    loadComponent: () =>
+      import("./features/manual-controller/manual-controller.component").then((m) => m.ManualControllerComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: RouteSegments.RECORDER,
+    loadComponent: () =>
+      import("./features/recorder/recorder-panel.component").then((m) => m.RecorderPanelComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: RouteSegments.LOGIN,
     loadComponent: () =>
       import("./features/auth/auth-screen.component").then((m) => m.AuthScreenComponent),

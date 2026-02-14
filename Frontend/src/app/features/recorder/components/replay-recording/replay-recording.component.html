@@ -1,0 +1,113 @@
+<div class="replay-recording-container">
+  <h3 class="section-title">
+    <i class="pi pi-play-circle"></i>
+    Replay Recordings
+  </h3>
+
+  <!-- ═══════════ Loading ═══════════ -->
+  @if (isLoading) {
+  <div class="loading-state">
+    <i class="pi pi-spin pi-spinner"></i>
+    <span>Loading recordings…</span>
+  </div>
+  }
+
+  <!-- ═══════════ Empty state ═══════════ -->
+  @if (!isLoading && recordings.length === 0) {
+  <div class="empty-state">
+    <i class="pi pi-inbox empty-icon"></i>
+    <p>No recordings yet. Create one in the "Create" tab!</p>
+  </div>
+  }
+
+  <!-- ═══════════ Main content ═══════════ -->
+  @if (!isLoading && recordings.length > 0) {
+  <div class="replay-layout">
+
+    <!-- Recording selector -->
+    <div class="recordings-list">
+      @for (rec of recordings; track rec.id) {
+      <div
+        class="recording-card"
+        [class.selected]="selectedRecording?.id === rec.id"
+        [class.disabled]="isReplaying && selectedRecording?.id !== rec.id"
+        (click)="onSelectRecording(rec)"
+      >
+        <span class="recording-name">{{ rec.name }}</span>
+        <div class="recording-meta">
+          <span><i class="pi pi-bolt"></i> {{ rec.speed }}</span>
+          <span><i class="pi pi-clock"></i> {{ formatDuration(rec.durationMs) }}</span>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Selected recording detail + controls -->
+    @if (isLoadingDetail) {
+    <div class="detail-loading">
+      <i class="pi pi-spin pi-spinner"></i>
+      <span>Loading events…</span>
+    </div>
+    }
+
+    @if (selectedRecording && !isLoadingDetail) {
+    <div class="replay-controls">
+      <!-- Recording info -->
+      <div class="detail-header">
+        <span class="detail-name">{{ selectedRecording.name }}</span>
+        <span class="detail-stats">
+          Speed {{ selectedRecording.speed }} · {{ formatDuration(selectedRecording.durationMs) }} · {{ selectedRecording.events.length }} events
+        </span>
+      </div>
+
+      <!-- Replay progress -->
+      @if (isReplaying) {
+      <div class="replay-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="replayProgress"></div>
+        </div>
+        <div class="progress-info">
+          <span>{{ replayElapsed }}</span>
+          <span>{{ currentEventIndex }}/{{ selectedRecording.events.length }} events</span>
+          @if (isLoopEnabled) {
+          <span class="loop-badge">Loop #{{ loopCount + 1 }}</span>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Control buttons -->
+      <div class="control-buttons">
+        @if (!isReplaying) {
+        <p-button
+          label="Play"
+          icon="pi pi-play"
+          severity="success"
+          (onClick)="onPlay()"
+          styleClass="play-btn"
+        ></p-button>
+        } @else {
+        <p-button
+          label="Stop"
+          icon="pi pi-stop"
+          severity="danger"
+          (onClick)="onStop()"
+          styleClass="stop-btn"
+        ></p-button>
+        }
+
+        <p-button
+          [label]="isLoopEnabled ? 'Loop ON' : 'Loop OFF'"
+          [icon]="isLoopEnabled ? 'pi pi-sync' : 'pi pi-circle'"
+          [severity]="isLoopEnabled ? 'info' : 'secondary'"
+          [outlined]="!isLoopEnabled"
+          (onClick)="onToggleLoop()"
+          [disabled]="isReplaying"
+          styleClass="loop-btn"
+        ></p-button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

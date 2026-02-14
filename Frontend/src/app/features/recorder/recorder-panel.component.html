@@ -1,0 +1,41 @@
+<div class="recorder-panel-container">
+  <div class="recorder-panel">
+    <div class="panel-header">
+      <h2 class="panel-title">
+        <i class="pi pi-video"></i>
+        Recording Manager
+      </h2>
+      <p class="panel-subtitle">Create, replay, and manage your driving recordings</p>
+    </div>
+
+    <p-tabs [value]="activeTab" (valueChange)="onTabChange($event)">
+      <p-tablist>
+        <p-tab value="0">
+          <i class="pi pi-microphone"></i>
+          <span class="tab-label">Create</span>
+        </p-tab>
+        <p-tab value="1">
+          <i class="pi pi-play-circle"></i>
+          <span class="tab-label">Replay</span>
+        </p-tab>
+        <p-tab value="2">
+          <i class="pi pi-trash"></i>
+          <span class="tab-label">Delete</span>
+        </p-tab>
+      </p-tablist>
+
+      <p-tabpanels>
+        <p-tabpanel value="0">
+          <app-create-recording></app-create-recording>
+        </p-tabpanel>
+        <p-tabpanel value="1">
+          <app-replay-recording></app-replay-recording>
+        </p-tabpanel>
+        <p-tabpanel value="2">
+          <app-delete-recording></app-delete-recording>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+</div>
+

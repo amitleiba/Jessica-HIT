@@ -1,0 +1,148 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sensor-panel-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-card);
+  border-left: 1px solid var(--primary-color, #4caf50);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  overflow: hidden;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+}
+
+/* ── Speed Dial Section ── */
+.speed-dial-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 320px;
+}
+
+.dial-wrapper {
+  width: 100%;
+  max-width: 260px;
+}
+
+/* ── SVG Gauge ── */
+.speed-gauge {
+  width: 100%;
+  height: auto;
+}
+
+.gauge-bg {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.gauge-fill {
+  stroke: var(--primary-color, #4caf50);
+  transition: stroke-dashoffset 0.2s ease;
+}
+
+.gauge-value {
+  fill: var(--text-color, #ffffff);
+  font-size: 2.2rem;
+  font-weight: 700;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.gauge-label {
+  fill: var(--text-color, #999);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  opacity: 0.6;
+  text-transform: uppercase;
+}
+
+/* ── Slider ── */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.slider-label {
+  color: var(--text-color, #999);
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 1.5rem;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.speed-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  cursor: pointer;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary-color, #4caf50);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      transform: scale(1.15);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  &::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary-color, #4caf50);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  &::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .sensor-panel-container {
+    border-left: none;
+    border-top: 1px solid var(--primary-color, #4caf50);
+    padding: 1.5rem 1rem;
+  }
+
+  .speed-dial-section {
+    max-width: 280px;
+  }
+
+  .dial-wrapper {
+    max-width: 220px;
+  }
+}

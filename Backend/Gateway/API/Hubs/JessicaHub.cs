@@ -61,6 +61,22 @@ public class JessicaHub(ILogger<JessicaHub> logger) : Hub
     }
 
     /// <summary>
+    /// Receives a car speed change from the frontend speed dial.
+    /// Speed is an integer between 0 (min) and 100 (max).
+    /// </summary>
+    public async Task CarSpeedChange(CarSpeedRequest request)
+    {
+        _logger.LogInformation(
+            "🏎 Car speed change from {ConnectionId}: {Speed}",
+            Context.ConnectionId, request.Speed);
+
+        // TODO: Forward the speed to the Jessica Manager microservice
+        // e.g. await _jessicaManagerClient.SendSpeedAsync(request.Speed);
+
+        await Task.CompletedTask;
+    }
+
+    /// <summary>
     /// Client signals that the car has started (user pressed Start).
     /// </summary>
     public async Task CarStart()

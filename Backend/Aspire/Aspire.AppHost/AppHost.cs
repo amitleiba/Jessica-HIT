@@ -17,6 +17,13 @@ var postgresAuth = builder.AddPostgres("postgres-auth")
 
 var authDb = postgresAuth.AddDatabase("AuthDb", databaseName: "jessica_auth");
 
+// PostgreSQL for RecordingManager — recordings and events
+var postgresRecording = builder.AddPostgres("postgres-recording")
+    .WithDataVolume("postgres-recording-data")
+    .WithPgAdmin();
+
+var recordingDb = postgresRecording.AddDatabase("RecordingDb", databaseName: "jessica_recordings");
+
 // ============================================
 // SERVICES
 // ============================================
@@ -31,10 +38,17 @@ var authService = builder.AddProject<Projects.AuthService>("authservice")
     .WithReference(authDb)
     .WaitFor(authDb);
 
-// Gateway (routes to JessicaManager + AuthService via YARP)
+// RecordingManager service (recordings CRUD + PostgreSQL)
+var recordingManager = builder.AddProject<Projects.RecordingManager>("recordingmanager")
+    .WithReference(recordingDb)
+    .WaitFor(recordingDb);
+
+// Gateway (routes to JessicaManager + AuthService + RecordingManager via YARP)
 var gateway = builder.AddProject<Projects.Gateway>("gateway")
     .WithReference(jessicaManager)
     .WithReference(authService)
-    .WaitFor(authService);
+    .WithReference(recordingManager)
+    .WaitFor(authService)
+    .WaitFor(recordingManager);
 
 await builder.Build().RunAsync().ConfigureAwait(false);

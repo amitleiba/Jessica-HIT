@@ -12,14 +12,22 @@
         styleClass="p-button-sm p-button-outlined" severity="primary"></p-button>
       }
 
-      <!-- Show when authenticated -->
-      @if (isAuthenticated$ | async) {
-      <span class="user-greeting text-sm">
-        Hello, <strong>{{ (user$ | async)?.name }}</strong>
-      </span>
-      <p-button label="Logout" icon="pi pi-sign-out" (onClick)="logout()" styleClass="p-button-sm"
-        severity="danger"></p-button>
-      }
+    <!-- Show when authenticated -->
+    @if (isAuthenticated$ | async) {
+    <a [routerLink]="routes.MANUAL_CONTROLLER" class="nav-link">
+      <p-button label="Manual Control" icon="pi pi-sliders-h" styleClass="p-button-sm p-button-outlined"
+        severity="primary"></p-button>
+    </a>
+    <a [routerLink]="routes.RECORDER" class="nav-link">
+      <p-button label="Recordings" icon="pi pi-video" styleClass="p-button-sm p-button-outlined"
+        severity="primary"></p-button>
+    </a>
+    <span class="user-greeting text-sm">
+      Hello, <strong>{{ (user$ | async)?.name }}</strong>
+    </span>
+    <p-button label="Logout" icon="pi pi-sign-out" (onClick)="logout()" styleClass="p-button-sm"
+      severity="danger"></p-button>
+    }
 
       <app-theme-toggle></app-theme-toggle>
     </div>

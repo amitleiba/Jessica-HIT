@@ -1,0 +1,100 @@
+<div class="create-recording-container">
+
+  <!-- ═══════════ PRE-RECORDING: Setup Form ═══════════ -->
+  @if (!isRecording) {
+  <div class="setup-form">
+    <h3 class="section-title">
+      <i class="pi pi-microphone"></i>
+      New Recording
+    </h3>
+
+    <!-- Recording Name -->
+    <div class="form-field">
+      <label for="rec-name">Recording Name</label>
+      <input
+        id="rec-name"
+        type="text"
+        pInputText
+        [(ngModel)]="recordingName"
+        placeholder="e.g. Figure 8 run"
+        maxlength="200"
+        class="w-full"
+      />
+    </div>
+
+    <!-- Speed Slider -->
+    <div class="form-field">
+      <label for="rec-speed">Speed: {{ recordingSpeed }}</label>
+      <div class="speed-slider-row">
+        <span class="speed-label">0</span>
+        <input
+          id="rec-speed"
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          [value]="recordingSpeed"
+          (input)="onSpeedInput($event)"
+          class="speed-slider"
+        />
+        <span class="speed-label">100</span>
+      </div>
+    </div>
+
+    <!-- Start Button -->
+    <p-button
+      label="Start Recording"
+      icon="pi pi-circle-fill"
+      severity="danger"
+      [disabled]="!canStart"
+      (onClick)="onStartRecording()"
+      styleClass="w-full start-btn"
+    ></p-button>
+  </div>
+  }
+
+  <!-- ═══════════ RECORDING IN PROGRESS: Full Dashboard ═══════════ -->
+  @if (isRecording) {
+  <div class="recording-active">
+
+    <!-- Recording status bar -->
+    <div class="recording-header">
+      <span class="rec-indicator">
+        <i class="pi pi-circle-fill rec-dot"></i>
+        REC
+      </span>
+      <span class="rec-timer">{{ elapsedDisplay }}</span>
+      <span class="rec-events">{{ eventCount }} events</span>
+    </div>
+
+    <!-- Dashboard: Camera + Controls -->
+    <div class="dashboard">
+      <!-- Left: Camera Feed -->
+      <div class="dashboard-camera">
+        <app-media-display [mediaData]="mediaData" [mediaType]="mediaType"></app-media-display>
+      </div>
+
+      <!-- Right: D-pad Controller -->
+      <div class="dashboard-controls">
+        <app-control-panel
+          [isRunning]="true"
+          (directionChange)="onDirectionChange($event)"
+          [showUp]="true"
+          [showDown]="true"
+          [showLeft]="true"
+          [showRight]="true"
+        ></app-control-panel>
+      </div>
+    </div>
+
+    <!-- Stop Button -->
+    <p-button
+      label="Stop Recording"
+      icon="pi pi-stop-circle"
+      severity="warn"
+      (onClick)="onStopRecording()"
+      styleClass="w-full stop-btn"
+    ></p-button>
+  </div>
+  }
+</div>

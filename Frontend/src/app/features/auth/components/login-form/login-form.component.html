@@ -38,10 +38,3 @@
 />
 </form>
 
-<!-- Loading State Indicator -->
-@if (isLoggingIn$ | async) {
-  <div class="flex align-items-center justify-content-center gap-3 mt-3 p-3 border-round surface-100">
-    <i class="pi pi-spin pi-spinner text-xl text-primary"></i>
-    <span class="font-medium text-primary">Authenticating...</span>
-  </div>
-}

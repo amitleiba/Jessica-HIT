@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { CarSensorData } from '../../shared/models/car-sensor-data.model';
 
 /**
  * Car Actions
@@ -24,4 +25,25 @@ export const clearDirection = createAction(
 export const startCar = createAction('[Car] Start');
 
 export const stopCar = createAction('[Car] Stop');
+
+// ── Speed ──
+
+/** User changed the speed dial */
+export const changeSpeed = createAction(
+    '[Car] Change Speed',
+    props<{ speed: number }>()
+);
+
+// ── Sensor data ──
+
+/** Dispatched when a new sensor data snapshot arrives from SignalR */
+export const sensorDataReceived = createAction(
+    '[Car] Sensor Data Received',
+    props<{ sensorData: CarSensorData }>()
+);
+
+/** Clear all sensor data (e.g. on disconnect) */
+export const clearSensorData = createAction(
+    '[Car] Clear Sensor Data'
+);
 

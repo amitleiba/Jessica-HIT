@@ -11,13 +11,14 @@ import { routes } from "./app.routes";
 import { appReducer } from "./store";
 import { AuthEffects } from "./store/effects/auth.effects";
 import { CarEffects } from "./store/effects/car.effects";
+import { RecordingEffects } from "./store/effects/recording.effects";
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(withInterceptorsFromDi()),  // Add HttpClient
     provideStore(appReducer),
-    provideEffects([AuthEffects, CarEffects]),  // Register Auth + Car Effects
+    provideEffects([AuthEffects, CarEffects, RecordingEffects]),  // Register Auth + Car + Recording Effects
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

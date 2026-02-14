@@ -1,0 +1,206 @@
+.replay-recording-container {
+  padding: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section-title {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i {
+    color: #27ae60;
+  }
+}
+
+// ── Loading & Empty ──
+
+.loading-state,
+.empty-state,
+.detail-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 200px;
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+}
+
+// ── Layout ──
+
+.replay-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+// ── Recordings list ──
+
+.recordings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.recording-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background-color: var(--surface-card);
+  border-radius: 0.5rem;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s ease, opacity 0.2s ease;
+
+  &:hover:not(.disabled) {
+    border-color: var(--primary-color);
+  }
+
+  &.selected {
+    border-color: #27ae60;
+    background-color: rgba(39, 174, 96, 0.05);
+  }
+
+  &.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.recording-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-color);
+}
+
+.recording-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-color);
+  opacity: 0.6;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  i {
+    font-size: 0.65rem;
+  }
+}
+
+// ── Replay controls ──
+
+.replay-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--surface-card);
+  border-radius: 0.75rem;
+}
+
+.detail-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.detail-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.detail-stats {
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+// ── Progress bar ──
+
+.replay-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.progress-bar {
+  height: 6px;
+  background-color: var(--surface-ground);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #27ae60;
+  border-radius: 3px;
+  transition: width 0.15s ease;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.loop-badge {
+  background-color: rgba(52, 152, 219, 0.15);
+  color: #3498db;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+// ── Control buttons ──
+
+.control-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+:host ::ng-deep .play-btn,
+:host ::ng-deep .stop-btn {
+  flex: 1;
+}
+
+:host ::ng-deep .loop-btn {
+  flex-shrink: 0;
+}
+
+// ── Responsive ──
+
+@media (max-width: 500px) {
+  .control-buttons {
+    flex-direction: column;
+  }
+
+  :host ::ng-deep .play-btn,
+  :host ::ng-deep .stop-btn,
+  :host ::ng-deep .loop-btn {
+    width: 100%;
+  }
+}

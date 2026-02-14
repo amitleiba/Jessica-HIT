@@ -1,5 +1,6 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
 import * as CarActions from '../actions/car.actions';
+import { CarSensorData, EMPTY_SENSOR_DATA } from '../../shared/models/car-sensor-data.model';
 
 /**
  * Car State
@@ -10,15 +11,21 @@ import * as CarActions from '../actions/car.actions';
  *     "left-right"  — combo (sorted alphabetically, hyphen-joined)
  *
  * isRunning — mirrors the Start/Stop toggle; only when true do we send hub events
+ *
+ * sensorData — latest raw telemetry snapshot from the car
  */
 export interface CarState {
     currentDirection: string;
     isRunning: boolean;
+    speed: number;
+    sensorData: CarSensorData;
 }
 
 export const initialCarState: CarState = {
     currentDirection: 'idle',
     isRunning: false,
+    speed: 0,
+    sensorData: EMPTY_SENSOR_DATA,
 };
 
 export const carReducer = createReducer(
@@ -61,6 +68,33 @@ export const carReducer = createReducer(
             isRunning: false,
             currentDirection: 'idle',
         };
+    }),
+
+    on(CarActions.changeSpeed, (state, { speed }) => {
+        if (state.speed === speed) {
+            return state;
+        }
+        console.log(`[Car Reducer] Speed: ${state.speed} → ${speed}`);
+        return {
+            ...state,
+            speed,
+        };
+    }),
+
+    on(CarActions.sensorDataReceived, (state, { sensorData }) => {
+        console.log('[Car Reducer] Sensor data updated');
+        return {
+            ...state,
+            sensorData: { ...state.sensorData, ...sensorData },
+        };
+    }),
+
+    on(CarActions.clearSensorData, (state) => {
+        console.log('[Car Reducer] Sensor data cleared');
+        return {
+            ...state,
+            sensorData: EMPTY_SENSOR_DATA,
+        };
     })
 );
 
@@ -68,6 +102,8 @@ export const carReducer = createReducer(
  * Car Feature — auto-generates selectors:
  *   carFeature.selectCurrentDirection
  *   carFeature.selectIsRunning
+ *   carFeature.selectSpeed
+ *   carFeature.selectSensorData
  *   carFeature.selectCarState  (entire slice)
  */
 export const carFeature = createFeature({
