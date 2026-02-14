@@ -87,4 +87,3 @@ public class AuthDbContext(DbContextOptions<AuthDbContext> options) : DbContext(
         });
     }
 }
-

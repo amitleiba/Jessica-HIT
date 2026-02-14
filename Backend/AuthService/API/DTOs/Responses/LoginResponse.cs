@@ -22,4 +22,3 @@ public class LoginResponse
     [Required]
     public required UserInfoResponse UserInfo { get; init; }
 }
-

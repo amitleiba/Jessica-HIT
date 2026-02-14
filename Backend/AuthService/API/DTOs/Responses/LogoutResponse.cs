@@ -13,4 +13,3 @@ public class LogoutResponse
 
     public string? Username { get; init; }
 }
-

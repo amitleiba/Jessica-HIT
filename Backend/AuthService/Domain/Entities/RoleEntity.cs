@@ -13,4 +13,3 @@ public class RoleEntity
     // ── Navigation Properties ──
     public ICollection<UserRoleEntity> UserRoles { get; set; } = [];
 }
-

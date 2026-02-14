@@ -1,6 +1,6 @@
-using System.Security.Claims;
 using AuthService.API.DTOs.Requests;
 using AuthService.API.DTOs.Responses;
+using System.Security.Claims;
 
 namespace AuthService.Application.Adapters;
 

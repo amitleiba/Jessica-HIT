@@ -1,7 +1,7 @@
-using System.Text;
 using AuthService.Domain.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace AuthService.Extensions;
 
@@ -61,4 +61,3 @@ public static class AuthenticationExtensions
         return services;
     }
 }
-

@@ -19,4 +19,3 @@ public class RefreshTokenRequest
     [Required(ErrorMessage = "Access token is required")]
     public required string AccessToken { get; init; }
 }
-

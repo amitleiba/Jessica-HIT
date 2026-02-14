@@ -45,4 +45,3 @@ public interface IUserRepository
     /// </summary>
     Task UpdateAsync(UserEntity user);
 }
-

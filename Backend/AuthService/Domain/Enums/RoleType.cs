@@ -15,4 +15,3 @@ public static class RoleType
     /// </summary>
     public static readonly string[] All = [Admin, User, Operator];
 }
-

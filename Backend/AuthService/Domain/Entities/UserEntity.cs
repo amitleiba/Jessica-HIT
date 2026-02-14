@@ -33,4 +33,3 @@ public class UserEntity
 
     public ICollection<RefreshTokenEntity> RefreshTokens { get; set; } = [];
 }
-

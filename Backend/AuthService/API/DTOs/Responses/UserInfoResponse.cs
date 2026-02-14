@@ -18,4 +18,3 @@ public class UserInfoResponse
     [Required]
     public required IReadOnlyCollection<ClaimDto> Claims { get; init; }
 }
-

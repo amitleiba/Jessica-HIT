@@ -14,4 +14,3 @@ public class LoginRequest
     [Required(ErrorMessage = "Password is required")]
     public required string Password { get; init; }
 }
-

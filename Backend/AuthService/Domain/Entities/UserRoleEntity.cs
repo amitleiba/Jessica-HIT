@@ -12,4 +12,3 @@ public class UserRoleEntity
     public int RoleId { get; set; }
     public RoleEntity Role { get; set; } = null!;
 }
-

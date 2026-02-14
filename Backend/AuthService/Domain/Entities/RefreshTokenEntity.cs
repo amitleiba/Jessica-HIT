@@ -38,4 +38,3 @@ public class RefreshTokenEntity
     // ── Navigation Properties ──
     public UserEntity User { get; set; } = null!;
 }
-

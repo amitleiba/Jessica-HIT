@@ -14,4 +14,3 @@ public class ClaimDto
     [Required]
     public required string Value { get; init; }
 }
-

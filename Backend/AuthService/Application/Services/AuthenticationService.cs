@@ -1,12 +1,12 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using AuthService.API.DTOs.Requests;
 using AuthService.API.DTOs.Responses;
 using AuthService.Application.Adapters;
 using AuthService.Domain.Configuration;
 using AuthService.Infrastructure.Adapters;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace AuthService.Application.Services;
 

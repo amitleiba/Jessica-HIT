@@ -57,4 +57,3 @@ app.MapDefaultEndpoints();
 logger.LogInformation("AuthService started successfully");
 
 await app.RunAsync().ConfigureAwait(false);
-

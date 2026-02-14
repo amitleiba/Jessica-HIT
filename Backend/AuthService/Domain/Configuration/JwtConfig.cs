@@ -41,4 +41,3 @@ public class JwtConfig
     /// </summary>
     public int RefreshTokenExpiryDays { get; set; } = 7;
 }
-

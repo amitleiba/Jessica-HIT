@@ -88,4 +88,3 @@ public static class SwaggerExtensions
         return app;
     }
 }
-

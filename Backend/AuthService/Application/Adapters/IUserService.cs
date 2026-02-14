@@ -42,4 +42,3 @@ public interface IUserService
     /// </summary>
     List<ClaimDto> BuildClaimDtos(UserEntity user, List<string> roles);
 }
-

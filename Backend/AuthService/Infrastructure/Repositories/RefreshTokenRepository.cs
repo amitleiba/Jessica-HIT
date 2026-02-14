@@ -78,4 +78,3 @@ public class RefreshTokenRepository(
         _logger.LogInformation("Cleaned up {Count} stale refresh tokens", staleTokens.Count);
     }
 }
-

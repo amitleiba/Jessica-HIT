@@ -34,4 +34,3 @@ public interface IRefreshTokenRepository
     /// </summary>
     Task CleanupExpiredTokensAsync(DateTime cutoffDate);
 }
-

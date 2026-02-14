@@ -23,7 +23,7 @@ var authDb = postgresAuth.AddDatabase("AuthDb", databaseName: "jessica_auth");
 
 // JessicaManager service
 var jessicaManager = builder.AddProject<Projects.JessicaManager>("jessicamanager");
-    // .WithReference(kafka);  // Commented out - Kafka not in use
+// .WithReference(kafka);  // Commented out - Kafka not in use
 
 // AuthService (custom auth + user management)
 // Receives the PostgreSQL connection string automatically via Aspire service discovery
