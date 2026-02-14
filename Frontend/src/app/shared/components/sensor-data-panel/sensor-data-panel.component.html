@@ -1,28 +1,11 @@
 <div class="sensor-panel-container">
-    <!-- Speed Dial Section -->
-    <div class="speed-dial-section">
-        <div class="dial-wrapper">
-            <!-- SVG Arc Gauge -->
-            <svg class="speed-gauge" viewBox="0 0 200 130">
-                <!-- Background arc -->
-                <path class="gauge-bg" d="M 20 120 A 80 80 0 0 1 180 120" fill="none" stroke-width="12"
-                    stroke-linecap="round" />
-                <!-- Filled arc (speed) -->
-                <path class="gauge-fill" [attr.d]="'M 20 120 A 80 80 0 0 1 180 120'" fill="none" stroke-width="12"
-                    stroke-linecap="round" [style.stroke-dasharray]="'251'"
-                    [style.stroke-dashoffset]="251 - (251 * speedPercent / 100)" />
-                <!-- Speed value text -->
-                <text x="100" y="100" text-anchor="middle" class="gauge-value">{{ speed }}</text>
-                <text x="100" y="118" text-anchor="middle" class="gauge-label">SPEED</text>
-            </svg>
-        </div>
-
-        <!-- Slider control -->
-        <div class="slider-container">
-            <span class="slider-label min-label">{{ minSpeed }}</span>
+    <div class="speed-section">
+        <label class="speed-label-text">Speed: {{ speed }}</label>
+        <div class="speed-slider-row">
+            <span class="speed-label">{{ minSpeed }}</span>
             <input type="range" class="speed-slider" [min]="minSpeed" [max]="maxSpeed" [step]="speedStep"
                 [ngModel]="speed" (input)="onSpeedInput($event)" />
-            <span class="slider-label max-label">{{ maxSpeed }}</span>
+            <span class="speed-label">{{ maxSpeed }}</span>
         </div>
     </div>
 </div>
