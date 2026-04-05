@@ -10,7 +10,7 @@ import { RecordingSummary } from '../../shared/models/recording.model';
  * isRecording    — true while a recording session is in progress (local capture)
  * isReplaying    — true while replaying a recording
  * replayRecordingId — ID of the recording currently being replayed
- * isLoopEnabled  — whether replay should loop at the end
+ * isLoopEnabled  — whether replay repeats the full forward+reverse cycle forever
  * error          — last error message (null = no error)
  */
 export interface RecordingState {

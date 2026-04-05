@@ -23,6 +23,9 @@ export const RouteSegments = {
 
   /** Recorder panel page segment */
   RECORDER: 'recorder',
+
+  /** Full-screen replay (path includes param name for documentation only) */
+  RECORDER_REPLAY_BASE: 'recorder/replay',
   
   /** Login page segment */
   LOGIN: 'login',
@@ -47,6 +50,12 @@ export const AppRoutes = {
 
   /** Recorder panel - create, replay, delete recordings */
   RECORDER: `/${RouteSegments.RECORDER}`,
+
+  /** Build URL for the replay session screen */
+  recorderReplay: (recordingId: string, loop?: boolean) => {
+    const q = loop ? '?loop=1' : '';
+    return `/${RouteSegments.RECORDER_REPLAY_BASE}/${recordingId}${q}`;
+  },
   
   /** Login page - user authentication */
   LOGIN: `/${RouteSegments.LOGIN}`,

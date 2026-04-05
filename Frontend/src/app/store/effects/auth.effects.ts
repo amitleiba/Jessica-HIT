@@ -7,6 +7,16 @@ import { AuthService } from '../../core/services/auth.service';
 import { AppRoutes, RouteBuilders } from '../../core/constants/routes';
 import * as AuthActions from '../actions/auth.actions';
 
+function authEffectErrorMessage(error: unknown): string {
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return 'An unexpected error occurred. Please try again.';
+}
+
 /**
  * Auth Effects
  * Handles side effects for authentication actions (HTTP requests, navigation, storage)
@@ -34,9 +44,10 @@ export class AuthEffects {
             console.log('Auth Effect: Login successful');
             return AuthActions.loginSuccess({ user, token });
           }),
-          catchError((error: string) => {
+          catchError((error: unknown) => {
+            const message = authEffectErrorMessage(error);
             console.error('Auth Effect: Login failed -', error);
-            return of(AuthActions.loginFailure({ error }));
+            return of(AuthActions.loginFailure({ error: message }));
           })
         )
       )
@@ -109,9 +120,10 @@ export class AuthEffects {
               return AuthActions.loginFailure({ error: 'No valid session found' });
             }
           }),
-          catchError((error: string) => {
+          catchError((error: unknown) => {
+            const message = authEffectErrorMessage(error);
             console.error('Auth Effect: Token validation failed -', error);
-            return of(AuthActions.loginFailure({ error }));
+            return of(AuthActions.loginFailure({ error: message }));
           })
         )
       )
@@ -191,9 +203,10 @@ export class AuthEffects {
             console.log('Auth Effect: Registration successful');
             return AuthActions.registerSuccess({ message: response.message });
           }),
-          catchError((error: string) => {
+          catchError((error: unknown) => {
+            const message = authEffectErrorMessage(error);
             console.error('Auth Effect: Registration failed -', error);
-            return of(AuthActions.registerFailure({ error }));
+            return of(AuthActions.registerFailure({ error: message }));
           })
         )
       )

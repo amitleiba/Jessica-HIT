@@ -6,6 +6,8 @@
 export interface CarSensorData {
     /** Current speed in km/h */
     speed?: number;
+    /** Base64 data URL or HTTP URL for a live camera frame when the hub pushes it */
+    cameraFrame?: string;
 }
 
 /** Empty default for initial state */

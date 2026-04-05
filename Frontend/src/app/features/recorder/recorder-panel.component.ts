@@ -10,7 +10,7 @@ import { DeleteRecordingComponent } from './components/delete-recording/delete-r
  *
  * Contains 3 tabs:
  *   1. Create  — record a new driving session
- *   2. Replay  — play back existing recordings (with loop support)
+ *   2. Replay  — pick a recording; Play opens full-screen camera + telemetry (no D-pad)
  *   3. Delete  — remove recordings you no longer need
  */
 @Component({

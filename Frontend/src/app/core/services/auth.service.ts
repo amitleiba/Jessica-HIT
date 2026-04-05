@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
-import { map, catchError, tap, switchMap } from 'rxjs/operators';
+import { Observable, throwError, of, TimeoutError } from 'rxjs';
+import { map, catchError, tap, switchMap, timeout } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 // Import DTOs from centralized dto folder
@@ -26,6 +26,9 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
+  /** Abort hung requests so NgRx can leave `isLoading` (login/register) and show an error. */
+  private static readonly requestTimeoutMs = 30_000;
+
   /**
    * Login with username and password via Backend Proxy (Secure)
    * Backend handles all Keycloak communication, keeping client_secret secure
@@ -38,6 +41,7 @@ export class AuthService {
     };
 
     return this.http.post<BackendLoginResponse>(`${this.apiUrl}/api/Auth/login`, loginRequest).pipe(
+      timeout(AuthService.requestTimeoutMs),
       map((response) => {
         const token = response.accessToken;
         this.storeToken(token);
@@ -46,6 +50,12 @@ export class AuthService {
       }),
       catchError((error) => {
         console.error('Login failed:', error);
+        if (error instanceof TimeoutError) {
+          return throwError(
+            () =>
+              'The server did not respond in time. Check that the gateway is running and reachable.'
+          );
+        }
         return throwError(() => this.handleError(error));
       })
     );
@@ -61,7 +71,8 @@ export class AuthService {
     });
 
     return this.http.get<UserInfoResponse>(`${this.apiUrl}/api/Auth/user-info`, { headers }).pipe(
-      map(userInfo => ({ userInfo, token }))
+      timeout(AuthService.requestTimeoutMs),
+      map((userInfo) => ({ userInfo, token }))
     );
   }
 
@@ -98,8 +109,15 @@ export class AuthService {
    */
   register(registerData: RegisterRequest): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(`${this.apiUrl}/api/Auth/register`, registerData).pipe(
+      timeout(AuthService.requestTimeoutMs),
       catchError((error) => {
         console.error('Registration failed:', error);
+        if (error instanceof TimeoutError) {
+          return throwError(
+            () =>
+              'The server did not respond in time. Check that the gateway is running and reachable.'
+          );
+        }
         return throwError(() => this.handleError(error));
       })
     );

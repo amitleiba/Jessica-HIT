@@ -4,7 +4,7 @@
         <div class="speed-slider-row">
             <span class="speed-label">{{ minSpeed }}</span>
             <input type="range" class="speed-slider" [min]="minSpeed" [max]="maxSpeed" [step]="speedStep"
-                [ngModel]="speed" (input)="onSpeedInput($event)" />
+                [ngModel]="speed" (input)="onSpeedInput($event)" [disabled]="readOnly" />
             <span class="speed-label">{{ maxSpeed }}</span>
         </div>
     </div>

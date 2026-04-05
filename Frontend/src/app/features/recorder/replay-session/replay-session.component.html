@@ -1,0 +1,123 @@
+@if (loadError) {
+<div
+  class="flex flex-column align-items-center justify-content-center gap-3 p-4 min-h-full replay-session-error"
+>
+  <p class="m-0 text-color-secondary">{{ loadError }}</p>
+  <p-button label="Back to recordings" icon="pi pi-arrow-left" [routerLink]="routes.RECORDER" />
+</div>
+} @else if (recording) {
+<div class="flex justify-content-center p-3 md:p-4 w-full replay-session-page">
+  <p-card styleClass="w-full replay-session-card shadow-3">
+    <ng-template pTemplate="header">
+      <div
+        class="flex flex-column md:flex-row align-items-stretch md:align-items-center justify-content-between gap-4 w-full px-4 py-4 md:px-5 md:py-5 border-bottom-1 surface-border"
+      >
+        <div class="flex align-items-start gap-3 md:gap-4 flex-1 min-w-0 pr-2 md:pr-3">
+          <p-button
+            icon="pi pi-arrow-left"
+            [rounded]="true"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="stopAndExit()"
+            title="Return to recordings and stop replay"
+            styleClass="flex-shrink-0"
+          />
+          <div class="flex flex-column gap-3 min-w-0">
+            <h1 class="m-0 text-xl md:text-2xl font-bold line-height-3 text-color">
+              Replay: {{ recording.name }}
+            </h1>
+            <p class="m-0 text-sm md:text-base text-color-secondary line-height-3">
+              Camera and telemetry only — steering is automated.
+              @if (loopPlayback) {
+              <span class="replay-trip-badge ml-2">Repeat trip</span>
+              }
+            </p>
+          </div>
+        </div>
+        <div
+          class="flex align-items-center justify-content-end md:justify-content-end flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 pl-0 md:pl-2"
+        >
+          <p-button
+            [label]="isReplayPaused() ? 'Resume' : 'Pause'"
+            [icon]="isReplayPaused() ? 'pi pi-play' : 'pi pi-pause'"
+            [severity]="isReplayPaused() ? 'success' : 'secondary'"
+            (onClick)="togglePause()"
+            title="Pause or resume the automated replay"
+            styleClass="w-full md:w-auto"
+          />
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="content">
+      <div class="p-4 md:p-5">
+        <div
+          class="flex flex-column lg:flex-row border-1 border-round-md overflow-hidden surface-border replay-dashboard"
+        >
+          <div
+            class="flex-1 min-w-0 replay-media-pane surface-ground flex align-items-center justify-content-center p-3 md:p-4"
+          >
+            <app-media-display
+              class="w-full h-full block replay-media-inner"
+              [mediaData]="mediaData"
+              [mediaType]="mediaType"
+            ></app-media-display>
+          </div>
+          <div
+            class="flex-1 flex flex-column gap-4 min-w-0 border-top-1 lg:border-top-none lg:border-left-1 surface-border surface-section p-4 md:p-5"
+          >
+            <div class="w-full">
+              <app-sensor-data-panel [speed]="speed" [readOnly]="true"></app-sensor-data-panel>
+            </div>
+            <div class="flex-1 flex flex-column gap-3">
+              <h3 class="m-0 text-base md:text-lg font-semibold text-color">Car data</h3>
+              <dl class="replay-telemetry-dl m-0">
+                <dt class="text-color-secondary font-medium">Steering (live)</dt>
+                <dd class="m-0 replay-telemetry-value">{{ currentDirection }}</dd>
+                @if (sensorData.speed != null) {
+                <dt class="text-color-secondary font-medium">Reported speed</dt>
+                <dd class="m-0 replay-telemetry-value">{{ sensorData.speed }} km/h</dd>
+                }
+              </dl>
+              @if (sensorData.speed == null) {
+              <p class="m-0 text-sm text-color-secondary line-height-3">
+                No live telemetry yet — hook hub → store when ready.
+              </p>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+      <div
+        class="flex flex-column gap-3 w-full px-4 py-4 md:px-5 md:py-5 border-top-1 surface-border surface-ground"
+      >
+        <div class="replay-progress-bar border-round-sm overflow-hidden w-full">
+          <div class="replay-progress-fill border-round-sm h-full" [style.width.%]="replayProgress"></div>
+        </div>
+        <div class="replay-footer-stats text-sm text-color-secondary pt-2">
+          <span class="replay-footer-stat font-medium text-color">{{ replayElapsed }}</span>
+          <span class="replay-footer-stat">
+            {{ currentEventIndex }}/{{ recording.events.length }} events
+          </span>
+          @if (isReplayPaused()) {
+          <span class="replay-footer-stat replay-paused-badge font-semibold">Paused</span>
+          }
+          @if (loopPlayback) {
+          <span class="replay-footer-stat replay-loop-badge font-semibold">
+            Trip #{{ loopCount + 1 }}
+          </span>
+          }
+        </div>
+      </div>
+    </ng-template>
+  </p-card>
+</div>
+} @else {
+<div class="flex align-items-center justify-content-center p-5 gap-2 min-h-full replay-session-loading">
+  <i class="pi pi-spin pi-spinner text-2xl"></i>
+  <span>Loading recording…</span>
+</div>
+}

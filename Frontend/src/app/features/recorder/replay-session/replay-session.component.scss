@@ -1,0 +1,130 @@
+/* Page shell — PrimeFlex handles most layout on the template */
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.replay-session-page {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  min-height: calc(100vh - 64px - 1.5rem);
+  align-items: flex-start;
+}
+
+/* Card stretches with grouped content */
+:host ::ng-deep .replay-session-card.p-card {
+  border: 1px solid var(--p-content-border-color, var(--surface-border, rgba(0, 0, 0, 0.12)));
+  overflow: hidden;
+}
+
+:host ::ng-deep .replay-session-card .p-card-body {
+  padding: 0;
+}
+
+:host ::ng-deep .replay-session-card .p-card-content {
+  padding: 0;
+}
+
+:host ::ng-deep .replay-session-card .p-card-footer {
+  padding: 0;
+}
+
+/* Camera / media region minimum height */
+.replay-media-pane {
+  min-height: 280px;
+  min-height: min(50vh, 420px);
+}
+
+.replay-dashboard {
+  min-height: 360px;
+}
+
+/* Inset for media component so it doesn’t touch the pane edges */
+.replay-media-inner {
+  min-height: 12rem;
+  border-radius: var(--p-border-radius-md, 0.375rem);
+}
+
+/* Sensor panel sits inside a padded column — drop duplicate borders / tighten inner box */
+:host ::ng-deep .replay-session-card app-sensor-data-panel .sensor-panel-container {
+  border-left: none;
+  border-top: none;
+  padding: 1.25rem 1rem;
+  border-radius: var(--p-border-radius-md, 0.375rem);
+}
+
+/* Telemetry grid */
+.replay-telemetry-dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+}
+
+.replay-telemetry-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Progress track */
+.replay-progress-bar {
+  height: 10px;
+  background: var(--surface-200, var(--surface-border, #e0e0e0));
+}
+
+.replay-progress-fill {
+  background: var(--primary-color);
+  transition: width 0.1s linear;
+}
+
+/* Footer stats: component-scoped flex + gap (avoids PrimeFlex gap utilities being overridden) */
+.replay-footer-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 2rem;
+}
+
+.replay-footer-stat {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.replay-trip-badge {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--p-border-radius-sm, 0.25rem);
+  background: var(--primary-color);
+  color: var(--primary-color-text, var(--primary-contrast, #fff));
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.replay-paused-badge {
+  color: var(--p-orange-500, #f57c00);
+}
+
+.replay-loop-badge {
+  color: var(--primary-color);
+}
+
+.replay-session-loading,
+.replay-session-error {
+  min-height: calc(100vh - 64px - 2rem);
+}
+
+@media (max-width: 991px) {
+  .replay-dashboard {
+    min-height: auto;
+  }
+
+  .replay-media-pane {
+    min-height: 240px;
+  }
+}

@@ -23,6 +23,8 @@ export class SensorDataPanelComponent {
     @Input() minSpeed: number = 0;
     @Input() maxSpeed: number = 100;
     @Input() speedStep: number = 1;
+    /** When true, speed slider is display-only (e.g. replay / telemetry view). */
+    @Input() readOnly = false;
 
     @Output() speedChange = new EventEmitter<number>();
 
@@ -34,6 +36,7 @@ export class SensorDataPanelComponent {
     }
 
     onSpeedInput(event: Event): void {
+        if (this.readOnly) return;
         const value = +(event.target as HTMLInputElement).value;
         console.log(`[SensorDataPanel] Speed dial → ${value}`);
         this.speedChange.emit(value);

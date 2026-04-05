@@ -10,16 +10,22 @@ var builder = DistributedApplication.CreateBuilder(args);
 // DATABASES
 // ============================================
 
+// One stable password for all local Postgres containers. When .WithDataVolume() is used, the
+// password is fixed at first init; if Aspire ever connected with a different generated password,
+// health checks fail with "password authentication failed for user postgres". Override via
+// Parameters:postgres-password in appsettings / user-secrets if needed.
+var postgresPassword = builder.AddParameter("postgres-password", "JessicaHit_LocalDev_Pg_9", secret: false);
+
 // PostgreSQL for AuthService — users, roles, refresh tokens
-var postgresAuth = builder.AddPostgres("postgres-auth")
-    .WithDataVolume("postgres-auth-data")
+var postgresAuth = builder.AddPostgres("postgres-auth", password: postgresPassword)
+    .WithDataVolume("jessica-hit-auth-pgdata")
     .WithPgAdmin();
 
 var authDb = postgresAuth.AddDatabase("AuthDb", databaseName: "jessica_auth");
 
 // PostgreSQL for RecordingManager — recordings and events
-var postgresRecording = builder.AddPostgres("postgres-recording")
-    .WithDataVolume("postgres-recording-data")
+var postgresRecording = builder.AddPostgres("postgres-recording", password: postgresPassword)
+    .WithDataVolume("jessica-hit-recording-pgdata")
     .WithPgAdmin();
 
 var recordingDb = postgresRecording.AddDatabase("RecordingDb", databaseName: "jessica_recordings");

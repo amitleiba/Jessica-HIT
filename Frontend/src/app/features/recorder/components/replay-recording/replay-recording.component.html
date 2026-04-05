@@ -30,7 +30,6 @@
       <div
         class="recording-card"
         [class.selected]="selectedRecording?.id === rec.id"
-        [class.disabled]="isReplaying && selectedRecording?.id !== rec.id"
         (click)="onSelectRecording(rec)"
       >
         <span class="recording-name">{{ rec.name }}</span>
@@ -52,7 +51,6 @@
 
     @if (selectedRecording && !isLoadingDetail) {
     <div class="replay-controls">
-      <!-- Recording info -->
       <div class="detail-header">
         <span class="detail-name">{{ selectedRecording.name }}</span>
         <span class="detail-stats">
@@ -60,49 +58,25 @@
         </span>
       </div>
 
-      <!-- Replay progress -->
-      @if (isReplaying) {
-      <div class="replay-progress">
-        <div class="progress-bar">
-          <div class="progress-fill" [style.width.%]="replayProgress"></div>
-        </div>
-        <div class="progress-info">
-          <span>{{ replayElapsed }}</span>
-          <span>{{ currentEventIndex }}/{{ selectedRecording.events.length }} events</span>
-          @if (isLoopEnabled) {
-          <span class="loop-badge">Loop #{{ loopCount + 1 }}</span>
-          }
-        </div>
-      </div>
-      }
+      <p class="replay-hint m-0 mb-3 text-color-secondary text-sm">
+        Play opens a full-screen view with the camera feed and car data. Use Back there to exit and stop; Pause/Resume only freezes the automated replay.
+      </p>
 
-      <!-- Control buttons -->
       <div class="control-buttons">
-        @if (!isReplaying) {
         <p-button
-          label="Play"
+          label="Play replay"
           icon="pi pi-play"
           severity="success"
           (onClick)="onPlay()"
           styleClass="play-btn"
         ></p-button>
-        } @else {
-        <p-button
-          label="Stop"
-          icon="pi pi-stop"
-          severity="danger"
-          (onClick)="onStop()"
-          styleClass="stop-btn"
-        ></p-button>
-        }
 
         <p-button
-          [label]="isLoopEnabled ? 'Loop ON' : 'Loop OFF'"
-          [icon]="isLoopEnabled ? 'pi pi-sync' : 'pi pi-circle'"
+          [label]="isLoopEnabled ? 'Repeat trip' : 'Single trip'"
+          [icon]="isLoopEnabled ? 'pi pi-sync' : 'pi pi-arrows-h'"
           [severity]="isLoopEnabled ? 'info' : 'secondary'"
           [outlined]="!isLoopEnabled"
           (onClick)="onToggleLoop()"
-          [disabled]="isReplaying"
           styleClass="loop-btn"
         ></p-button>
       </div>

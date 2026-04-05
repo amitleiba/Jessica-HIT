@@ -30,6 +30,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: "recorder/replay/:recordingId",
+    loadComponent: () =>
+      import("./features/recorder/replay-session/replay-session.component").then(
+        (m) => m.ReplaySessionComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: RouteSegments.RECORDER,
     loadComponent: () =>
       import("./features/recorder/recorder-panel.component").then((m) => m.RecorderPanelComponent),
