@@ -1,9 +1,11 @@
 .home-container {
   width: 100%;
-  height: calc(100vh - 64px);
+  min-height: calc(100dvh - 64px - 2rem);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
 }
 
 .home-title {

@@ -76,11 +76,3 @@
   size="large"
 />
 </form>
-
-<!-- Loading State Indicator -->
-@if (isLoading$ | async) {
-  <div class="flex align-items-center justify-content-center gap-3 mt-3 p-3 border-round surface-100">
-    <i class="pi pi-spin pi-spinner text-xl text-success"></i>
-    <span class="font-medium text-success">Creating your account...</span>
-  </div>
-}

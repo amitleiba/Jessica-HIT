@@ -2,8 +2,6 @@
 :host {
   display: block;
   width: 100%;
-  height: 100%;
-  min-height: 0;
 }
 
 .replay-session-page {
@@ -11,14 +9,14 @@
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
-  min-height: calc(100vh - 64px - 1.5rem);
+  padding-bottom: 1.5rem;
   align-items: flex-start;
 }
 
-/* Card stretches with grouped content */
+/* Card: allow inner content to paint; page scroll is on <main> */
 :host ::ng-deep .replay-session-card.p-card {
   border: 1px solid var(--p-content-border-color, var(--surface-border, rgba(0, 0, 0, 0.12)));
-  overflow: hidden;
+  overflow: visible;
 }
 
 :host ::ng-deep .replay-session-card .p-card-body {
@@ -116,7 +114,8 @@
 
 .replay-session-loading,
 .replay-session-error {
-  min-height: calc(100vh - 64px - 2rem);
+  min-height: min(50vh, 320px);
+  padding-bottom: 2rem;
 }
 
 @media (max-width: 991px) {

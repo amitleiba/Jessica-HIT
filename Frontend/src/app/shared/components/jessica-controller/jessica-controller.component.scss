@@ -1,26 +1,33 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  height: 100%;
+  flex: 1 1 auto;
+  min-height: 260px;
 }
 
 .jessica-controller-container {
   background-color: var(--surface-ground);
   transition: background-color 0.3s ease;
-  overflow: hidden;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: visible;
 }
 
 .media-section {
+  flex: 1 1 50%;
+  min-height: 160px;
   overflow: hidden;
-  min-height: 0; // Allow flexbox to shrink
 }
 
 .control-section {
+  flex: 1 1 50%;
+  min-height: 180px;
   background-color: var(--surface-card);
   transition: background-color 0.3s ease;
   overflow: visible;
-  min-height: 0; // Allow flexbox to shrink
   display: flex;
   align-items: center;
   justify-content: center;

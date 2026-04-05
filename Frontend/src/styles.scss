@@ -21,16 +21,20 @@
   --text-color: #ffffff;
 }
 
-html,
-body {
+html {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden; /* Prevent page-level scrollbar — pages scroll internally if needed */
 }
 
 body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
   background-color: var(--surface-ground);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  /* Vertical scroll happens in <main.main-content> so the navbar stays fixed */
+  overflow-y: hidden;
 }

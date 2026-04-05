@@ -1,33 +1,27 @@
 :host {
   display: block;
   width: 100%;
-  height: calc(100vh - 64px); // viewport minus navbar
-  overflow: hidden;
 }
 
 .recorder-panel-container {
   width: 100%;
-  height: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding: 1rem;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .recorder-panel {
   width: 100%;
   max-width: 900px;
-  height: 100%;
   border-radius: 1.5rem;
-  overflow: hidden;
   border: 1px solid var(--primary-color, #4caf50);
   background-color: var(--surface-ground);
   transition: border-color 0.3s ease, background-color 0.3s ease;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
   padding: 1rem 1.5rem;
-  box-sizing: border-box; // Include padding + border in height calculation
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
@@ -60,14 +54,14 @@
   }
 }
 
-/* Make the tabs + tab panels fill remaining vertical space */
+/* Tabs grow with content; page scroll is on <main> */
 :host ::ng-deep {
   .p-tabs {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-height: 0; // critical for flexbox to allow shrinking
-    overflow: hidden;
+    flex: 0 0 auto;
+    min-height: 0;
+    overflow: visible;
   }
 
   .p-tab {
@@ -81,14 +75,16 @@
   }
 
   .p-tabpanels {
-    flex: 1;
+    flex: 0 0 auto;
     min-height: 0;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .p-tabpanel {
-    height: 100%;
-    overflow: hidden;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding: 0.25rem 0 0.5rem;
   }
 }
 
@@ -96,7 +92,6 @@
   font-size: 0.9rem;
 }
 
-/* ── Responsive ── */
 @media (max-width: 600px) {
   .recorder-panel-container {
     padding: 0.5rem;

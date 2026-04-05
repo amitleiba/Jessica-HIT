@@ -1,2 +1,5 @@
-// Auth Screen Component Styles
-// No custom styles needed - using PrimeFlex utilities in template
+/* Scroll lives on <main>; this block can grow taller than the viewport */
+.auth-screen-shell {
+  box-sizing: border-box;
+  min-height: calc(100dvh - 64px - 2rem);
+}

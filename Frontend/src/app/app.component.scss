@@ -1,14 +1,19 @@
 .app-container {
   height: 100vh;
+  max-height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
+/* Single scroll region under the fixed navbar — all routes scroll here */
 .main-content {
-  margin-top: 64px; // Navbar height (padding + content)
-  flex: 1;
+  flex: 1 1 auto;
   width: 100%;
-  height: calc(100vh - 64px);
-  overflow: hidden; // Each page handles its own scrolling
+  min-height: 0;
+  padding-top: 64px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
