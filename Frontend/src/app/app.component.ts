@@ -1,6 +1,7 @@
 import { Component, inject } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { NavbarComponent } from "./shared/components/navbar/navbar.component";
+import { ToastModule } from "primeng/toast";
 import { Store } from "@ngrx/store";
 import * as AuthActions from "./store/actions/auth.actions";
 import { SignalManagerService } from "./core/services/signal-manager.service";
@@ -8,7 +9,7 @@ import { SignalManagerService } from "./core/services/signal-manager.service";
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent],
+  imports: [RouterOutlet, NavbarComponent, ToastModule],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
 })

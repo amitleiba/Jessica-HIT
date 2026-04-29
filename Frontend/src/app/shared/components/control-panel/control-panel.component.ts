@@ -104,6 +104,10 @@ export class ControlPanelComponent implements OnDestroy {
     }
   }
 
+  get hasCenterButton(): boolean {
+    return (!!this.onStart && !this.isRunning) || (!!this.onStop && this.isRunning);
+  }
+
   // ────────────────────────────────────────────────────────────
   //  Unified evaluation with deduplication
   // ────────────────────────────────────────────────────────────

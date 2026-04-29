@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { tap, withLatestFrom } from 'rxjs/operators';
+import { map, tap, withLatestFrom } from 'rxjs/operators';
 import { SignalManagerService } from '../../core/services/signal-manager.service';
+import { AlertService } from '../../core/services/alert.service';
 import { carFeature } from '../reducers/car.reducer';
 import * as CarActions from '../actions/car.actions';
 
@@ -27,6 +28,8 @@ export class CarEffects {
     private readonly actions$ = inject(Actions);
     private readonly store = inject(Store);
     private readonly signalManager = inject(SignalManagerService);
+    private readonly alertService = inject(AlertService);
+    private lastSafety: number | null = null;
 
     /**
      * Direction Change → send via hub only when the car is running.
@@ -39,14 +42,18 @@ export class CarEffects {
             this.actions$.pipe(
                 ofType(CarActions.changeDirection),
                 withLatestFrom(
-                    this.store.select(carFeature.selectIsRunning)
+                    this.store.select(carFeature.selectIsRunning),
+                    this.store.select(carFeature.selectSpeed)
                 ),
-                tap(([action, isRunning]) => {
+                tap(([action, isRunning, speed]) => {
                     if (isRunning) {
                         console.log(
-                            `[CarEffect] ✅ Running → sending "${action.direction}" to hub`
+                            `[CarEffect] ✅ Running → sending "${action.direction}" @ speed ${speed} to hub`
                         );
-                        this.signalManager.send('CarDirectionChange', { direction: action.direction });
+                        this.signalManager.send('CarDirectionChange', {
+                            direction: action.direction,
+                            speed
+                        });
                     } else {
                         console.log(
                             `[CarEffect] ⛔ STOPPED → "${action.direction}" NOT sent`
@@ -107,10 +114,41 @@ export class CarEffects {
                 ofType(CarActions.stopCar),
                 tap(() => {
                     console.log('[CarEffect] ⏹ Car stopped → sending CarStop + idle to hub');
-                    this.signalManager.send('CarDirectionChange', { direction: 'idle' });
+                    this.signalManager.send('CarDirectionChange', { direction: 'idle', speed: 0 });
                     this.signalManager.send('CarStop', {});
                 })
             ),
         { dispatch: false }
+    );
+
+    /**
+     * Robot status stream from Gateway hub → update telemetry in store.
+     */
+    robotStatusUpdated$ = createEffect(() =>
+        this.signalManager.on<{
+            distance: number;
+            safety: number;
+            mode: number;
+            battery: number;
+            receivedAtUtc: string;
+        }>('RobotStatusUpdated').pipe(
+            tap((status) => {
+                if (status.safety === 1 && this.lastSafety !== 1) {
+                    this.alertService.danger('Something is in front of the car.', 'DANGER');
+                }
+                this.lastSafety = status.safety;
+            }),
+            map((status) =>
+                CarActions.sensorDataReceived({
+                    sensorData: {
+                        distance: status.distance,
+                        safety: status.safety,
+                        mode: status.mode,
+                        battery: status.battery,
+                        receivedAtUtc: status.receivedAtUtc
+                    }
+                })
+            )
+        )
     );
 }

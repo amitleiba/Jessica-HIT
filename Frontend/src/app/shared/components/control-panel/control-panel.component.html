@@ -1,7 +1,7 @@
 <div class="control-panel-container">
   <div class="control-grid">
     <!-- D-pad with Start/Stop in center -->
-    <div class="d-pad-container">
+    <div class="d-pad-container" [class.no-center]="!hasCenterButton">
       <!-- Up Button -->
       @if (showUp) {
       <app-circular-button icon="pi pi-arrow-up" size="medium" severity="secondary" [isActive]="isDirectionActive('up')"
@@ -9,26 +9,39 @@
       }
 
       <!-- Middle Row: Left, Start/Stop, Right -->
-      <div class="middle-row">
+      @if (hasCenterButton) {
+        <div class="middle-row">
+          @if (showLeft) {
+          <app-circular-button icon="pi pi-arrow-left" size="medium" severity="secondary"
+            [isActive]="isDirectionActive('left')" (buttonClick)="onDirectionClick('left')"
+            class="d-pad-btn left-btn"></app-circular-button>
+          }
+
+          <!-- Start/Stop Button in Center (Circular) -->
+          @if (onStart && !isRunning) {
+          <app-circular-button icon="pi pi-play" size="medium" severity="success" (buttonClick)="onStartStopClick()"
+            class="d-pad-btn center-btn"></app-circular-button>
+          } @if (onStop && isRunning) {
+          <app-circular-button icon="pi pi-stop" size="medium" severity="danger" (buttonClick)="onStartStopClick()"
+            class="d-pad-btn center-btn"></app-circular-button>
+          } @if (showRight) {
+          <app-circular-button icon="pi pi-arrow-right" size="medium" severity="secondary"
+            [isActive]="isDirectionActive('right')" (buttonClick)="onDirectionClick('right')"
+            class="d-pad-btn right-btn"></app-circular-button>
+          }
+        </div>
+      } @else {
         @if (showLeft) {
         <app-circular-button icon="pi pi-arrow-left" size="medium" severity="secondary"
           [isActive]="isDirectionActive('left')" (buttonClick)="onDirectionClick('left')"
-          class="d-pad-btn left-btn"></app-circular-button>
+          class="d-pad-btn left-btn no-center-left"></app-circular-button>
         }
-
-        <!-- Start/Stop Button in Center (Circular) -->
-        @if (onStart && !isRunning) {
-        <app-circular-button icon="pi pi-play" size="medium" severity="success" (buttonClick)="onStartStopClick()"
-          class="d-pad-btn center-btn"></app-circular-button>
-        } @if (onStop && isRunning) {
-        <app-circular-button icon="pi pi-stop" size="medium" severity="danger" (buttonClick)="onStartStopClick()"
-          class="d-pad-btn center-btn"></app-circular-button>
-        } @if (showRight) {
+        @if (showRight) {
         <app-circular-button icon="pi pi-arrow-right" size="medium" severity="secondary"
           [isActive]="isDirectionActive('right')" (buttonClick)="onDirectionClick('right')"
-          class="d-pad-btn right-btn"></app-circular-button>
+          class="d-pad-btn right-btn no-center-right"></app-circular-button>
         }
-      </div>
+      }
 
       <!-- Down Button -->
       @if (showDown) {

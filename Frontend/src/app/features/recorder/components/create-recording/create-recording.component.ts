@@ -52,7 +52,7 @@ export class CreateRecordingComponent implements OnInit, OnDestroy {
 
     // ── Form fields (pre-recording) ──
     recordingName = '';
-    recordingSpeed = 50;
+    recordingSpeed = 5;
 
     // ── State ──
     isRecording = false;
@@ -132,7 +132,7 @@ export class CreateRecordingComponent implements OnInit, OnDestroy {
 
         // Reset form for next recording
         this.recordingName = '';
-        this.recordingSpeed = 50;
+        this.recordingSpeed = 5;
         this.eventCount = 0;
     }
 

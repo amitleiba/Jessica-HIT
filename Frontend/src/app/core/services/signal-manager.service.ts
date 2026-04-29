@@ -49,6 +49,8 @@ export class SignalManagerService {
 
     /** Track which server→client methods we've already registered listeners for */
     private registeredListeners = new Set<string>();
+    /** Methods currently bound on the active HubConnection instance */
+    private attachedListeners = new Set<string>();
 
     // ─────────────────────────────────────────────
     //  Connect / Disconnect
@@ -104,6 +106,7 @@ export class SignalManagerService {
         this.connection
             .start()
             .then(() => {
+                this.attachAllRegisteredListeners();
                 console.log('[SignalManager] ✅ Connected');
                 this.connectionState.next('connected');
             })
@@ -120,7 +123,7 @@ export class SignalManagerService {
         if (this.connection) {
             this.connection.stop();
             this.connection = null;
-            this.registeredListeners.clear();
+            this.attachedListeners.clear();
         }
         this.connectionState.next('disconnected');
         console.log('[SignalManager] Disconnected (manual)');
@@ -201,7 +204,20 @@ export class SignalManagerService {
      * Every invocation from the server is piped into `messageSubject`.
      */
     private ensureListener(method: string): void {
-        if (this.registeredListeners.has(method) || !this.connection) return;
+        this.registeredListeners.add(method);
+        this.attachListener(method);
+    }
+
+    private attachAllRegisteredListeners(): void {
+        for (const method of this.registeredListeners) {
+            this.attachListener(method);
+        }
+    }
+
+    private attachListener(method: string): void {
+        if (!this.connection || this.attachedListeners.has(method)) {
+            return;
+        }
 
         this.connection.on(method, (...args: any[]) => {
             const data = args.length === 1 ? args[0] : args;
@@ -209,7 +225,7 @@ export class SignalManagerService {
             this.messageSubject.next({ event: method, data });
         });
 
-        this.registeredListeners.add(method);
+        this.attachedListeners.add(method);
     }
 }
 

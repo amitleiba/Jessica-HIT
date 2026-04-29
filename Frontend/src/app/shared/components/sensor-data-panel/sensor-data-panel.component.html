@@ -8,4 +8,32 @@
             <span class="speed-label">{{ maxSpeed }}</span>
         </div>
     </div>
+
+    <div class="telemetry-section">
+        <h4 class="telemetry-title">Robot status</h4>
+        <div class="telemetry-grid">
+            <div class="telemetry-item">
+                <span class="telemetry-label">Distance</span>
+                <span class="telemetry-value">
+                    {{ sensorData.distance != null ? (sensorData.distance + ' cm') : 'N/A' }}
+                </span>
+            </div>
+            <div class="telemetry-item">
+                <span class="telemetry-label">Safety</span>
+                <span class="telemetry-value" [class.telemetry-alert]="sensorData.safety === 1">
+                    {{ safetyLabel }}
+                </span>
+            </div>
+            <div class="telemetry-item">
+                <span class="telemetry-label">Direction</span>
+                <span class="telemetry-value">{{ currentDirection || 'idle' }}</span>
+            </div>
+            <div class="telemetry-item">
+                <span class="telemetry-label">Battery</span>
+                <span class="telemetry-value">
+                    {{ sensorData.battery != null ? (sensorData.battery + ' V') : 'N/A' }}
+                </span>
+            </div>
+        </div>
+    </div>
 </div>

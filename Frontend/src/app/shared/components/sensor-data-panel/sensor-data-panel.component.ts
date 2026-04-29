@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CarSensorData } from '../../models/car-sensor-data.model';
 
 /**
  * SensorDataPanelComponent
@@ -21,10 +22,12 @@ export class SensorDataPanelComponent {
     // ── Speed dial config ──
     @Input() speed: number = 0;
     @Input() minSpeed: number = 0;
-    @Input() maxSpeed: number = 100;
+    @Input() maxSpeed: number = 10;
     @Input() speedStep: number = 1;
     /** When true, speed slider is display-only (e.g. replay / telemetry view). */
     @Input() readOnly = false;
+    @Input() sensorData: CarSensorData = {};
+    @Input() currentDirection = 'idle';
 
     @Output() speedChange = new EventEmitter<number>();
 
@@ -40,5 +43,10 @@ export class SensorDataPanelComponent {
         const value = +(event.target as HTMLInputElement).value;
         console.log(`[SensorDataPanel] Speed dial → ${value}`);
         this.speedChange.emit(value);
+    }
+
+    get safetyLabel(): string {
+        if (this.sensorData.safety == null) return 'N/A';
+        return this.sensorData.safety === 1 ? 'DANGER' : 'SAFE';
     }
 }

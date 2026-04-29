@@ -1,4 +1,5 @@
 using Gateway.Extensions;
+using Gateway.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +50,11 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
+builder.Services.AddHttpClient("JessicaManager", client =>
+{
+    client.BaseAddress = new Uri("http://jessicamanager");
+});
+builder.Services.AddHostedService<JessicaStatusRelayService>();
 builder.Services.AddSwaggerWithJwt(swaggerConfig, logger);
 builder.Services.AddReverseProxyWithUserForwarding(builder.Configuration);
 

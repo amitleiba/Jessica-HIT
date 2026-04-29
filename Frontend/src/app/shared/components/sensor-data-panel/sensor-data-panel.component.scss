@@ -10,13 +10,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   background-color: var(--surface-card);
   border-left: 1px solid var(--primary-color, #4caf50);
   transition: background-color 0.3s ease, border-color 0.3s ease;
   overflow: hidden;
   padding: 2rem 1.5rem;
   box-sizing: border-box;
+  gap: 1.25rem;
 }
 
 .speed-section {
@@ -25,6 +26,52 @@
   gap: 0.35rem;
   width: 100%;
   max-width: 320px;
+}
+
+.telemetry-section {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.telemetry-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.telemetry-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.5rem;
+  background-color: var(--surface-ground);
+}
+
+.telemetry-label {
+  font-size: 0.7rem;
+  color: var(--text-color);
+  opacity: 0.65;
+}
+
+.telemetry-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.telemetry-alert {
+  color: #e67e22;
 }
 
 .speed-label-text {
@@ -64,6 +111,10 @@
   }
 
   .speed-section {
+    max-width: 280px;
+  }
+
+  .telemetry-section {
     max-width: 280px;
   }
 }

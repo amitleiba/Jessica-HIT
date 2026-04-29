@@ -9,6 +9,7 @@ import { MediaDisplayComponent } from '../../../shared/components/media-display/
 import { SensorDataPanelComponent } from '../../../shared/components/sensor-data-panel/sensor-data-panel.component';
 import { RecordingService } from '../../../core/services/recording.service';
 import { RecordingReplaySchedulerService } from '../../../core/services/recording-replay-scheduler.service';
+import { AlertService } from '../../../core/services/alert.service';
 import { AppRoutes } from '../../../core/constants/routes';
 import { Recording } from '../../../shared/models/recording.model';
 import { CarSensorData } from '../../../shared/models/car-sensor-data.model';
@@ -40,7 +41,11 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
   private readonly recordingService = inject(RecordingService);
   private readonly replayScheduler = inject(RecordingReplaySchedulerService);
+  private readonly alertService = inject(AlertService);
   private readonly subs = new Subscription();
+  private dangerRetryTimeout: ReturnType<typeof setTimeout> | null = null;
+  private dangerRecoveryActive = false;
+  private readonly dangerRetryMs = 2000;
 
   readonly routes = AppRoutes;
 
@@ -102,6 +107,7 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.store.select(carFeature.selectSensorData).subscribe((data) => {
         this.sensorData = data;
+        this.handleSafetySignal(data.safety);
         const frame = data.cameraFrame ?? null;
         this.mediaData = frame;
         if (frame?.startsWith('data:video') || /\.(webm|mp4|ogg)(\?|$)/i.test(frame ?? '')) {
@@ -170,15 +176,70 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
         this.loopCount = n;
       },
       onNaturalComplete: () => {
-        this.teardownReplay(true);
+        if (!this.dangerRecoveryActive) {
+          this.teardownReplay(true);
+        }
       },
     });
+  }
+
+  private handleSafetySignal(safety: number | undefined): void {
+    if (safety === 1) {
+      this.startDangerRecoveryIfNeeded();
+      return;
+    }
+
+    if (safety === 0 && this.dangerRecoveryActive) {
+      this.dangerRecoveryActive = false;
+      this.clearDangerRetryTimeout();
+      if (this.recording) {
+        this.beginReplay(this.recording);
+      }
+    }
+  }
+
+  private startDangerRecoveryIfNeeded(): void {
+    if (this.dangerRecoveryActive || !this.recording) {
+      return;
+    }
+
+    this.dangerRecoveryActive = true;
+    this.alertService.danger('Obstacle detected. Restarting route from start until path is clear.', 'DANGER');
+    this.replayScheduler.stopTimers();
+    this.store.dispatch(CarActions.stopCar());
+    this.store.dispatch(CarActions.clearDirection());
+    this.scheduleDangerRetry();
+  }
+
+  private scheduleDangerRetry(): void {
+    this.clearDangerRetryTimeout();
+
+    this.dangerRetryTimeout = setTimeout(() => {
+      if (!this.dangerRecoveryActive || !this.recording) {
+        return;
+      }
+
+      this.beginReplay(this.recording);
+
+      if (this.dangerRecoveryActive) {
+        this.scheduleDangerRetry();
+      }
+    }, this.dangerRetryMs);
+  }
+
+  private clearDangerRetryTimeout(): void {
+    if (this.dangerRetryTimeout) {
+      clearTimeout(this.dangerRetryTimeout);
+      this.dangerRetryTimeout = null;
+    }
   }
 
   /**
    * Stops timers and car; optionally navigates back to the recorder list.
    */
   private teardownReplay(navigateToRecorder: boolean): void {
+    this.dangerRecoveryActive = false;
+    this.clearDangerRetryTimeout();
     this.replayScheduler.stopTimers();
     this.store.dispatch(RecordingActions.stopReplay());
     this.store.dispatch(CarActions.stopCar());

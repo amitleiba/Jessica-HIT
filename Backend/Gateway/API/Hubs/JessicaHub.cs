@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System.Net.Http.Json;
 using Gateway.API.DTOs.Requests;
 
 namespace Gateway.API.Hubs;
@@ -14,9 +15,10 @@ namespace Gateway.API.Hubs;
 ///   CarStop()                                 — user stopped the car
 /// </summary>
 [Authorize]
-public class JessicaHub(ILogger<JessicaHub> logger) : Hub
+public class JessicaHub(ILogger<JessicaHub> logger, IHttpClientFactory httpClientFactory) : Hub
 {
     private readonly ILogger<JessicaHub> _logger = logger;
+    private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
     /// <summary>
     /// Called when a client connects to the hub
@@ -54,10 +56,13 @@ public class JessicaHub(ILogger<JessicaHub> logger) : Hub
             "🎮 Car direction change from {ConnectionId}: {Direction}",
             Context.ConnectionId, request.Direction);
 
-        // TODO: Forward the direction to the Jessica Manager microservice
-        // e.g. await _jessicaManagerClient.SendDirectionAsync(request.Direction);
-
-        await Task.CompletedTask;
+        var payload = new
+        {
+            ConnectionId = Context.ConnectionId,
+            Direction = request.Direction,
+            Speed = request.Speed
+        };
+        await ForwardToJessicaManagerAsync("/api/car/direction", payload, Context.ConnectionAborted).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -70,10 +75,12 @@ public class JessicaHub(ILogger<JessicaHub> logger) : Hub
             "🏎 Car speed change from {ConnectionId}: {Speed}",
             Context.ConnectionId, request.Speed);
 
-        // TODO: Forward the speed to the Jessica Manager microservice
-        // e.g. await _jessicaManagerClient.SendSpeedAsync(request.Speed);
-
-        await Task.CompletedTask;
+        var payload = new
+        {
+            ConnectionId = Context.ConnectionId,
+            Speed = request.Speed
+        };
+        await ForwardToJessicaManagerAsync("/api/car/speed", payload, Context.ConnectionAborted).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -83,10 +90,11 @@ public class JessicaHub(ILogger<JessicaHub> logger) : Hub
     {
         _logger.LogInformation("▶ Car START from {ConnectionId}", Context.ConnectionId);
 
-        // TODO: Notify Jessica Manager that this user's car session started
-        // e.g. await _jessicaManagerClient.StartSessionAsync(Context.ConnectionId);
-
-        await Task.CompletedTask;
+        var payload = new
+        {
+            ConnectionId = Context.ConnectionId
+        };
+        await ForwardToJessicaManagerAsync("/api/car/start", payload, Context.ConnectionAborted).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -96,9 +104,35 @@ public class JessicaHub(ILogger<JessicaHub> logger) : Hub
     {
         _logger.LogInformation("⏹ Car STOP from {ConnectionId}", Context.ConnectionId);
 
-        // TODO: Notify Jessica Manager that this user's car session stopped
-        // e.g. await _jessicaManagerClient.StopSessionAsync(Context.ConnectionId);
+        var payload = new
+        {
+            ConnectionId = Context.ConnectionId
+        };
+        await ForwardToJessicaManagerAsync("/api/car/stop", payload, Context.ConnectionAborted).ConfigureAwait(false);
+    }
 
-        await Task.CompletedTask;
+    private async Task ForwardToJessicaManagerAsync<TPayload>(string route, TPayload payload, CancellationToken cancellationToken)
+    {
+        var client = _httpClientFactory.CreateClient("JessicaManager");
+
+        try
+        {
+            var response = await client.PostAsJsonAsync(route, payload, cancellationToken).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "JessicaManager rejected command {Route} from {ConnectionId}. StatusCode={StatusCode}",
+                    route,
+                    Context.ConnectionId,
+                    (int)response.StatusCode);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Failed forwarding command {Route} from {ConnectionId} to JessicaManager",
+                route,
+                Context.ConnectionId);
+        }
     }
 }

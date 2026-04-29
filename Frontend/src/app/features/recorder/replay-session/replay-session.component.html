@@ -67,23 +67,12 @@
             class="flex-1 flex flex-column gap-4 min-w-0 border-top-1 lg:border-top-none lg:border-left-1 surface-border surface-section p-4 md:p-5"
           >
             <div class="w-full">
-              <app-sensor-data-panel [speed]="speed" [readOnly]="true"></app-sensor-data-panel>
-            </div>
-            <div class="flex-1 flex flex-column gap-3">
-              <h3 class="m-0 text-base md:text-lg font-semibold text-color">Car data</h3>
-              <dl class="replay-telemetry-dl m-0">
-                <dt class="text-color-secondary font-medium">Steering (live)</dt>
-                <dd class="m-0 replay-telemetry-value">{{ currentDirection }}</dd>
-                @if (sensorData.speed != null) {
-                <dt class="text-color-secondary font-medium">Reported speed</dt>
-                <dd class="m-0 replay-telemetry-value">{{ sensorData.speed }} km/h</dd>
-                }
-              </dl>
-              @if (sensorData.speed == null) {
-              <p class="m-0 text-sm text-color-secondary line-height-3">
-                No live telemetry yet — hook hub → store when ready.
-              </p>
-              }
+              <app-sensor-data-panel
+                [speed]="speed"
+                [sensorData]="sensorData"
+                [currentDirection]="currentDirection"
+                [readOnly]="true"
+              ></app-sensor-data-panel>
             </div>
           </div>
         </div>

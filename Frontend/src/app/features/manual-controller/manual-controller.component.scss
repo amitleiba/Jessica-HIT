@@ -1,17 +1,19 @@
 .manual-controller-container {
   width: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
   padding: 1rem;
   box-sizing: border-box;
+  min-height: calc(100dvh - 64px);
 }
 
 .dashboard-panel {
   display: flex;
   width: 100%;
   max-width: 1400px;
-  min-height: min(520px, calc(100dvh - 64px - 2rem));
+  height: calc(100dvh - 64px - 2rem);
+  min-height: 520px;
   max-height: none;
   border-radius: 1.5rem;
   overflow: hidden;
@@ -39,10 +41,21 @@
   flex-direction: column;
 }
 
+.panel-left > app-jessica-controller,
+.panel-right > app-sensor-data-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 /* ── Responsive: stack on small screens ── */
 @media (max-width: 768px) {
+  .manual-controller-container {
+    min-height: 0;
+  }
+
   .dashboard-panel {
     flex-direction: column;
+    height: auto;
     min-height: 0;
   }
 

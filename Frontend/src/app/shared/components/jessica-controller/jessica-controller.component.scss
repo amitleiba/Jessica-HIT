@@ -13,22 +13,25 @@
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
-  overflow: visible;
-}
-
-.media-section {
-  flex: 1 1 50%;
-  min-height: 160px;
   overflow: hidden;
 }
 
+.media-section {
+  flex: 1 1 auto;
+  min-height: 160px;
+  overflow: hidden;
+  display: flex;
+}
+
 .control-section {
-  flex: 1 1 50%;
-  min-height: 180px;
+  flex: 0 0 auto;
+  min-height: 220px;
   background-color: var(--surface-card);
   transition: background-color 0.3s ease;
-  overflow: visible;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0.5rem 0.75rem 0.75rem;
+  box-sizing: border-box;
 }

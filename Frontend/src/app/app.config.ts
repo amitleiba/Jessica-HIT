@@ -6,6 +6,7 @@ import { provideEffects } from "@ngrx/effects";
 import { provideStoreDevtools } from "@ngrx/store-devtools";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { providePrimeNG } from "primeng/config";
+import { MessageService } from "primeng/api";
 import Aura from "@primeng/themes/aura";
 import { routes } from "./app.routes";
 import { appReducer } from "./store";
@@ -36,5 +37,6 @@ export const appConfig: ApplicationConfig = {
       trace: true,
       traceLimit: 75,
     }),
+    MessageService,
   ],
 };

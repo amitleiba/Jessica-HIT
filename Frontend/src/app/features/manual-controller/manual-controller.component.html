@@ -7,7 +7,12 @@
 
     <!-- Right: Sensor Data Panel (speed dial + future sensors) -->
     <div class="panel-right">
-      <app-sensor-data-panel [speed]="speed" (speedChange)="onSpeedChange($event)"></app-sensor-data-panel>
+      <app-sensor-data-panel
+        [speed]="speed"
+        [sensorData]="sensorData"
+        [currentDirection]="currentDirection"
+        (speedChange)="onSpeedChange($event)"
+      ></app-sensor-data-panel>
     </div>
   </div>
 </div>

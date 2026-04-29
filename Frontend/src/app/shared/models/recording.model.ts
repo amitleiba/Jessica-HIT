@@ -18,7 +18,7 @@ export interface RecordingSummary {
     /** User-given display name */
     name: string;
 
-    /** Fixed speed for the entire recording (0–100) */
+    /** Fixed speed for the entire recording (0–10) */
     speed: number;
 
     /** Total recording duration in milliseconds */
