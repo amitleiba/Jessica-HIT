@@ -1,7 +1,5 @@
 @if (loadError) {
-<div
-  class="flex flex-column align-items-center justify-content-center gap-3 p-4 min-h-full replay-session-error"
->
+<div class="flex flex-column align-items-center justify-content-center gap-3 p-4 min-h-full replay-session-error">
   <p class="m-0 text-color-secondary">{{ loadError }}</p>
   <p-button label="Back to recordings" icon="pi pi-arrow-left" [routerLink]="routes.RECORDER" />
 </div>
@@ -10,18 +8,10 @@
   <p-card styleClass="w-full replay-session-card shadow-3">
     <ng-template pTemplate="header">
       <div
-        class="flex flex-column md:flex-row align-items-stretch md:align-items-center justify-content-between gap-4 w-full px-4 py-4 md:px-5 md:py-5 border-bottom-1 surface-border"
-      >
+        class="flex flex-column md:flex-row align-items-stretch md:align-items-center justify-content-between gap-4 w-full px-4 py-4 md:px-5 md:py-5 border-bottom-1 surface-border">
         <div class="flex align-items-start gap-3 md:gap-4 flex-1 min-w-0 pr-2 md:pr-3">
-          <p-button
-            icon="pi pi-arrow-left"
-            [rounded]="true"
-            severity="secondary"
-            [outlined]="true"
-            (onClick)="stopAndExit()"
-            title="Return to recordings and stop replay"
-            styleClass="flex-shrink-0"
-          />
+          <p-button icon="pi pi-arrow-left" [rounded]="true" severity="secondary" [outlined]="true"
+            (onClick)="stopAndExit()" title="Return to recordings and stop replay" styleClass="flex-shrink-0" />
           <div class="flex flex-column gap-3 min-w-0">
             <h1 class="m-0 text-xl md:text-2xl font-bold line-height-3 text-color">
               Replay: {{ recording.name }}
@@ -35,16 +25,11 @@
           </div>
         </div>
         <div
-          class="flex align-items-center justify-content-end md:justify-content-end flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 pl-0 md:pl-2"
-        >
-          <p-button
-            [label]="isReplayPaused() ? 'Resume' : 'Pause'"
+          class="flex align-items-center justify-content-end md:justify-content-end flex-shrink-0 w-full md:w-auto pt-2 md:pt-0 pl-0 md:pl-2">
+          <p-button [label]="isReplayPaused() ? 'Resume' : 'Pause'"
             [icon]="isReplayPaused() ? 'pi pi-play' : 'pi pi-pause'"
-            [severity]="isReplayPaused() ? 'success' : 'secondary'"
-            (onClick)="togglePause()"
-            title="Pause or resume the automated replay"
-            styleClass="w-full md:w-auto"
-          />
+            [severity]="isReplayPaused() ? 'success' : 'secondary'" (onClick)="togglePause()"
+            title="Pause or resume the automated replay" styleClass="w-full md:w-auto" />
         </div>
       </div>
     </ng-template>
@@ -52,27 +37,17 @@
     <ng-template pTemplate="content">
       <div class="p-4 md:p-5">
         <div
-          class="flex flex-column lg:flex-row border-1 border-round-md overflow-hidden surface-border replay-dashboard"
-        >
+          class="flex flex-column lg:flex-row border-1 border-round-md overflow-hidden surface-border replay-dashboard">
           <div
-            class="flex-1 min-w-0 replay-media-pane surface-ground flex align-items-center justify-content-center p-3 md:p-4"
-          >
-            <app-media-display
-              class="w-full h-full block replay-media-inner"
-              [mediaData]="mediaData"
-              [mediaType]="mediaType"
-            ></app-media-display>
+            class="flex-1 min-w-0 replay-media-pane surface-ground flex align-items-center justify-content-center p-3 md:p-4">
+            <app-media-display class="w-full h-full block replay-media-inner" [mediaData]="mediaData"
+              [mediaType]="mediaType"></app-media-display>
           </div>
           <div
-            class="flex-1 flex flex-column gap-4 min-w-0 border-top-1 lg:border-top-none lg:border-left-1 surface-border surface-section p-4 md:p-5"
-          >
+            class="flex-1 flex flex-column gap-4 min-w-0 border-top-1 lg:border-top-none lg:border-left-1 surface-border surface-section p-4 md:p-5">
             <div class="w-full">
-              <app-sensor-data-panel
-                [speed]="speed"
-                [sensorData]="sensorData"
-                [currentDirection]="currentDirection"
-                [readOnly]="true"
-              ></app-sensor-data-panel>
+              <app-sensor-data-panel [speed]="speed" [sensorData]="sensorData" [currentDirection]="currentDirection"
+                [readOnly]="true"></app-sensor-data-panel>
             </div>
           </div>
         </div>
@@ -80,9 +55,7 @@
     </ng-template>
 
     <ng-template pTemplate="footer">
-      <div
-        class="flex flex-column gap-3 w-full px-4 py-4 md:px-5 md:py-5 border-top-1 surface-border surface-ground"
-      >
+      <div class="flex flex-column gap-3 w-full px-4 py-4 md:px-5 md:py-5 border-top-1 surface-border surface-ground">
         <div class="replay-progress-bar border-round-sm overflow-hidden w-full">
           <div class="replay-progress-fill border-round-sm h-full" [style.width.%]="replayProgress"></div>
         </div>
