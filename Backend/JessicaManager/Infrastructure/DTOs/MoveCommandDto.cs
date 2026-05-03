@@ -4,9 +4,12 @@ namespace JessicaManager.Infrastructure.DTOs;
 
 public sealed class MoveCommandDto
 {
-    [JsonPropertyName("leftWheel")]
-    public int LeftWheel { get; init; }
+    [JsonPropertyName("cmd")]
+    public string Cmd { get; init; } = "move";
 
-    [JsonPropertyName("rightWheel")]
-    public int RightWheel { get; init; }
+    [JsonPropertyName("left")]
+    public int Left { get; init; }
+
+    [JsonPropertyName("right")]
+    public int Right { get; init; }
 }

@@ -13,9 +13,6 @@ export type Direction = "up" | "down" | "left" | "right";
 })
 export class ControlPanelComponent implements OnDestroy {
   // ── Inputs ──
-  @Input() onStart?: () => void;
-  @Input() onStop?: () => void;
-  @Input() isRunning: boolean = false;
 
   /** Show/hide individual direction buttons */
   @Input() showUp: boolean = true;
@@ -96,17 +93,7 @@ export class ControlPanelComponent implements OnDestroy {
     }, 150);
   }
 
-  onStartStopClick(): void {
-    if (this.isRunning && this.onStop) {
-      this.onStop();
-    } else if (!this.isRunning && this.onStart) {
-      this.onStart();
-    }
-  }
 
-  get hasCenterButton(): boolean {
-    return (!!this.onStart && !this.isRunning) || (!!this.onStop && this.isRunning);
-  }
 
   // ────────────────────────────────────────────────────────────
   //  Unified evaluation with deduplication

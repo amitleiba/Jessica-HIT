@@ -26,18 +26,18 @@
     <div class="form-field">
       <label for="rec-speed">Speed: {{ recordingSpeed }}</label>
       <div class="speed-slider-row">
-        <span class="speed-label">0</span>
+        <span class="speed-label">50</span>
         <input
           id="rec-speed"
           type="range"
-          min="0"
-          max="10"
-          step="1"
+          min="50"
+          max="100"
+          step="5"
           [value]="recordingSpeed"
           (input)="onSpeedInput($event)"
           class="speed-slider"
         />
-        <span class="speed-label">10</span>
+        <span class="speed-label">100</span>
       </div>
     </div>
 
@@ -77,7 +77,6 @@
       <!-- Right: D-pad Controller -->
       <div class="dashboard-controls">
         <app-control-panel
-          [isRunning]="true"
           (directionChange)="onDirectionChange($event)"
           [showUp]="true"
           [showDown]="true"

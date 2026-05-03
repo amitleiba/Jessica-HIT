@@ -4,6 +4,9 @@ namespace JessicaManager.Infrastructure.DTOs;
 
 public sealed class RobotStatusEventDto
 {
+    [JsonPropertyName("type")]
+    public string Type { get; init; } = string.Empty;
+
     [JsonPropertyName("distance")]
     public int Distance { get; init; }
 

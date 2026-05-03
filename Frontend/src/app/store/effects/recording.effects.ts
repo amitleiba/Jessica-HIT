@@ -61,9 +61,8 @@ export class RecordingEffects {
                     // 1. Start local event capture
                     this.recordingService.startCapture(name, speed);
 
-                    // 2. Set speed + start the car so direction commands go to the hub
+                    // 2. Set speed so direction commands use the correct speed
                     this.store.dispatch(CarActions.changeSpeed({ speed }));
-                    this.store.dispatch(CarActions.startCar());
                 })
             ),
         { dispatch: false }
@@ -77,8 +76,8 @@ export class RecordingEffects {
         this.actions$.pipe(
             ofType(RecordingActions.stopRecording),
             switchMap(() => {
-                // 1. Stop the car
-                this.store.dispatch(CarActions.stopCar());
+                // 1. Send idle direction to stop motion
+                this.store.dispatch(CarActions.changeDirection({ direction: 'idle' }));
 
                 // 2. Collect the captured data
                 const request = this.recordingService.stopCapture();

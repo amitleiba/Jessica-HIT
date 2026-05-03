@@ -52,7 +52,7 @@ export class CreateRecordingComponent implements OnInit, OnDestroy {
 
     // ── Form fields (pre-recording) ──
     recordingName = '';
-    recordingSpeed = 5;
+    recordingSpeed = 50;
 
     // ── State ──
     isRecording = false;
@@ -103,7 +103,7 @@ export class CreateRecordingComponent implements OnInit, OnDestroy {
         // Safety: if user navigates away while recording, stop it
         if (this.isRecording) {
             this.store.dispatch(RecordingActions.stopRecording());
-            this.store.dispatch(CarActions.stopCar());
+            this.store.dispatch(CarActions.changeDirection({ direction: 'idle' }));
         }
 
         console.log('[CreateRecording] Destroyed');
@@ -132,7 +132,7 @@ export class CreateRecordingComponent implements OnInit, OnDestroy {
 
         // Reset form for next recording
         this.recordingName = '';
-        this.recordingSpeed = 5;
+        this.recordingSpeed = 50;
         this.eventCount = 0;
     }
 

@@ -155,7 +155,6 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
       })
     );
     this.store.dispatch(CarActions.changeSpeed({ speed: rec.speed }));
-    this.store.dispatch(CarActions.startCar());
 
     this.replayProgress = 0;
     this.replayElapsed = '00:00';
@@ -206,7 +205,7 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
     this.dangerRecoveryActive = true;
     this.alertService.danger('Obstacle detected. Restarting route from start until path is clear.', 'DANGER');
     this.replayScheduler.stopTimers();
-    this.store.dispatch(CarActions.stopCar());
+    this.store.dispatch(CarActions.changeDirection({ direction: 'idle' }));
     this.store.dispatch(CarActions.clearDirection());
     this.scheduleDangerRetry();
   }
@@ -242,7 +241,7 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
     this.clearDangerRetryTimeout();
     this.replayScheduler.stopTimers();
     this.store.dispatch(RecordingActions.stopReplay());
-    this.store.dispatch(CarActions.stopCar());
+    this.store.dispatch(CarActions.changeDirection({ direction: 'idle' }));
     this.store.dispatch(CarActions.clearDirection());
     this.replayProgress = 0;
     this.replayElapsed = '00:00';

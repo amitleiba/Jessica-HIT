@@ -70,11 +70,16 @@ public class CarCommandsController(
     }
 
     [HttpPost("stop")]
-    public IActionResult Stop([FromBody] CarSessionCommand command)
+    public async Task<IActionResult> Stop([FromBody] CarSessionCommand command, CancellationToken cancellationToken)
     {
         _logger.LogInformation(
             "⏹ Stop command received. ConnectionId={ConnectionId}",
             command.ConnectionId);
+
+        await _moveCommandPublisher
+            .PublishStopCommandAsync(cancellationToken)
+            .ConfigureAwait(false);
+
         return Ok(new
         {
             accepted = true,

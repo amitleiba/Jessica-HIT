@@ -15,11 +15,7 @@ import * as CarActions from '../actions/car.actions';
  * Flow:
  *   ControlPanel emits directionChange("up" | "idle" | "left-right" | …)
  *     → JessicaController dispatches [Car] Change Direction
- *       → this effect checks:
- *           1. Has the direction actually changed? (safety dedup)
- *           2. Is the car running?
- *         → if BOTH true → send 'CarDirectionChange' to hub
- *         → otherwise    → skip
+ *       → this effect sends 'CarDirectionChange' to hub
  *
  * Hub method names use PascalCase to match C# SignalR hub conventions.
  */
@@ -32,7 +28,7 @@ export class CarEffects {
     private lastSafety: number | null = null;
 
     /**
-     * Direction Change → send via hub only when the car is running.
+     * Direction Change → always send via hub.
      *
      * Dedup is already handled by the reducer (returns same state ref if unchanged)
      * and by the ControlPanel (only emits on actual transitions).
@@ -42,80 +38,33 @@ export class CarEffects {
             this.actions$.pipe(
                 ofType(CarActions.changeDirection),
                 withLatestFrom(
-                    this.store.select(carFeature.selectIsRunning),
                     this.store.select(carFeature.selectSpeed)
                 ),
-                tap(([action, isRunning, speed]) => {
-                    if (isRunning) {
-                        console.log(
-                            `[CarEffect] ✅ Running → sending "${action.direction}" @ speed ${speed} to hub`
-                        );
-                        this.signalManager.send('CarDirectionChange', {
-                            direction: action.direction,
-                            speed
-                        });
-                    } else {
-                        console.log(
-                            `[CarEffect] ⛔ STOPPED → "${action.direction}" NOT sent`
-                        );
-                    }
+                tap(([action, speed]) => {
+                    console.log(
+                        `[CarEffect] ✅ Sending "${action.direction}" @ speed ${speed} to hub`
+                    );
+                    this.signalManager.send('CarDirectionChange', {
+                        direction: action.direction,
+                        speed
+                    });
                 })
             ),
         { dispatch: false }
     );
 
     /**
-     * Speed Change → send via hub only when the car is running.
+     * Speed Change → always send via hub.
      */
     speedChange$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(CarActions.changeSpeed),
-                withLatestFrom(
-                    this.store.select(carFeature.selectIsRunning)
-                ),
-                tap(([action, isRunning]) => {
-                    if (isRunning) {
-                        console.log(
-                            `[CarEffect] ✅ Running → sending speed ${action.speed} to hub`
-                        );
-                        this.signalManager.send('CarSpeedChange', { speed: action.speed });
-                    } else {
-                        console.log(
-                            `[CarEffect] ⛔ STOPPED → speed ${action.speed} NOT sent`
-                        );
-                    }
-                })
-            ),
-        { dispatch: false }
-    );
-
-    /**
-     * Start Car → notify backend via hub.
-     */
-    startCar$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(CarActions.startCar),
-                tap(() => {
-                    console.log('[CarEffect] ▶ Car started → sending CarStart to hub');
-                    this.signalManager.send('CarStart', {});
-                })
-            ),
-        { dispatch: false }
-    );
-
-    /**
-     * Stop Car → notify backend via hub + send idle direction.
-     */
-    stopCar$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(CarActions.stopCar),
-                tap(() => {
-                    console.log('[CarEffect] ⏹ Car stopped → sending CarStop + idle to hub');
-                    this.signalManager.send('CarDirectionChange', { direction: 'idle', speed: 0 });
-                    this.signalManager.send('CarStop', {});
+                tap((action) => {
+                    console.log(
+                        `[CarEffect] ✅ Sending speed ${action.speed} to hub`
+                    );
+                    this.signalManager.send('CarSpeedChange', { speed: action.speed });
                 })
             ),
         { dispatch: false }

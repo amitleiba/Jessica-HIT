@@ -38,8 +38,9 @@ public sealed class JessicaWebSocketMoveCommandPublisher(
 
             var payload = new MoveCommandDto
             {
-                LeftWheel = leftWheel,
-                RightWheel = rightWheel
+                Cmd = "move",
+                Left = leftWheel,
+                Right = rightWheel
             };
             var json = JsonSerializer.Serialize(payload, _jsonOptions);
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -63,6 +64,45 @@ public sealed class JessicaWebSocketMoveCommandPublisher(
                 "❌ Failed sending move command over WS. LeftWheel={LeftWheel}, RightWheel={RightWheel}, Url={Url}",
                 leftWheel,
                 rightWheel,
+                _options.Url);
+
+            await ResetSocketAsync().ConfigureAwait(false);
+            throw;
+        }
+        finally
+        {
+            _sendLock.Release();
+        }
+    }
+
+    public async Task PublishStopCommandAsync(CancellationToken cancellationToken)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        await _sendLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await EnsureConnectedAsync(cancellationToken).ConfigureAwait(false);
+
+            var payload = new StopCommandDto();
+            var json = JsonSerializer.Serialize(payload, _jsonOptions);
+            var bytes = Encoding.UTF8.GetBytes(json);
+
+            await _socket!.SendAsync(
+                new ArraySegment<byte>(bytes),
+                WebSocketMessageType.Text,
+                endOfMessage: true,
+                cancellationToken).ConfigureAwait(false);
+
+            _logger.LogInformation(
+                "📤 Stop command sent to Jessica over WS. Url={Url}",
+                _options.Url);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "❌ Failed sending stop command over WS. Url={Url}",
                 _options.Url);
 
             await ResetSocketAsync().ConfigureAwait(false);
@@ -275,6 +315,13 @@ public sealed class JessicaWebSocketMoveCommandPublisher(
             var incoming = JsonSerializer.Deserialize<RobotStatusEventDto>(rawMessage, _jsonOptions);
             if (incoming is null)
             {
+                return;
+            }
+
+            // Only process telemetry messages from the robot.
+            if (!string.Equals(incoming.Type, "telemetry", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogDebug("Ignoring non-telemetry WS message. Type={Type}", incoming.Type);
                 return;
             }
 

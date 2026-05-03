@@ -20,10 +20,10 @@ import { CarSensorData } from '../../models/car-sensor-data.model';
 })
 export class SensorDataPanelComponent {
     // ── Speed dial config ──
-    @Input() speed: number = 0;
-    @Input() minSpeed: number = 0;
-    @Input() maxSpeed: number = 10;
-    @Input() speedStep: number = 1;
+    @Input() speed: number = 50;
+    @Input() minSpeed: number = 50;
+    @Input() maxSpeed: number = 100;
+    @Input() speedStep: number = 5;
     /** When true, speed slider is display-only (e.g. replay / telemetry view). */
     @Input() readOnly = false;
     @Input() sensorData: CarSensorData = {};

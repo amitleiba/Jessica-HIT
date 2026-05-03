@@ -3,7 +3,6 @@ import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { MediaDisplayComponent } from '../media-display/media-display.component';
 import { ControlPanelComponent } from '../control-panel/control-panel.component';
-import { carFeature } from '../../../store/reducers/car.reducer';
 import * as CarActions from '../../../store/actions/car.actions';
 
 @Component({
@@ -19,19 +18,12 @@ export class JessicaControllerComponent implements OnInit, OnDestroy {
 
   mediaData: string | null = null; // Will receive from WebSocket
   mediaType: 'image' | 'video' = 'image';
-  isRunning = false;
 
   // ─────────────────────────────────────────────
   //  Lifecycle
   // ─────────────────────────────────────────────
 
   ngOnInit(): void {
-    this.subscriptions.add(
-      this.store.select(carFeature.selectIsRunning).subscribe((running) => {
-        console.log('[JessicaController] Store isRunning →', running);
-        this.isRunning = running;
-      })
-    );
     console.log('[JessicaController] Initialized');
   }
 
@@ -53,18 +45,4 @@ export class JessicaControllerComponent implements OnInit, OnDestroy {
     console.log(`[JessicaController] 🎮 Direction → "${direction}" — dispatching`);
     this.store.dispatch(CarActions.changeDirection({ direction }));
   }
-
-  // ─────────────────────────────────────────────
-  //  Start / Stop
-  // ─────────────────────────────────────────────
-
-  onStart = (): void => {
-    console.log('[JessicaController] ▶ START → dispatching');
-    this.store.dispatch(CarActions.startCar());
-  };
-
-  onStop = (): void => {
-    console.log('[JessicaController] ⏹ STOP → dispatching');
-    this.store.dispatch(CarActions.stopCar());
-  };
 }

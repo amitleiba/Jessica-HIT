@@ -20,12 +20,6 @@ export const clearDirection = createAction(
     '[Car] Clear Direction'
 );
 
-// ── Running state ──
-
-export const startCar = createAction('[Car] Start');
-
-export const stopCar = createAction('[Car] Stop');
-
 // ── Speed ──
 
 /** User changed the speed dial */
@@ -46,4 +40,3 @@ export const sensorDataReceived = createAction(
 export const clearSensorData = createAction(
     '[Car] Clear Sensor Data'
 );
-

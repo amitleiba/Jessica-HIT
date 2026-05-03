@@ -10,21 +10,17 @@ import { CarSensorData, EMPTY_SENSOR_DATA } from '../../shared/models/car-sensor
  *     "up"          — single direction
  *     "left-right"  — combo (sorted alphabetically, hyphen-joined)
  *
- * isRunning — mirrors the Start/Stop toggle; only when true do we send hub events
- *
  * sensorData — latest raw telemetry snapshot from the car
  */
 export interface CarState {
     currentDirection: string;
-    isRunning: boolean;
     speed: number;
     sensorData: CarSensorData;
 }
 
 export const initialCarState: CarState = {
     currentDirection: 'idle',
-    isRunning: false,
-    speed: 0,
+    speed: 50,
     sensorData: EMPTY_SENSOR_DATA,
 };
 
@@ -49,23 +45,6 @@ export const carReducer = createReducer(
         console.log('[Car Reducer] Direction cleared → idle');
         return {
             ...state,
-            currentDirection: 'idle',
-        };
-    }),
-
-    on(CarActions.startCar, (state) => {
-        console.log('[Car Reducer] Car STARTED');
-        return {
-            ...state,
-            isRunning: true,
-        };
-    }),
-
-    on(CarActions.stopCar, (state) => {
-        console.log('[Car Reducer] Car STOPPED → idle');
-        return {
-            ...state,
-            isRunning: false,
             currentDirection: 'idle',
         };
     }),
@@ -101,7 +80,6 @@ export const carReducer = createReducer(
 /**
  * Car Feature — auto-generates selectors:
  *   carFeature.selectCurrentDirection
- *   carFeature.selectIsRunning
  *   carFeature.selectSpeed
  *   carFeature.selectSensorData
  *   carFeature.selectCarState  (entire slice)
