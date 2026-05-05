@@ -15,7 +15,7 @@ export interface ReplaySchedulerHandlers {
   shouldLoop: () => boolean;
 }
 
-type ScheduledJob = { at: number; seq: number; run: () => void };
+type ScheduledJob = { at: number; seq: number; direction: string; run: () => void };
 
 /**
  * Imperative ping-pong replay scheduling (setTimeout). Supports pause/resume by
@@ -74,7 +74,7 @@ export class RecordingReplaySchedulerService {
     this.scheduleCycleFromOffset(recording, handlers, 0);
   }
 
-  /** Freeze timers; car keeps last command until resume or teardown. */
+  /** Freeze timers and stop the car immediately. */
   pause(): void {
     if (!this.activeRecording || !this.handlers || this.paused) {
       return;
@@ -86,6 +86,10 @@ export class RecordingReplaySchedulerService {
     this.clearTimeouts();
     this.stopProgressTracker();
     this.paused = true;
+    
+    // Stop the car physically when paused
+    this.store.dispatch(CarActions.changeDirection({ direction: 'idle' }));
+    
     console.log(`[ReplayScheduler] Paused at ${this.savedElapsedForResume.toFixed(0)}ms`);
   }
 
@@ -148,6 +152,17 @@ export class RecordingReplaySchedulerService {
       totalCycleMs
     );
 
+    // Determine the direction the car should be in at the current fromElapsed time
+    let currentDirection = 'idle';
+    for (const job of jobs) {
+      if (job.at <= fromElapsed) {
+        currentDirection = job.direction;
+      }
+    }
+    
+    // Resume motion immediately in the correct direction
+    this.store.dispatch(CarActions.changeDirection({ direction: currentDirection }));
+
     const scheduleAt = (delayMs: number, fn: () => void) => {
       const id = setTimeout(() => this.zone.run(fn), delayMs);
       this.replayTimeouts.push(id);
@@ -175,6 +190,7 @@ export class RecordingReplaySchedulerService {
       jobs.push({
         at: event.offsetMs,
         seq: seq++,
+        direction: event.direction,
         run: () => {
           handlers.onEventIndex(index + 1);
           console.log(
@@ -193,6 +209,7 @@ export class RecordingReplaySchedulerService {
       jobs.push({
         at: forwardEnd,
         seq: seq++,
+        direction: invertedLast,
         run: () => {
           console.log(
             `[ReplayScheduler] ◀ Rev start invert("${last}") = "${invertedLast}" @ ${forwardEnd}ms`
@@ -211,6 +228,7 @@ export class RecordingReplaySchedulerService {
       jobs.push({
         at,
         seq: seq++,
+        direction: direction,
         run: () => {
           console.log(
             `[ReplayScheduler] ◀ Rev i=${i} invert("${segmentDir}") → "${direction}" @ ${at}ms`
@@ -224,6 +242,7 @@ export class RecordingReplaySchedulerService {
     jobs.push({
       at: totalCycleMs,
       seq: seq++,
+      direction: 'idle',
       run: () => {
         if (handlers.shouldLoop()) {
           this.loopCycleCount++;
