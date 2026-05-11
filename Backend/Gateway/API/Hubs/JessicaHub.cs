@@ -111,9 +111,29 @@ public class JessicaHub(ILogger<JessicaHub> logger, IHttpClientFactory httpClien
         await ForwardToJessicaManagerAsync("/api/car/stop", payload, Context.ConnectionAborted).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Client signals that the car should immediately halt (Emergency Stop).
+    /// </summary>
+    public async Task CarEmergencyStop()
+    {
+        _logger.LogWarning("🛑 Car EMERGENCY STOP from {ConnectionId}", Context.ConnectionId);
+
+        var payload = new
+        {
+            ConnectionId = Context.ConnectionId
+        };
+        await ForwardToJessicaManagerAsync("/api/car/emergency-stop", payload, Context.ConnectionAborted).ConfigureAwait(false);
+    }
+
     private async Task ForwardToJessicaManagerAsync<TPayload>(string route, TPayload payload, CancellationToken cancellationToken)
     {
         var client = _httpClientFactory.CreateClient("JessicaManager");
+        
+        var userId = Context.UserIdentifier;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            client.DefaultRequestHeaders.Add("X-User-Id", userId);
+        }
 
         try
         {

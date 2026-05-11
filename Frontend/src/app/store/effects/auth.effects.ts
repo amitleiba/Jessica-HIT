@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { map, catchError, exhaustMap, tap } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 import { AppRoutes, RouteBuilders } from '../../core/constants/routes';
+import { SignalManagerService } from '../../core/services/signal-manager.service';
 import * as AuthActions from '../actions/auth.actions';
 
 function authEffectErrorMessage(error: unknown): string {
@@ -27,6 +28,7 @@ export class AuthEffects {
   private readonly actions$ = inject(Actions);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly signalManager = inject(SignalManagerService);
 
   /**
    * Login Effect
@@ -148,6 +150,7 @@ export class AuthEffects {
             user: null, 
             token: null, 
             isAuthenticated: false, 
+            isInitialized: true,
             error: null 
           }));
         }
@@ -156,13 +159,22 @@ export class AuthEffects {
           map((result) => {
             if (result) {
               console.log('Auth Effect: Auth restored from token');
-              return AuthActions.loginSuccess({ user: result.user, token: result.token });
+              // Using setAuthState instead of loginSuccess so we can set isInitialized=true
+              return AuthActions.setAuthState({
+                user: result.user, 
+                token: result.token,
+                isAuthenticated: true,
+                isLoading: false,
+                isInitialized: true,
+                error: null
+              });
             } else {
               console.log('Auth Effect: Token validation failed');
               return AuthActions.setAuthState({ 
                 user: null, 
                 token: null, 
-                isAuthenticated: false, 
+                isAuthenticated: false,
+                isInitialized: true,
                 error: null 
               });
             }
@@ -172,7 +184,8 @@ export class AuthEffects {
             return of(AuthActions.setAuthState({ 
               user: null, 
               token: null, 
-              isAuthenticated: false, 
+              isAuthenticated: false,
+              isInitialized: true,
               error: null 
             }));
           })
@@ -226,6 +239,43 @@ export class AuthEffects {
           console.log('Auth Effect: Registration success, navigating to login');
           const route = RouteBuilders.loginWithRegistrationSuccess(message);
           this.router.navigate([route.path], { queryParams: route.queryParams });
+        })
+      ),
+    { dispatch: false }
+  );
+
+  /**
+   * Connect SignalR Effect
+   * Listens for: [Auth] Login Success
+   * Side effect: Connects the SignalR hub
+   */
+  connectSignalR$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.loginSuccess, AuthActions.setAuthState),
+        tap((action) => {
+          // If it's a loginSuccess, or a setAuthState that sets isAuthenticated to true
+          if (action.type === AuthActions.loginSuccess.type || (action as any).isAuthenticated) {
+            console.log('Auth Effect: Authenticated, connecting SignalR');
+            this.signalManager.connect();
+          }
+        })
+      ),
+    { dispatch: false }
+  );
+
+  /**
+   * Disconnect SignalR Effect
+   * Listens for: [Auth] Logout
+   * Side effect: Disconnects the SignalR hub
+   */
+  disconnectSignalR$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.logout),
+        tap(() => {
+          console.log('Auth Effect: Logout, disconnecting SignalR');
+          this.signalManager.disconnect();
         })
       ),
     { dispatch: false }

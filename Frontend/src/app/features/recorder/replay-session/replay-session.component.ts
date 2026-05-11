@@ -45,7 +45,9 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
   private readonly subs = new Subscription();
   private dangerRetryTimeout: ReturnType<typeof setTimeout> | null = null;
   private dangerRecoveryActive = false;
+  private dangerRetryCount = 0;
   private readonly dangerRetryMs = 2000;
+  private readonly maxDangerRetries = 5;
 
   readonly routes = AppRoutes;
 
@@ -190,6 +192,7 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
 
     if (safety === 0 && this.dangerRecoveryActive) {
       this.dangerRecoveryActive = false;
+      this.dangerRetryCount = 0;
       this.clearDangerRetryTimeout();
       if (this.recording) {
         this.beginReplay(this.recording);
@@ -203,6 +206,7 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
     }
 
     this.dangerRecoveryActive = true;
+    this.dangerRetryCount = 0;
     this.alertService.danger('Obstacle detected. Restarting route from start until path is clear.', 'DANGER');
     this.replayScheduler.stopTimers();
     this.store.dispatch(CarActions.changeDirection({ direction: 'idle' }));
@@ -215,6 +219,14 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
 
     this.dangerRetryTimeout = setTimeout(() => {
       if (!this.dangerRecoveryActive || !this.recording) {
+        return;
+      }
+
+      this.dangerRetryCount++;
+
+      if (this.dangerRetryCount >= this.maxDangerRetries) {
+        this.alertService.danger('Path blocked permanently. Stopping replay.', 'REPLAY CANCELLED');
+        this.teardownReplay(true);
         return;
       }
 
@@ -238,6 +250,7 @@ export class ReplaySessionComponent implements OnInit, OnDestroy {
    */
   private teardownReplay(navigateToRecorder: boolean): void {
     this.dangerRecoveryActive = false;
+    this.dangerRetryCount = 0;
     this.clearDangerRetryTimeout();
     this.replayScheduler.stopTimers();
     this.store.dispatch(RecordingActions.stopReplay());

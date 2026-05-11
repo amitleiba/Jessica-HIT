@@ -38,86 +38,66 @@ export const recordingReducer = createReducer(
 
     // ── Load list ──
 
-    on(RecordingActions.loadRecordings, (state) => {
-        console.log('[Recording Reducer] Loading recordings…');
-        return { ...state, isLoadingList: true, error: null };
-    }),
+    on(RecordingActions.loadRecordings, (state) => ({
+        ...state, isLoadingList: true, error: null
+    })),
 
-    on(RecordingActions.loadRecordingsSuccess, (state, { recordings }) => {
-        console.log(`[Recording Reducer] Loaded ${recordings.length} recordings`);
-        return { ...state, recordings, isLoadingList: false };
-    }),
+    on(RecordingActions.loadRecordingsSuccess, (state, { recordings }) => ({
+        ...state, recordings, isLoadingList: false
+    })),
 
-    on(RecordingActions.loadRecordingsFailure, (state, { error }) => {
-        console.log('[Recording Reducer] Load failed:', error);
-        return { ...state, isLoadingList: false, error };
-    }),
+    on(RecordingActions.loadRecordingsFailure, (state, { error }) => ({
+        ...state, isLoadingList: false, error
+    })),
 
     // ── Create recording ──
 
-    on(RecordingActions.startRecording, (state) => {
-        console.log('[Recording Reducer] Recording STARTED');
-        return { ...state, isRecording: true, error: null };
-    }),
+    on(RecordingActions.startRecording, (state) => ({
+        ...state, isRecording: true, error: null
+    })),
 
-    on(RecordingActions.stopRecording, (state) => {
-        console.log('[Recording Reducer] Recording STOPPED — saving…');
-        return { ...state, isRecording: false };
-    }),
+    on(RecordingActions.stopRecording, (state) => ({
+        ...state, isRecording: false
+    })),
 
-    on(RecordingActions.saveRecordingSuccess, (state, { recording }) => {
-        console.log(`[Recording Reducer] Saved: "${recording.name}"`);
-        return {
-            ...state,
-            recordings: [recording, ...state.recordings],
-        };
-    }),
+    on(RecordingActions.saveRecordingSuccess, (state, { recording }) => ({
+        ...state,
+        recordings: [recording, ...state.recordings],
+    })),
 
-    on(RecordingActions.saveRecordingFailure, (state, { error }) => {
-        console.log('[Recording Reducer] Save failed:', error);
-        return { ...state, error };
-    }),
+    on(RecordingActions.saveRecordingFailure, (state, { error }) => ({
+        ...state, error
+    })),
 
     // ── Delete recording ──
 
-    on(RecordingActions.deleteRecordingSuccess, (state, { id }) => {
-        console.log(`[Recording Reducer] Deleted recording ${id}`);
-        return {
-            ...state,
-            recordings: state.recordings.filter((r) => r.id !== id),
-        };
-    }),
+    on(RecordingActions.deleteRecordingSuccess, (state, { id }) => ({
+        ...state,
+        recordings: state.recordings.filter((r) => r.id !== id),
+    })),
 
-    on(RecordingActions.deleteRecordingFailure, (state, { error }) => {
-        console.log('[Recording Reducer] Delete failed:', error);
-        return { ...state, error };
-    }),
+    on(RecordingActions.deleteRecordingFailure, (state, { error }) => ({
+        ...state, error
+    })),
 
     // ── Replay ──
 
-    on(RecordingActions.startReplay, (state, { recordingId, loop }) => {
-        console.log(`[Recording Reducer] Replay STARTED — ${recordingId}, loop=${loop}`);
-        return {
-            ...state,
-            isReplaying: true,
-            replayRecordingId: recordingId,
-            isLoopEnabled: loop,
-        };
-    }),
+    on(RecordingActions.startReplay, (state, { recordingId, loop }) => ({
+        ...state,
+        isReplaying: true,
+        replayRecordingId: recordingId,
+        isLoopEnabled: loop,
+    })),
 
-    on(RecordingActions.stopReplay, (state) => {
-        console.log('[Recording Reducer] Replay STOPPED');
-        return {
-            ...state,
-            isReplaying: false,
-            replayRecordingId: null,
-        };
-    }),
+    on(RecordingActions.stopReplay, (state) => ({
+        ...state,
+        isReplaying: false,
+        replayRecordingId: null,
+    })),
 
-    on(RecordingActions.toggleLoop, (state) => {
-        console.log(`[Recording Reducer] Loop toggled → ${!state.isLoopEnabled}`);
-        return { ...state, isLoopEnabled: !state.isLoopEnabled };
-    })
+    on(RecordingActions.toggleLoop, (state) => ({
+        ...state, isLoopEnabled: !state.isLoopEnabled
+    }))
 );
 
 /**

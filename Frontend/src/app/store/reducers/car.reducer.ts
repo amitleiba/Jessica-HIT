@@ -31,7 +31,6 @@ export const carReducer = createReducer(
         if (state.currentDirection === direction) {
             return state; // Same direction — no state change
         }
-        console.log(`[Car Reducer] Direction: "${state.currentDirection}" → "${direction}"`);
         return {
             ...state,
             currentDirection: direction,
@@ -42,7 +41,6 @@ export const carReducer = createReducer(
         if (state.currentDirection === 'idle') {
             return state;
         }
-        console.log('[Car Reducer] Direction cleared → idle');
         return {
             ...state,
             currentDirection: 'idle',
@@ -53,28 +51,27 @@ export const carReducer = createReducer(
         if (state.speed === speed) {
             return state;
         }
-        console.log(`[Car Reducer] Speed: ${state.speed} → ${speed}`);
         return {
             ...state,
             speed,
         };
     }),
 
-    on(CarActions.sensorDataReceived, (state, { sensorData }) => {
-        console.log('[Car Reducer] Sensor data updated');
-        return {
-            ...state,
-            sensorData: { ...state.sensorData, ...sensorData },
-        };
-    }),
+    on(CarActions.emergencyStop, (state) => ({
+        ...state,
+        currentDirection: 'idle',
+        speed: 0
+    })),
 
-    on(CarActions.clearSensorData, (state) => {
-        console.log('[Car Reducer] Sensor data cleared');
-        return {
-            ...state,
-            sensorData: EMPTY_SENSOR_DATA,
-        };
-    })
+    on(CarActions.sensorDataReceived, (state, { sensorData }) => ({
+        ...state,
+        sensorData: { ...state.sensorData, ...sensorData },
+    })),
+
+    on(CarActions.clearSensorData, (state) => ({
+        ...state,
+        sensorData: EMPTY_SENSOR_DATA,
+    }))
 );
 
 /**

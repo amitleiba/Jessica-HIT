@@ -10,28 +10,36 @@ public class CarCommandsController(
     ILogger<CarCommandsController> logger,
     IMovementConversionService movementConversionService,
     IMoveCommandPublisher moveCommandPublisher,
-    IRobotStatusState robotStatusState) : ControllerBase
+    IRobotStatusState robotStatusState,
+    ICurrentSpeedState currentSpeedState) : ControllerBase
 {
     private readonly ILogger<CarCommandsController> _logger = logger;
     private readonly IMovementConversionService _movementConversionService = movementConversionService;
     private readonly IMoveCommandPublisher _moveCommandPublisher = moveCommandPublisher;
     private readonly IRobotStatusState _robotStatusState = robotStatusState;
+    private readonly ICurrentSpeedState _currentSpeedState = currentSpeedState;
+
+    private string? GetUserId() => Request.Headers["X-User-Id"].FirstOrDefault();
 
     [HttpPost("direction")]
     public async Task<IActionResult> Direction([FromBody] CarDirectionCommand command, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrEmpty(GetUserId())) return Unauthorized(new { message = "User identity not provided" });
+
+        var effectiveSpeed = command.Speed > 0 ? command.Speed : _currentSpeedState.GetSpeed();
+
         var output = _movementConversionService.ConvertToMotorOutput(
             new MovementConversionRequestDto
             {
                 Direction = command.Direction,
-                Speed = command.Speed
+                Speed = effectiveSpeed
             });
 
         _logger.LogInformation(
             "🎮 Direction command received. ConnectionId={ConnectionId}, Direction={Direction}, Speed={Speed}, LeftMotor={LeftMotor}, RightMotor={RightMotor}, NormalizedDirection={NormalizedDirection}",
             command.ConnectionId,
             command.Direction,
-            command.Speed,
+            effectiveSpeed,
             output.LeftMotor,
             output.RightMotor,
             output.NormalizedDirection);
@@ -44,7 +52,7 @@ public class CarCommandsController(
         {
             accepted = true,
             direction = output.NormalizedDirection,
-            speed = command.Speed,
+            speed = effectiveSpeed,
             leftMotor = output.LeftMotor,
             rightMotor = output.RightMotor
         });
@@ -53,6 +61,10 @@ public class CarCommandsController(
     [HttpPost("speed")]
     public IActionResult Speed([FromBody] CarSpeedCommand command)
     {
+        if (string.IsNullOrEmpty(GetUserId())) return Unauthorized(new { message = "User identity not provided" });
+
+        _currentSpeedState.SetSpeed(command.Speed);
+
         _logger.LogInformation(
             "🏎 Speed command received. ConnectionId={ConnectionId}, Speed={Speed}",
             command.ConnectionId,
@@ -63,6 +75,8 @@ public class CarCommandsController(
     [HttpPost("start")]
     public IActionResult Start([FromBody] CarSessionCommand command)
     {
+        if (string.IsNullOrEmpty(GetUserId())) return Unauthorized(new { message = "User identity not provided" });
+
         _logger.LogInformation(
             "▶ Start command received. ConnectionId={ConnectionId}",
             command.ConnectionId);
@@ -72,6 +86,8 @@ public class CarCommandsController(
     [HttpPost("stop")]
     public async Task<IActionResult> Stop([FromBody] CarSessionCommand command, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrEmpty(GetUserId())) return Unauthorized(new { message = "User identity not provided" });
+
         _logger.LogInformation(
             "⏹ Stop command received. ConnectionId={ConnectionId}",
             command.ConnectionId);
@@ -88,9 +104,34 @@ public class CarCommandsController(
         });
     }
 
+    [HttpPost("emergency-stop")]
+    public async Task<IActionResult> EmergencyStop([FromBody] CarSessionCommand command, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(GetUserId())) return Unauthorized(new { message = "User identity not provided" });
+
+        _logger.LogWarning(
+            "🛑 EMERGENCY STOP command received. ConnectionId={ConnectionId}",
+            command.ConnectionId);
+
+        _currentSpeedState.SetSpeed(0);
+
+        await _moveCommandPublisher
+            .PublishStopCommandAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return Ok(new
+        {
+            accepted = true,
+            leftMotor = 0,
+            rightMotor = 0
+        });
+    }
+
     [HttpGet("status")]
     public IActionResult Status()
     {
+        if (string.IsNullOrEmpty(GetUserId())) return Unauthorized(new { message = "User identity not provided" });
+
         if (!_robotStatusState.TryGetLatest(out var status) || status is null)
         {
             return NotFound(new

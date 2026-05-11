@@ -1,6 +1,6 @@
 import { ApplicationConfig, isDevMode } from "@angular/core";
 import { provideRouter } from "@angular/router";
-import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi, withInterceptors } from "@angular/common/http";
 import { provideStore } from "@ngrx/store";
 import { provideEffects } from "@ngrx/effects";
 import { provideStoreDevtools } from "@ngrx/store-devtools";
@@ -14,10 +14,12 @@ import { AuthEffects } from "./store/effects/auth.effects";
 import { CarEffects } from "./store/effects/car.effects";
 import { RecordingEffects } from "./store/effects/recording.effects";
 
+import { authInterceptor } from "./core/interceptors/auth.interceptor";
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(withInterceptorsFromDi()),  // Add HttpClient
+    provideHttpClient(withInterceptorsFromDi(), withInterceptors([authInterceptor])),
     provideStore(appReducer),
     provideEffects([AuthEffects, CarEffects, RecordingEffects]),  // Register Auth + Car + Recording Effects
     provideAnimationsAsync(),
