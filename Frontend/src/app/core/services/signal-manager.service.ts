@@ -108,6 +108,11 @@ export class SignalManagerService {
         connectionId,
       );
       this.connectionState.next("connected");
+
+      // BUG FIX: The previous connection instance lost its attached callbacks.
+      // We must clear the tracker and re-attach all listeners to the new connection.
+      this.attachedListeners.clear();
+      this.attachAllRegisteredListeners();
     });
 
     this.connection.onclose((error) => {

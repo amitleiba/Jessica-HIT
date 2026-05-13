@@ -2,12 +2,12 @@ import { createFeature, createReducer, createSelector, on } from "@ngrx/store";
 import * as AuthActions from "../actions/auth.actions";
 import { User } from "../../core/dto";
 
-// Auth State Interface
 export interface AuthState {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isInitialized: boolean;
   error: string | null;
 }
 
@@ -16,6 +16,7 @@ export const initialAuthState: AuthState = {
   token: null,
   isAuthenticated: false,
   isLoading: false,
+  isInitialized: false,
   error: null,
 };
 
@@ -24,7 +25,6 @@ export const authReducer = createReducer(
 
   // Login flow
   on(AuthActions.login, (state) => {
-    console.log('Auth Reducer: Login action');
     return {
       ...state,
       isLoading: true,
@@ -33,7 +33,6 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.loginSuccess, (state, { user, token }) => {
-    console.log('Auth Reducer: Login success');
     return {
       ...state,
       user,
@@ -45,7 +44,6 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.loginFailure, (state, { error }) => {
-    console.log('Auth Reducer: Login failure -', error);
     return {
       ...state,
       isLoading: false,
@@ -55,13 +53,11 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.logout, () => {
-    console.log('Auth Reducer: Logout');
     return initialAuthState;
   }),
 
   // Register flow
   on(AuthActions.register, (state) => {
-    console.log('Auth Reducer: Register action');
     return {
       ...state,
       isLoading: true,
@@ -70,7 +66,6 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.registerSuccess, (state, { message }) => {
-    console.log('Auth Reducer: Register success');
     return {
       ...state,
       isLoading: false,
@@ -79,7 +74,6 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.registerFailure, (state, { error }) => {
-    console.log('Auth Reducer: Register failure -', error);
     return {
       ...state,
       isLoading: false,
@@ -123,13 +117,10 @@ export const authReducer = createReducer(
     };
   }),
 
-  on(AuthActions.setAuthState, (state, payload) => {
-    console.log('Auth Reducer: Setting auth state');
-    return {
-      ...state,
-      ...payload,
-    };
-  })
+  on(AuthActions.setAuthState, (state, { type, ...payload }) => ({
+    ...state,
+    ...payload,
+  }))
 );
 
 /**

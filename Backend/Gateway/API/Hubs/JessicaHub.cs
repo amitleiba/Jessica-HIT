@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
 using System.Net.Http.Json;
 using Gateway.API.DTOs.Requests;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Gateway.API.Hubs;
 
@@ -115,9 +115,28 @@ public class JessicaHub(ILogger<JessicaHub> logger, IHttpClientFactory httpClien
     {
         var client = _httpClientFactory.CreateClient("JessicaManager");
 
+        var userId = Context.UserIdentifier;
+        if (string.IsNullOrEmpty(userId))
+        {
+            _logger.LogWarning(
+                "JessicaManager forward skipped user id: {Route} from {ConnectionId}. JWT sub/NameIdentifier missing — car commands will be rejected.",
+                route,
+                Context.ConnectionId);
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, route)
+        {
+            Content = JsonContent.Create(payload)
+        };
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            request.Headers.TryAddWithoutValidation("X-User-Id", userId);
+        }
+
         try
         {
-            var response = await client.PostAsJsonAsync(route, payload, cancellationToken).ConfigureAwait(false);
+            var response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning(

@@ -3,9 +3,9 @@ version: "3.8"
 # ============================================
 # Shared JWT config — MUST match between
 # AuthService (signs tokens) and Gateway (validates tokens)
+# Set Jwt__SecretKey in your .env file
 # ============================================
 x-jwt-env: &jwt-env
-  Jwt__SecretKey: "JessicaSuperSecretKeyThatIsAtLeast32CharactersLong!!2026"
   Jwt__Issuer: "jessica-auth"
   Jwt__Audience: "jessica-api"
   Jwt__AccessTokenExpiryMinutes: "15"

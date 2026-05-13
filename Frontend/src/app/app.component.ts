@@ -19,7 +19,5 @@ export class AppComponent {
 
   constructor() {
     this.store.dispatch(AuthActions.initAuth());
-    this.signalManager.connect();
-    console.log('[AppComponent] Initialized — SignalR connecting');
   }
 }

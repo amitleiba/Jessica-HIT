@@ -2,6 +2,7 @@ import { Injectable, inject, NgZone } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Recording } from '../../shared/models/recording.model';
 import * as CarActions from '../../store/actions/car.actions';
+import { formatMs } from '../../shared/utils/time.utils';
 
 export interface ReplaySchedulerHandlers {
   /** ~10/sec during a cycle */
@@ -269,7 +270,7 @@ export class RecordingReplaySchedulerService {
       const elapsed = performance.now() - this.replayStartTime;
       const progress = Math.min(100, (elapsed / durationMs) * 100);
       this.zone.run(() => {
-        handlers.onProgressTick(Math.round(progress), this.formatMs(elapsed));
+        handlers.onProgressTick(Math.round(progress), formatMs(elapsed));
       });
     }, 100);
   }
@@ -284,13 +285,6 @@ export class RecordingReplaySchedulerService {
   private clearTimeouts(): void {
     this.replayTimeouts.forEach(clearTimeout);
     this.replayTimeouts = [];
-  }
-
-  private formatMs(ms: number): string {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
   private invertDirection(direction: string): string {

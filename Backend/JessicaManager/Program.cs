@@ -19,6 +19,7 @@ builder.Services
     .Validate(
         options => options.Url is not null && (options.Url.Scheme == "ws" || options.Url.Scheme == "wss"),
         $"{JessicaWebSocketOptions.SectionName}:Url must be an absolute ws/wss URL.");
+builder.Services.AddSingleton<ICurrentSpeedState, InMemoryCurrentSpeedState>();
 builder.Services.AddSingleton<IRobotStatusState, InMemoryRobotStatusState>();
 builder.Services.AddSingleton<JessicaWebSocketMoveCommandPublisher>();
 builder.Services.AddSingleton<IMoveCommandPublisher>(sp => sp.GetRequiredService<JessicaWebSocketMoveCommandPublisher>());
@@ -34,8 +35,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseAuthorization();
 
 app.MapControllers();
 app.MapDefaultEndpoints();

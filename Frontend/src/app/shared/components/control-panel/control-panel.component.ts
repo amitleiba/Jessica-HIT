@@ -46,13 +46,30 @@ export class ControlPanelComponent implements OnDestroy {
   private evalTimer: ReturnType<typeof setTimeout> | null = null;
   private lastResolved: string = "idle";
 
-  /** Map browser KeyboardEvent.key → Direction */
   private readonly keyMap: Record<string, Direction> = {
     ArrowUp: "up",
     ArrowDown: "down",
     ArrowLeft: "left",
     ArrowRight: "right",
+    w: "up",
+    W: "up",
+    s: "down",
+    S: "down",
+    a: "left",
+    A: "left",
+    d: "right",
+    D: "right",
   };
+
+  /**
+   * Helper to determine if the user is typing in an input field
+   */
+  private isInputEvent(event: KeyboardEvent): boolean {
+    const target = event.target as HTMLElement;
+    if (!target) return false;
+    const tagName = target.tagName.toLowerCase();
+    return tagName === 'input' || tagName === 'textarea' || target.isContentEditable;
+  }
 
   // ────────────────────────────────────────────────────────────
   //  Keyboard listeners (window-level so it works without focus)
@@ -60,6 +77,7 @@ export class ControlPanelComponent implements OnDestroy {
 
   @HostListener("window:keydown", ["$event"])
   handleKeyDown(event: KeyboardEvent): void {
+    if (this.isInputEvent(event)) return;
     const direction = this.keyMap[event.key];
     if (!direction || event.repeat) return;
 
@@ -70,6 +88,7 @@ export class ControlPanelComponent implements OnDestroy {
 
   @HostListener("window:keyup", ["$event"])
   handleKeyUp(event: KeyboardEvent): void {
+    if (this.isInputEvent(event)) return;
     const direction = this.keyMap[event.key];
     if (!direction) return;
 

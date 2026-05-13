@@ -122,26 +122,16 @@ export class RecordingService {
     //  HTTP: CRUD
     // ═══════════════════════════════════════════
 
-    private get headers(): HttpHeaders {
-        return new HttpHeaders({
-            Authorization: `Bearer ${localStorage.getItem('access_token') ?? ''}`,
-        });
-    }
-
     /** GET /api/recordings — list all recordings for the current user. */
     getRecordings(): Observable<RecordingSummary[]> {
         console.log('[RecordingService] HTTP GET all recordings');
-        return this.http.get<RecordingSummary[]>(this.apiUrl, {
-            headers: this.headers,
-        });
+        return this.http.get<RecordingSummary[]>(this.apiUrl);
     }
 
     /** GET /api/recordings/{id} — get a single recording with events (for replay). */
     getRecording(id: string): Observable<Recording> {
         console.log(`[RecordingService] HTTP GET recording ${id}`);
-        return this.http.get<Recording>(`${this.apiUrl}/${id}`, {
-            headers: this.headers,
-        });
+        return this.http.get<Recording>(`${this.apiUrl}/${id}`);
     }
 
     /** POST /api/recordings — save a new recording. */
@@ -149,17 +139,13 @@ export class RecordingService {
         console.log(
             `[RecordingService] HTTP POST recording "${request.name}" (${request.events.length} events)`
         );
-        return this.http.post<RecordingSummary>(this.apiUrl, request, {
-            headers: this.headers,
-        });
+        return this.http.post<RecordingSummary>(this.apiUrl, request);
     }
 
     /** DELETE /api/recordings/{id} — delete a recording. */
     deleteRecording(id: string): Observable<void> {
         console.log(`[RecordingService] HTTP DELETE recording ${id}`);
-        return this.http.delete<void>(`${this.apiUrl}/${id}`, {
-            headers: this.headers,
-        });
+        return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 }
 

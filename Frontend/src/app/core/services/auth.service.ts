@@ -45,6 +45,9 @@ export class AuthService {
       map((response) => {
         const token = response.accessToken;
         this.storeToken(token);
+        if (response.refreshToken) {
+          this.storeRefreshToken(response.refreshToken);
+        }
         const user = this.mapUserInfoToUser(response.userInfo);
         return { user, token };
       }),
@@ -150,6 +153,33 @@ export class AuthService {
     );
   }
 
+  /**
+   * Refresh the access token using the stored refresh token
+   */
+  refreshToken(): Observable<{ token: string }> {
+    const refreshToken = this.getStoredRefreshToken();
+    const accessToken = this.getStoredToken();
+
+    if (!refreshToken || !accessToken) {
+      return throwError(() => new Error('No tokens available for refresh'));
+    }
+
+    return this.http.post<BackendLoginResponse>(`${this.apiUrl}/api/Auth/refresh`, {
+      accessToken,
+      refreshToken
+    }).pipe(
+      timeout(AuthService.requestTimeoutMs),
+      map((response) => {
+        const token = response.accessToken;
+        this.storeToken(token);
+        if (response.refreshToken) {
+          this.storeRefreshToken(response.refreshToken);
+        }
+        return { token };
+      })
+    );
+  }
+
   // ============================================
   // Private Helper Methods
   // ============================================
@@ -243,8 +273,22 @@ export class AuthService {
   /**
    * Get stored JWT token from localStorage
    */
-  private getStoredToken(): string | null {
+  getStoredToken(): string | null {
     return localStorage.getItem('access_token');
+  }
+
+  /**
+   * Store refresh token in localStorage
+   */
+  private storeRefreshToken(token: string): void {
+    localStorage.setItem('refresh_token', token);
+  }
+
+  /**
+   * Get stored refresh token from localStorage
+   */
+  getStoredRefreshToken(): string | null {
+    return localStorage.getItem('refresh_token');
   }
 
   /**

@@ -1,5 +1,7 @@
 using Gateway.Extensions;
 using Gateway.API.Services;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,18 +52,38 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
-builder.Services.AddHttpClient("JessicaManager", client =>
+builder.Services.AddHttpClient("JessicaManager", (sp, client) =>
 {
-    client.BaseAddress = new Uri("http://jessicamanager");
+    var baseUrl = sp.GetRequiredService<IConfiguration>()["JessicaManager:BaseUrl"];
+    if (string.IsNullOrWhiteSpace(baseUrl))
+    {
+        baseUrl = "http://jessicamanager";
+    }
+
+    client.BaseAddress = new Uri(baseUrl);
+    logger.LogInformation("JessicaManager HTTP client BaseAddress={BaseAddress}", baseUrl);
 });
 builder.Services.AddHostedService<JessicaStatusRelayService>();
 builder.Services.AddSwaggerWithJwt(swaggerConfig, logger);
 builder.Services.AddReverseProxyWithUserForwarding(builder.Configuration);
 
+// Add Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("AuthLimiter", opt =>
+    {
+        opt.PermitLimit = 10;
+        opt.Window = TimeSpan.FromSeconds(10);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
+    });
+});
+
 var app = builder.Build();
 
 app.UseSwaggerWithJwt(swaggerConfig, logger);
 app.UseCors("SignalRCorsPolicy");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
