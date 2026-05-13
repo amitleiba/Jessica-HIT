@@ -71,21 +71,6 @@ export class CarEffects {
     );
 
     /**
-     * Emergency Stop
-     */
-    emergencyStop$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(CarActions.emergencyStop),
-                tap(() => {
-                    console.log(`[CarEffect] 🛑 Sending emergency stop to hub`);
-                    this.signalManager.send('CarEmergencyStop', {});
-                })
-            ),
-        { dispatch: false }
-    );
-
-    /**
      * Robot status stream from Gateway hub → update telemetry in store.
      */
     robotStatusUpdated$ = createEffect(() =>

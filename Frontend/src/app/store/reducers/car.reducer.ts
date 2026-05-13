@@ -57,12 +57,6 @@ export const carReducer = createReducer(
         };
     }),
 
-    on(CarActions.emergencyStop, (state) => ({
-        ...state,
-        currentDirection: 'idle',
-        speed: 0
-    })),
-
     on(CarActions.sensorDataReceived, (state, { sensorData }) => ({
         ...state,
         sensorData: { ...state.sensorData, ...sensorData },

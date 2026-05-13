@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
 using System.Net.Http.Json;
 using Gateway.API.DTOs.Requests;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Gateway.API.Hubs;
 
@@ -111,33 +111,32 @@ public class JessicaHub(ILogger<JessicaHub> logger, IHttpClientFactory httpClien
         await ForwardToJessicaManagerAsync("/api/car/stop", payload, Context.ConnectionAborted).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Client signals that the car should immediately halt (Emergency Stop).
-    /// </summary>
-    public async Task CarEmergencyStop()
-    {
-        _logger.LogWarning("🛑 Car EMERGENCY STOP from {ConnectionId}", Context.ConnectionId);
-
-        var payload = new
-        {
-            ConnectionId = Context.ConnectionId
-        };
-        await ForwardToJessicaManagerAsync("/api/car/emergency-stop", payload, Context.ConnectionAborted).ConfigureAwait(false);
-    }
-
     private async Task ForwardToJessicaManagerAsync<TPayload>(string route, TPayload payload, CancellationToken cancellationToken)
     {
         var client = _httpClientFactory.CreateClient("JessicaManager");
-        
+
         var userId = Context.UserIdentifier;
+        if (string.IsNullOrEmpty(userId))
+        {
+            _logger.LogWarning(
+                "JessicaManager forward skipped user id: {Route} from {ConnectionId}. JWT sub/NameIdentifier missing — car commands will be rejected.",
+                route,
+                Context.ConnectionId);
+        }
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, route)
+        {
+            Content = JsonContent.Create(payload)
+        };
+
         if (!string.IsNullOrEmpty(userId))
         {
-            client.DefaultRequestHeaders.Add("X-User-Id", userId);
+            request.Headers.TryAddWithoutValidation("X-User-Id", userId);
         }
 
         try
         {
-            var response = await client.PostAsJsonAsync(route, payload, cancellationToken).ConfigureAwait(false);
+            var response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning(

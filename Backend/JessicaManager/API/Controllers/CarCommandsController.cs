@@ -104,29 +104,6 @@ public class CarCommandsController(
         });
     }
 
-    [HttpPost("emergency-stop")]
-    public async Task<IActionResult> EmergencyStop([FromBody] CarSessionCommand command, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrEmpty(GetUserId())) return Unauthorized(new { message = "User identity not provided" });
-
-        _logger.LogWarning(
-            "🛑 EMERGENCY STOP command received. ConnectionId={ConnectionId}",
-            command.ConnectionId);
-
-        _currentSpeedState.SetSpeed(0);
-
-        await _moveCommandPublisher
-            .PublishStopCommandAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        return Ok(new
-        {
-            accepted = true,
-            leftMotor = 0,
-            rightMotor = 0
-        });
-    }
-
     [HttpGet("status")]
     public IActionResult Status()
     {

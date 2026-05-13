@@ -52,9 +52,16 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
-builder.Services.AddHttpClient("JessicaManager", client =>
+builder.Services.AddHttpClient("JessicaManager", (sp, client) =>
 {
-    client.BaseAddress = new Uri("http://jessicamanager");
+    var baseUrl = sp.GetRequiredService<IConfiguration>()["JessicaManager:BaseUrl"];
+    if (string.IsNullOrWhiteSpace(baseUrl))
+    {
+        baseUrl = "http://jessicamanager";
+    }
+
+    client.BaseAddress = new Uri(baseUrl);
+    logger.LogInformation("JessicaManager HTTP client BaseAddress={BaseAddress}", baseUrl);
 });
 builder.Services.AddHostedService<JessicaStatusRelayService>();
 builder.Services.AddSwaggerWithJwt(swaggerConfig, logger);

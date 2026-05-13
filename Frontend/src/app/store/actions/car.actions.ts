@@ -28,8 +28,6 @@ export const changeSpeed = createAction(
     props<{ speed: number }>()
 );
 
-export const emergencyStop = createAction('[Car] Emergency Stop');
-
 // ── Sensor data ──
 
 /** Dispatched when a new sensor data snapshot arrives from SignalR */
