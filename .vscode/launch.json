@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Backend/Aspire/Aspire.AppHost/bin/Debug/net10.0/Aspire.AppHost.dll",
+            "program": "${workspaceFolder}/Backend/Aspire/Aspire.AppHost/bin/Debug/net9.0/Aspire.AppHost.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Backend/Aspire/Aspire.AppHost",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

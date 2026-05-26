@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Http.Json;
 using Gateway.API.DTOs.Responses;
 using Gateway.API.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -7,7 +9,8 @@ namespace Gateway.API.Services;
 public sealed class JessicaStatusRelayService(
     ILogger<JessicaStatusRelayService> logger,
     IHttpClientFactory httpClientFactory,
-    IHubContext<JessicaHub> hubContext) : BackgroundService
+    IHubContext<JessicaHub> hubContext,
+    IConfiguration configuration) : BackgroundService
 {
     private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(250);
     private static readonly TimeSpan FailurePollInterval = TimeSpan.FromSeconds(3);
@@ -15,6 +18,7 @@ public sealed class JessicaStatusRelayService(
     private readonly ILogger<JessicaStatusRelayService> _logger = logger;
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly IHubContext<JessicaHub> _hubContext = hubContext;
+    private readonly IConfiguration _configuration = configuration;
     private DateTime? _lastForwardedAtUtc;
     private int _pollFailureCount;
     private DateTime _lastDetailedFailureLogUtc = DateTime.MinValue;
@@ -27,10 +31,30 @@ public sealed class JessicaStatusRelayService(
         {
             try
             {
+                var relayUserId = _configuration["JessicaManager:StatusRelayUserId"];
+                if (string.IsNullOrWhiteSpace(relayUserId))
+                {
+                    relayUserId = "internal-status-relay";
+                }
+
                 var client = _httpClientFactory.CreateClient("JessicaManager");
-                var status = await client
-                    .GetFromJsonAsync<RobotStatusResponse>("/api/car/status", stoppingToken)
-                    .ConfigureAwait(false);
+                using var request = new HttpRequestMessage(HttpMethod.Get, "/api/car/status");
+                request.Headers.TryAddWithoutValidation("X-User-Id", relayUserId);
+
+                var response = await client.SendAsync(request, stoppingToken).ConfigureAwait(false);
+
+                RobotStatusResponse? status;
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    status = new RobotStatusResponse { Available = false };
+                }
+                else
+                {
+                    response.EnsureSuccessStatusCode();
+                    status = await response.Content
+                        .ReadFromJsonAsync<RobotStatusResponse>(cancellationToken: stoppingToken)
+                        .ConfigureAwait(false);
+                }
 
                 if (status is null || !status.Available)
                 {

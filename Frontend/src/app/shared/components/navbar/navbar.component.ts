@@ -7,6 +7,7 @@ import { Store } from "@ngrx/store";
 import { authFeature } from "../../../store/reducers/auth.reducer";
 import { AppRoutes } from "../../../core/constants/routes";
 import * as AuthActions from "../../../store/actions/auth.actions";
+import { SignalManagerService } from "../../../core/services/signal-manager.service";
 
 @Component({
   selector: "app-navbar",
@@ -18,10 +19,12 @@ import * as AuthActions from "../../../store/actions/auth.actions";
 export class NavbarComponent {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
+  private readonly signalManager = inject(SignalManagerService);
 
   // Observable state from store (using auto-generated feature selectors)
   isAuthenticated$ = this.store.select(authFeature.selectIsAuthenticated);
   user$ = this.store.select(authFeature.selectUser);
+  connectionState$ = this.signalManager.connectionState$;
 
   // Route constants for template
   readonly routes = AppRoutes;

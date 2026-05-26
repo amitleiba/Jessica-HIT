@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { MediaDisplayComponent } from '../media-display/media-display.component';
 import { ControlPanelComponent } from '../control-panel/control-panel.component';
 import * as CarActions from '../../../store/actions/car.actions';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-jessica-controller',
@@ -16,15 +17,15 @@ export class JessicaControllerComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
   private subscriptions = new Subscription();
 
-  mediaData: string | null = null; // Will receive from WebSocket
-  mediaType: 'image' | 'video' = 'image';
+  mediaData: string | null = environment.cameraUrl; // Live camera feed URL
+  mediaType: 'image' | 'video' | 'stream' = 'stream';
 
   // ─────────────────────────────────────────────
   //  Lifecycle
   // ─────────────────────────────────────────────
 
   ngOnInit(): void {
-    console.log('[JessicaController] Initialized');
+    console.log('[JessicaController] Initialized — camera feed:', environment.cameraUrl);
   }
 
   ngOnDestroy(): void {

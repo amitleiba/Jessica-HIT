@@ -9,6 +9,6 @@ import { CommonModule } from "@angular/common";
   styleUrl: "./media-display.component.scss",
 })
 export class MediaDisplayComponent {
-  @Input() mediaData: string | null = null; // URL or base64 data for image/video
-  @Input() mediaType: "image" | "video" = "image"; // Type of media to display
+  @Input() mediaData: string | null = null; // URL or base64 data for image/video/stream
+  @Input() mediaType: "image" | "video" | "stream" = "image"; // Type of media to display
 }

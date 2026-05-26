@@ -13,6 +13,7 @@ import { recordingFeature } from '../../../../store/reducers/recording.reducer';
 import { carFeature } from '../../../../store/reducers/car.reducer';
 import * as RecordingActions from '../../../../store/actions/recording.actions';
 import * as CarActions from '../../../../store/actions/car.actions';
+import { formatMs } from '../../../../shared/utils/time.utils';
 
 /**
  * CreateRecordingComponent — "Create" tab inside the Recorder Panel.
@@ -166,7 +167,7 @@ export class CreateRecordingComponent implements OnInit, OnDestroy {
         this.stopTimer();
         this.timerInterval = setInterval(() => {
             const ms = this.recordingService.elapsedMs;
-            this.elapsedDisplay = this.formatMs(ms);
+            this.elapsedDisplay = formatMs(ms);
             this.eventCount = this.recordingService.eventCount;
         }, 100);
     }
@@ -176,12 +177,5 @@ export class CreateRecordingComponent implements OnInit, OnDestroy {
             clearInterval(this.timerInterval);
             this.timerInterval = null;
         }
-    }
-
-    private formatMs(ms: number): string {
-        const totalSeconds = Math.floor(ms / 1000);
-        const minutes = Math.floor(totalSeconds / 60);
-        const seconds = totalSeconds % 60;
-        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 }
