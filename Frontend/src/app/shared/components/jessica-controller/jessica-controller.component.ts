@@ -5,6 +5,7 @@ import { MediaDisplayComponent } from '../media-display/media-display.component'
 import { ControlPanelComponent } from '../control-panel/control-panel.component';
 import * as CarActions from '../../../store/actions/car.actions';
 import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/services/config.service';
 
 @Component({
   selector: 'app-jessica-controller',
@@ -15,9 +16,12 @@ import { environment } from '../../../../environments/environment';
 })
 export class JessicaControllerComponent implements OnInit, OnDestroy {
   private readonly store = inject(Store);
+  private readonly configService = inject(ConfigService);
   private subscriptions = new Subscription();
 
-  mediaData: string | null = environment.cameraUrl; // Live camera feed URL
+  get mediaData(): string | null {
+    return this.configService.getCameraUrl();
+  }
   mediaType: 'image' | 'video' | 'stream' = 'stream';
 
   // ─────────────────────────────────────────────
@@ -25,7 +29,7 @@ export class JessicaControllerComponent implements OnInit, OnDestroy {
   // ─────────────────────────────────────────────
 
   ngOnInit(): void {
-    console.log('[JessicaController] Initialized — camera feed:', environment.cameraUrl);
+    console.log('[JessicaController] Initialized — camera feed:', this.mediaData);
   }
 
   ngOnDestroy(): void {

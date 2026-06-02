@@ -36,7 +36,14 @@
       severity="danger"></p-button>
     }
 
+      <p-button
+        icon="pi pi-cog"
+        (onClick)="isSettingsVisible = true"
+        styleClass="p-button-sm p-button-text p-button-secondary"
+        title="Connection Settings"
+      ></p-button>
       <app-theme-toggle></app-theme-toggle>
     </div>
   </div>
 </nav>
+<app-settings [(visible)]="isSettingsVisible"></app-settings>

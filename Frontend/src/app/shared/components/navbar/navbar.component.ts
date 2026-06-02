@@ -11,11 +11,12 @@ import { carFeature } from "../../../store/reducers/car.reducer";
 import { AppRoutes } from "../../../core/constants/routes";
 import * as AuthActions from "../../../store/actions/auth.actions";
 import { SignalManagerService } from "../../../core/services/signal-manager.service";
+import { SettingsComponent } from "../settings/settings.component";
 
 @Component({
   selector: "app-navbar",
   standalone: true,
-  imports: [CommonModule, RouterModule, ThemeToggleComponent, ButtonModule],
+  imports: [CommonModule, RouterModule, ThemeToggleComponent, ButtonModule, SettingsComponent],
   templateUrl: "./navbar.component.html",
   styleUrl: "./navbar.component.scss",
 })
@@ -23,6 +24,8 @@ export class NavbarComponent {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
   private readonly signalManager = inject(SignalManagerService);
+
+  isSettingsVisible = false;
 
   // Observable state from store (using auto-generated feature selectors)
   isAuthenticated$ = this.store.select(authFeature.selectIsAuthenticated);

@@ -14,6 +14,7 @@ import { carFeature } from '../../../../store/reducers/car.reducer';
 import * as RecordingActions from '../../../../store/actions/recording.actions';
 import * as CarActions from '../../../../store/actions/car.actions';
 import { formatMs } from '../../../../shared/utils/time.utils';
+import { ConfigService } from '../../../../core/services/config.service';
 
 /**
  * CreateRecordingComponent — "Create" tab inside the Recorder Panel.
@@ -49,6 +50,7 @@ import { formatMs } from '../../../../shared/utils/time.utils';
 export class CreateRecordingComponent implements OnInit, OnDestroy {
     private readonly store = inject(Store);
     readonly recordingService = inject(RecordingService);
+    private readonly configService = inject(ConfigService);
     private subscriptions = new Subscription();
 
     // ── Form fields (pre-recording) ──
@@ -61,8 +63,10 @@ export class CreateRecordingComponent implements OnInit, OnDestroy {
     currentSpeed = 0;
 
     // ── Camera feed ──
-    mediaData: string | null = null;
-    mediaType: 'image' | 'video' = 'image';
+    get mediaData(): string | null {
+        return this.configService.getCameraUrl();
+    }
+    mediaType: 'image' | 'video' | 'stream' = 'stream';
 
     // ── Timer display ──
     elapsedDisplay = '00:00';

@@ -1,0 +1,80 @@
+<p-dialog
+  header="Connection Settings"
+  [(visible)]="visible"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="true"
+  (onHide)="onClose()"
+  styleClass="settings-dialog"
+  [style]="{ width: '450px' }"
+>
+  <div class="settings-dialog-content flex flex-column gap-4 pt-3">
+    <p class="settings-info-text text-sm">
+      Configure connection addresses for the central backend API and the ESP32-CAM video module.
+    </p>
+
+    <!-- Gateway API URL Field -->
+    <div class="form-field flex flex-column gap-2">
+      <label for="gateway-url" class="font-medium text-sm flex align-items-center gap-2">
+        <i class="pi pi-server"></i> Gateway API URL
+      </label>
+      <div class="p-inputgroup">
+        <span class="p-inputgroup-addon">
+          <i class="pi pi-link"></i>
+        </span>
+        <input
+          id="gateway-url"
+          type="text"
+          pInputText
+          [(ngModel)]="gatewayUrl"
+          placeholder="e.g. http://localhost:5207"
+          class="w-full"
+        />
+      </div>
+      <small class="field-hint text-xs">
+        Typically <code>http://localhost:5207</code> (Development)
+      </small>
+    </div>
+
+    <!-- ESP Camera URL Field -->
+    <div class="form-field flex flex-column gap-2">
+      <label for="camera-url" class="font-medium text-sm flex align-items-center gap-2">
+        <i class="pi pi-camera"></i> ESP Camera URL
+      </label>
+      <div class="p-inputgroup">
+        <span class="p-inputgroup-addon">
+          <i class="pi pi-video"></i>
+        </span>
+        <input
+          id="camera-url"
+          type="text"
+          pInputText
+          [(ngModel)]="cameraUrl"
+          placeholder="e.g. http://192.168.1.160/"
+          class="w-full"
+        />
+      </div>
+      <small class="field-hint text-xs">
+        Typically <code>http://192.168.1.160/</code> (ESP32-CAM MJPEG server)
+      </small>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end gap-2 pt-2">
+      <p-button
+        label="Cancel"
+        icon="pi pi-times"
+        styleClass="p-button-text p-button-secondary"
+        (onClick)="onClose()"
+      ></p-button>
+      <p-button
+        label="Save Settings"
+        icon="pi pi-check"
+        styleClass="p-button-primary shadow-2"
+        (onClick)="onSave()"
+      ></p-button>
+    </div>
+  </ng-template>
+</p-dialog>

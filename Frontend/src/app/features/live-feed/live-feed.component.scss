@@ -1,0 +1,60 @@
+.live-feed-container {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+  min-height: calc(100dvh - 64px);
+}
+
+.feed-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+  height: calc(100dvh - 64px - 2rem);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--primary-color, #4caf50);
+  background-color: var(--surface-card);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+.feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: var(--surface-hover);
+  border-bottom: 1px solid var(--surface-border);
+
+  .feed-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .live-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #e53935;
+    color: #fff;
+    animation: pulse-badge 2s infinite;
+  }
+}
+
+.feed-display-wrapper {
+  flex: 1;
+  min-height: 0;
+  background-color: #000;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
