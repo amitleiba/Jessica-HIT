@@ -35,7 +35,7 @@ var recordingDb = postgresRecording.AddDatabase("RecordingDb", databaseName: "je
 // ============================================
 
 // External Jessica robot WS endpoint (override per environment).
-var jessicaWsUrl = builder.AddParameter("jessica-ws-url", "ws://127.0.0.1:8765", secret: false);
+var jessicaWsUrl = builder.AddParameter("jessica-ws-url", "ws://192.168.1.215:81", secret: false);
 
 // JessicaManager service
 var jessicaManager = builder.AddProject<Projects.JessicaManager>("jessicamanager")

@@ -6,6 +6,7 @@ import { SignalManagerService } from '../../core/services/signal-manager.service
 import { AlertService } from '../../core/services/alert.service';
 import { carFeature } from '../reducers/car.reducer';
 import * as CarActions from '../actions/car.actions';
+import * as AuthActions from '../actions/auth.actions';
 
 /**
  * Car Effects
@@ -75,6 +76,7 @@ export class CarEffects {
      */
     robotStatusUpdated$ = createEffect(() =>
         this.signalManager.on<{
+            available?: boolean;
             distance: number;
             safety: number;
             mode: number;
@@ -90,6 +92,7 @@ export class CarEffects {
             map((status) =>
                 CarActions.sensorDataReceived({
                     sensorData: {
+                        available: status.available ?? false,
                         distance: status.distance,
                         safety: status.safety,
                         mode: status.mode,
@@ -98,6 +101,16 @@ export class CarEffects {
                     }
                 })
             )
+        )
+    );
+
+    /**
+     * Clear sensor data telemetry when the user logs out.
+     */
+    logoutClearData$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AuthActions.logout),
+            map(() => CarActions.clearSensorData())
         )
     );
 }

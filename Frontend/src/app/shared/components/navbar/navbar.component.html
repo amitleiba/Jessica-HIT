@@ -18,8 +18,8 @@
     <!-- Show when authenticated -->
     @if (isAuthenticated$ | async) {
     <div class="connection-status flex align-items-center gap-2 mr-3" title="Car Connection Status">
-      <div class="status-dot" [ngClass]="(connectionState$ | async) || 'disconnected'"></div>
-      <span class="text-sm hidden sm:inline">{{ (connectionState$ | async) | titlecase }}</span>
+      <div class="status-dot" [ngClass]="(robotConnectionState$ | async) || 'disconnected'"></div>
+      <span class="text-sm hidden sm:inline">{{ (robotConnectionState$ | async) | titlecase }}</span>
     </div>
     <a [routerLink]="routes.MANUAL_CONTROLLER" class="nav-link">
       <p-button label="Manual Control" icon="pi pi-sliders-h" styleClass="p-button-sm p-button-outlined"

@@ -118,6 +118,16 @@ public class CarCommandsController(
             });
         }
 
+        // Check if the status is stale (older than 2 seconds)
+        if (DateTime.UtcNow - status.ReceivedAtUtc > TimeSpan.FromSeconds(2.0))
+        {
+            return NotFound(new
+            {
+                available = false,
+                message = "Robot status is stale (disconnected)."
+            });
+        }
+
         return Ok(new
         {
             available = true,

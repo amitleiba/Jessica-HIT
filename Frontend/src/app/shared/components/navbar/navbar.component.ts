@@ -4,7 +4,10 @@ import { CommonModule } from "@angular/common";
 import { Router, RouterModule } from "@angular/router";
 import { ButtonModule } from "primeng/button";
 import { Store } from "@ngrx/store";
+import { combineLatest } from "rxjs";
+import { map } from "rxjs/operators";
 import { authFeature } from "../../../store/reducers/auth.reducer";
+import { carFeature } from "../../../store/reducers/car.reducer";
 import { AppRoutes } from "../../../core/constants/routes";
 import * as AuthActions from "../../../store/actions/auth.actions";
 import { SignalManagerService } from "../../../core/services/signal-manager.service";
@@ -25,6 +28,18 @@ export class NavbarComponent {
   isAuthenticated$ = this.store.select(authFeature.selectIsAuthenticated);
   user$ = this.store.select(authFeature.selectUser);
   connectionState$ = this.signalManager.connectionState$;
+
+  robotConnectionState$ = combineLatest([
+    this.signalManager.connectionState$,
+    this.store.select(carFeature.selectSensorData)
+  ]).pipe(
+    map(([connState, sensorData]) => {
+      if (connState !== 'connected') {
+        return connState;
+      }
+      return sensorData?.available ? 'connected' : 'disconnected';
+    })
+  );
 
   // Route constants for template
   readonly routes = AppRoutes;
