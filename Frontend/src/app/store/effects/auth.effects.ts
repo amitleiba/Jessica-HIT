@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Actions, createEffect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { map, catchError, exhaustMap, tap } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
@@ -134,13 +134,13 @@ export class AuthEffects {
 
   /**
    * Init Auth Effect (for restoring session on app initialization)
-   * Listens for: [Auth] Init Auth
+   * Listens for: ROOT_EFFECTS_INIT (automatically dispatched when effects start)
    * Calls: AuthService.validateToken() (reads from localStorage)
    * Dispatches: [Auth] Login Success | [Auth] Set Error (silent failure if no token)
    */
   initAuth$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.initAuth),
+      ofType(ROOT_EFFECTS_INIT),
       tap(() => console.log('Auth Effect: Initializing auth from localStorage')),
       exhaustMap(() => {
         const token = localStorage.getItem('access_token');

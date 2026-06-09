@@ -50,6 +50,7 @@ public class JessicaHub(ILogger<JessicaHub> logger, IHttpClientFactory httpClien
     /// Direction values: "up", "down", "left", "right",
     ///   or combos: "left-right", "down-up", "down-left", "down-right", "left-up", "right-up"
     /// </summary>
+    [Authorize(Roles = "Operator,Admin")]
     public async Task CarDirectionChange(CarDirectionRequest request)
     {
         _logger.LogInformation(
@@ -69,6 +70,7 @@ public class JessicaHub(ILogger<JessicaHub> logger, IHttpClientFactory httpClien
     /// Receives a car speed change from the frontend speed dial.
     /// Speed is an integer between 0 (min) and 100 (max).
     /// </summary>
+    [Authorize(Roles = "Operator,Admin")]
     public async Task CarSpeedChange(CarSpeedRequest request)
     {
         _logger.LogInformation(
@@ -86,6 +88,7 @@ public class JessicaHub(ILogger<JessicaHub> logger, IHttpClientFactory httpClien
     /// <summary>
     /// Client signals that the car has started (user pressed Start).
     /// </summary>
+    [Authorize(Roles = "Operator,Admin")]
     public async Task CarStart()
     {
         _logger.LogInformation("▶ Car START from {ConnectionId}", Context.ConnectionId);
@@ -100,6 +103,7 @@ public class JessicaHub(ILogger<JessicaHub> logger, IHttpClientFactory httpClien
     /// <summary>
     /// Client signals that the car has stopped (user pressed Stop).
     /// </summary>
+    [Authorize(Roles = "Operator,Admin")]
     public async Task CarStop()
     {
         _logger.LogInformation("⏹ Car STOP from {ConnectionId}", Context.ConnectionId);

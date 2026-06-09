@@ -1,6 +1,7 @@
 import { Routes } from "@angular/router";
 import { AppRoutes, RouteSegments } from "./core/constants/routes";
 import { authGuard } from "./core/guards/auth.guard";
+import { roleGuard } from "./core/guards/role.guard";
 
 /**
  * Application Routes Configuration
@@ -27,13 +28,15 @@ export const routes: Routes = [
     path: RouteSegments.MANUAL_CONTROLLER,
     loadComponent: () =>
       import("./features/manual-controller/manual-controller.component").then((m) => m.ManualControllerComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { expectedRoles: ["Operator", "Admin"] },
   },
   {
     path: RouteSegments.LIVE_FEED,
     loadComponent: () =>
       import("./features/live-feed/live-feed.component").then((m) => m.LiveFeedComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { expectedRoles: ["Viewer", "Operator", "Admin"] },
   },
   {
     path: "recorder/replay/:recordingId",
@@ -41,13 +44,22 @@ export const routes: Routes = [
       import("./features/recorder/replay-session/replay-session.component").then(
         (m) => m.ReplaySessionComponent
       ),
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { expectedRoles: ["Operator", "Admin"] },
   },
   {
     path: RouteSegments.RECORDER,
     loadComponent: () =>
       import("./features/recorder/recorder-panel.component").then((m) => m.RecorderPanelComponent),
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: { expectedRoles: ["Operator", "Admin"] },
+  },
+  {
+    path: RouteSegments.USER_MANAGEMENT,
+    loadComponent: () =>
+      import("./features/user-management/user-management.component").then((m) => m.UserManagementComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { expectedRoles: ["Admin"] },
   },
   {
     path: RouteSegments.LOGIN,

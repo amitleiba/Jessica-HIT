@@ -44,4 +44,19 @@ public interface IUserRepository
     /// Updates an existing user entity.
     /// </summary>
     Task UpdateAsync(UserEntity user);
+
+    /// <summary>
+    /// Gets all users including roles.
+    /// </summary>
+    Task<List<UserEntity>> GetAllAsync();
+
+    /// <summary>
+    /// Creates a new user with the specified role.
+    /// </summary>
+    Task<UserEntity> CreateWithRoleAsync(UserEntity user, string roleName);
+
+    /// <summary>
+    /// Deletes a user by ID. Returns true if deleted, false if not found.
+    /// </summary>
+    Task<bool> DeleteAsync(Guid id);
 }

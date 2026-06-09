@@ -155,4 +155,81 @@ public class UserService(
 
         return claims;
     }
+
+    public async Task<List<UserEntity>> GetAllUsersAsync()
+    {
+        _logger.LogDebug("Retrieving all users from database via repository");
+        return await _userRepo.GetAllAsync().ConfigureAwait(false);
+    }
+
+    public async Task<RegisterResponse> CreateUserWithRoleAsync(CreateUserRequest request)
+    {
+        _logger.LogInformation("Attempting to create user with role: {Username} (Role: {Role})", request.Username, request.Role);
+
+        try
+        {
+            // Check if username already exists
+            if (await _userRepo.UsernameExistsAsync(request.Username).ConfigureAwait(false))
+            {
+                _logger.LogWarning("Create user failed — username already exists: {Username}", request.Username);
+                return new RegisterResponse
+                {
+                    Message = "Username already exists. Please try a different one.",
+                    UserId = null
+                };
+            }
+
+            // Check if email already exists
+            if (await _userRepo.EmailExistsAsync(request.Email).ConfigureAwait(false))
+            {
+                _logger.LogWarning("Create user failed — email already exists: {Email}", request.Email);
+                return new RegisterResponse
+                {
+                    Message = "Email already registered. Please use a different email.",
+                    UserId = null
+                };
+            }
+
+            // Hash password via ICryptoManager
+            var passwordHash = _cryptoManager.HashPassword(request.Password);
+
+            var user = new UserEntity
+            {
+                Id = Guid.NewGuid(),
+                Username = request.Username,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                PasswordHash = passwordHash,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            var createdUser = await _userRepo.CreateWithRoleAsync(user, request.Role).ConfigureAwait(false);
+
+            _logger.LogInformation("User created successfully: {Username} (ID: {UserId}) with role {Role}", request.Username, createdUser.Id, request.Role);
+
+            return new RegisterResponse
+            {
+                Message = $"User created successfully with role {request.Role}!",
+                UserId = createdUser.Id.ToString()
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception during user creation for: {Username}", request.Username);
+            return new RegisterResponse
+            {
+                Message = "User creation failed. Please try again later.",
+                UserId = null
+            };
+        }
+    }
+
+    public async Task<bool> DeleteUserAsync(Guid userId)
+    {
+        _logger.LogInformation("Attempting to delete user ID: {UserId}", userId);
+        return await _userRepo.DeleteAsync(userId).ConfigureAwait(false);
+    }
 }

@@ -79,6 +79,13 @@ public static class AuthenticationExtensions
                 policy.RequireAuthenticatedUser();
                 policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
             });
+
+            options.AddPolicy("operator", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole("Operator", "Admin");
+                policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+            });
         });
 
         return services;

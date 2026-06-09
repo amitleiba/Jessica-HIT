@@ -9,9 +9,10 @@ public static class RoleType
     public const string Admin = "Admin";
     public const string User = "User";
     public const string Operator = "Operator";
+    public const string Viewer = "Viewer";
 
     /// <summary>
     /// All roles that should be seeded into the database.
     /// </summary>
-    public static readonly string[] All = [Admin, User, Operator];
+    public static readonly string[] All = [Admin, User, Operator, Viewer];
 }

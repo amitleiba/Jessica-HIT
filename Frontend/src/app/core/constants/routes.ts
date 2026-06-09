@@ -35,6 +35,9 @@ export const RouteSegments = {
   
   /** Registration page segment */
   REGISTER: 'register',
+
+  /** User management page segment */
+  USER_MANAGEMENT: 'users',
 } as const;
 
 /**
@@ -68,6 +71,9 @@ export const AppRoutes = {
   
   /** Registration page - new user signup */
   REGISTER: `/${RouteSegments.REGISTER}`,
+
+  /** User management page - admin dashboard */
+  USER_MANAGEMENT: `/${RouteSegments.USER_MANAGEMENT}`,
 } as const;
 
 /**

@@ -103,4 +103,61 @@ public class UserRepository(
         _db.Users.Update(user);
         await _db.SaveChangesAsync().ConfigureAwait(false);
     }
+
+    public async Task<List<UserEntity>> GetAllAsync()
+    {
+        _logger.LogDebug("Fetching all users with roles");
+        return await _db.Users
+            .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+            .OrderBy(u => u.Username)
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
+
+    public async Task<UserEntity> CreateWithRoleAsync(UserEntity user, string roleName)
+    {
+        _logger.LogInformation("Creating user: {Username} with role {Role}", user.Username, roleName);
+
+        var role = await _db.Roles
+            .FirstOrDefaultAsync(r => r.Name == roleName)
+            .ConfigureAwait(false);
+
+        if (role != null)
+        {
+            user.UserRoles.Add(new UserRoleEntity
+            {
+                UserId = user.Id,
+                RoleId = role.Id
+            });
+        }
+        else
+        {
+            _logger.LogWarning("Specified role '{RoleName}' not found — user created without roles", roleName);
+        }
+
+        _db.Users.Add(user);
+        await _db.SaveChangesAsync().ConfigureAwait(false);
+
+        _logger.LogInformation("User created successfully: {Username} (ID: {UserId})", user.Username, user.Id);
+        return user;
+    }
+
+    public async Task<bool> DeleteAsync(Guid id)
+    {
+        _logger.LogInformation("Deleting user ID: {UserId}", id);
+
+        var user = await _db.Users.FindAsync(id).ConfigureAwait(false);
+        if (user == null)
+        {
+            _logger.LogWarning("Delete failed — user not found ID: {UserId}", id);
+            return false;
+        }
+
+        _db.Users.Remove(user);
+        await _db.SaveChangesAsync().ConfigureAwait(false);
+
+        _logger.LogInformation("User deleted successfully: {Username} (ID: {UserId})", user.Username, id);
+        return true;
+    }
 }

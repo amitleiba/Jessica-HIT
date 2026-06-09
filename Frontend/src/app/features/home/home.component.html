@@ -26,6 +26,7 @@
 
   <!-- Feature Cards -->
   <section class="features-section fade-in delay-4">
+    @if (isOperator$ | async) {
     <a [routerLink]="routes.MANUAL_CONTROLLER" class="feature-card" id="feature-manual-control">
       <div class="feature-icon-wrapper">
         <i class="pi pi-sliders-h feature-icon"></i>
@@ -47,6 +48,7 @@
         <i class="pi pi-arrow-right"></i>
       </div>
     </a>
+    }
 
     <a [routerLink]="routes.LIVE_FEED" class="feature-card" id="feature-live-feed">
       <div class="feature-icon-wrapper">
@@ -59,6 +61,19 @@
         <i class="pi pi-arrow-right"></i>
       </div>
     </a>
+
+    @if (isAdmin$ | async) {
+    <a [routerLink]="routes.USER_MANAGEMENT" class="feature-card" id="feature-user-management">
+      <div class="feature-icon-wrapper">
+        <i class="pi pi-users feature-icon"></i>
+      </div>
+      <h3 class="feature-title">User Management</h3>
+      <p class="feature-desc">Manage system users, add new operators or viewers, and delete accounts</p>
+      <div class="feature-arrow">
+        <i class="pi pi-arrow-right"></i>
+      </div>
+    </a>
+    }
   </section>
 
   <!-- System Status -->
