@@ -1,0 +1,129 @@
+:host ::ng-deep {
+  .settings-dialog {
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    background-color: var(--surface-card);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    .p-dialog-header {
+      background-color: var(--surface-card);
+      color: var(--text-color);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      font-weight: 700;
+
+      .p-dialog-title {
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        
+        &::before {
+          content: "\e966"; /* PrimeIcon settings gear icon */
+          font-family: 'primeicons';
+          color: var(--primary-color);
+          font-size: 1.3rem;
+        }
+      }
+
+      .p-dialog-header-icons .p-dialog-header-close {
+        color: var(--text-color);
+        opacity: 0.7;
+        transition: opacity 0.2s;
+        
+        &:hover {
+          opacity: 1;
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+      }
+    }
+
+    .p-dialog-content {
+      background-color: var(--surface-card);
+      color: var(--text-color);
+      padding: 1.5rem;
+    }
+
+    .p-dialog-footer {
+      background-color: var(--surface-card);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 1rem 1.5rem;
+    }
+  }
+
+  /* Input group customization */
+  .p-inputgroup-addon {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--text-color);
+    opacity: 0.8;
+  }
+
+  .p-inputtext {
+    border-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--surface-ground);
+    color: var(--text-color);
+    transition: all 0.2s ease;
+
+    &:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
+    }
+  }
+}
+
+.settings-info-text {
+  color: var(--text-color);
+  opacity: 0.7;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.form-field {
+  label {
+    color: var(--text-color);
+    i {
+      color: var(--primary-color);
+    }
+  }
+
+  .field-hint {
+    color: var(--text-color);
+    opacity: 0.5;
+    
+    code {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  }
+}
+
+/* Dark mode specific tweaks */
+.app-dark-mode {
+  ::ng-deep {
+    .settings-dialog {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+
+      .p-dialog-header, .p-dialog-content, .p-dialog-footer {
+        border-color: rgba(255, 255, 255, 0.05);
+      }
+    }
+
+    .p-inputgroup-addon {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .p-inputtext {
+      border-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .form-field .field-hint code {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}

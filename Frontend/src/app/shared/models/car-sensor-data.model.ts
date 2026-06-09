@@ -4,6 +4,8 @@
  * Start minimal — add more sensor fields as they become available.
  */
 export interface CarSensorData {
+    /** Whether the robot is connected to the backend */
+    available?: boolean;
     /** Current speed in km/h */
     speed?: number;
     /** Base64 data URL or HTTP URL for a live camera frame when the hub pushes it */

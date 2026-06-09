@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { Subject, Observable, filter, map, BehaviorSubject } from "rxjs";
 import {
   HubConnection,
@@ -8,6 +8,7 @@ import {
   HttpTransportType,
 } from "@microsoft/signalr";
 import { environment } from "../../../environments/environment";
+import { ConfigService } from "./config.service";
 
 /**
  * Inbound message wrapper — used by the internal `on()` stream.
@@ -39,6 +40,8 @@ export type SignalConnectionState =
  */
 @Injectable({ providedIn: "root" })
 export class SignalManagerService {
+  private readonly configService = inject(ConfigService);
+
   // ── Observables ──
   private messageSubject = new Subject<SignalMessage>();
   private connectionState = new BehaviorSubject<SignalConnectionState>(
@@ -80,7 +83,7 @@ export class SignalManagerService {
       return;
     }
 
-    const hubUrl = url ?? environment.signalRUrl;
+    const hubUrl = url ?? this.configService.getSignalRUrl();
     this.connectionState.next("connecting");
     console.log(`[SignalManager] Connecting to ${hubUrl} …`);
 

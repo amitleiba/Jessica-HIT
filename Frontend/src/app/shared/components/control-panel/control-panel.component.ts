@@ -98,18 +98,25 @@ export class ControlPanelComponent implements OnDestroy {
   }
 
   // ────────────────────────────────────────────────────────────
-  //  Click handler (momentary press: add → evaluate → remove → evaluate)
+  //  Press and Release handlers (mouse and touch interactions)
   // ────────────────────────────────────────────────────────────
 
-  onDirectionClick(direction: Direction): void {
+  onPress(direction: Direction, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+    }
     this.activeDirections.add(direction);
     this.scheduleEvaluation();
+  }
 
-    // Click is momentary — release after a short hold
-    setTimeout(() => {
+  onRelease(direction: Direction, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+    }
+    if (this.activeDirections.has(direction)) {
       this.activeDirections.delete(direction);
       this.scheduleEvaluation();
-    }, 150);
+    }
   }
 
 

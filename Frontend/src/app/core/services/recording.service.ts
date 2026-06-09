@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ConfigService } from './config.service';
 import {
     RecordingSummary,
     Recording,
@@ -25,7 +26,11 @@ import {
 @Injectable({ providedIn: 'root' })
 export class RecordingService {
     private readonly http = inject(HttpClient);
-    private readonly apiUrl = `${environment.apiUrl}/api/recordings`;
+    private readonly configService = inject(ConfigService);
+
+    private get apiUrl(): string {
+        return `${this.configService.getApiUrl()}/api/recordings`;
+    }
 
     // ═══════════════════════════════════════════
     //  Local capture state

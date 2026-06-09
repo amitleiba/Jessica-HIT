@@ -22,6 +22,7 @@ public sealed class JessicaStatusRelayService(
     private DateTime? _lastForwardedAtUtc;
     private int _pollFailureCount;
     private DateTime _lastDetailedFailureLogUtc = DateTime.MinValue;
+    private bool? _lastForwardedAvailable;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -58,22 +59,39 @@ public sealed class JessicaStatusRelayService(
 
                 if (status is null || !status.Available)
                 {
+                    if (!_lastForwardedAvailable.HasValue || _lastForwardedAvailable.Value)
+                    {
+                        _lastForwardedAvailable = false;
+                        await _hubContext.Clients.All.SendAsync("RobotStatusUpdated", new
+                        {
+                            available = false,
+                            distance = 0,
+                            safety = 0,
+                            mode = 0,
+                            battery = 0.0,
+                            receivedAtUtc = DateTime.UtcNow
+                        }, stoppingToken).ConfigureAwait(false);
+                    }
+
                     await Task.Delay(PollInterval, stoppingToken).ConfigureAwait(false);
                     continue;
                 }
 
                 _pollFailureCount = 0;
 
-                if (_lastForwardedAtUtc.HasValue && status.ReceivedAtUtc <= _lastForwardedAtUtc.Value)
+                var isTransition = !_lastForwardedAvailable.HasValue || !_lastForwardedAvailable.Value;
+                if (!isTransition && _lastForwardedAtUtc.HasValue && status.ReceivedAtUtc <= _lastForwardedAtUtc.Value)
                 {
                     await Task.Delay(PollInterval, stoppingToken).ConfigureAwait(false);
                     continue;
                 }
 
                 _lastForwardedAtUtc = status.ReceivedAtUtc;
+                _lastForwardedAvailable = true;
 
                 await _hubContext.Clients.All.SendAsync("RobotStatusUpdated", new
                 {
+                    available = true,
                     distance = status.Distance,
                     safety = status.Safety,
                     mode = status.Mode,

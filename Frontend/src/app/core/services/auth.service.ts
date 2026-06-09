@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, of, TimeoutError } from 'rxjs';
 import { map, catchError, tap, switchMap, timeout } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { ConfigService } from './config.service';
 
 // Import DTOs from centralized dto folder
 import {
@@ -24,7 +25,11 @@ import {
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = environment.apiUrl;
+  private readonly configService = inject(ConfigService);
+
+  private get apiUrl(): string {
+    return this.configService.getApiUrl();
+  }
 
   /** Abort hung requests so NgRx can leave `isLoading` (login/register) and show an error. */
   private static readonly requestTimeoutMs = 30_000;

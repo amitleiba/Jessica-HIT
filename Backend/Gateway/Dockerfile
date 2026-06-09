@@ -7,7 +7,6 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Gateway/Gateway.csproj", "Gateway/"]
-COPY ["Common/Common.csproj", "Common/"]
 COPY ["Aspire/Aspire.ServiceDefaults/Aspire.ServiceDefaults.csproj", "Aspire/Aspire.ServiceDefaults/"]
 COPY ["Directory.Build.props", "."]
 COPY ["Directory.Packages.props", "."]

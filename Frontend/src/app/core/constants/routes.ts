@@ -21,6 +21,9 @@ export const RouteSegments = {
   /** Manual controller page segment */
   MANUAL_CONTROLLER: 'manual-controller',
 
+  /** Live feed page segment */
+  LIVE_FEED: 'live-feed',
+
   /** Recorder panel page segment */
   RECORDER: 'recorder',
 
@@ -47,6 +50,9 @@ export const AppRoutes = {
 
   /** Manual controller - drive the car with D-pad + speed dial */
   MANUAL_CONTROLLER: `/${RouteSegments.MANUAL_CONTROLLER}`,
+
+  /** Live feed - only camera, no controls */
+  LIVE_FEED: `/${RouteSegments.LIVE_FEED}`,
 
   /** Recorder panel - create, replay, delete recordings */
   RECORDER: `/${RouteSegments.RECORDER}`,

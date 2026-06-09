@@ -5,25 +5,33 @@
       <!-- Up Button -->
       @if (showUp) {
       <app-circular-button icon="pi pi-arrow-up" size="medium" severity="secondary" [isActive]="isDirectionActive('up')"
-        (buttonClick)="onDirectionClick('up')" class="d-pad-btn up-btn"></app-circular-button>
+        (mousedown)="onPress('up')" (mouseup)="onRelease('up')" (mouseleave)="onRelease('up')"
+        (touchstart)="onPress('up', $event)" (touchend)="onRelease('up', $event)"
+        class="d-pad-btn up-btn"></app-circular-button>
       }
 
       <!-- Middle Row: Left, Right -->
       @if (showLeft) {
       <app-circular-button icon="pi pi-arrow-left" size="medium" severity="secondary"
-        [isActive]="isDirectionActive('left')" (buttonClick)="onDirectionClick('left')"
+        [isActive]="isDirectionActive('left')"
+        (mousedown)="onPress('left')" (mouseup)="onRelease('left')" (mouseleave)="onRelease('left')"
+        (touchstart)="onPress('left', $event)" (touchend)="onRelease('left', $event)"
         class="d-pad-btn left-btn no-center-left"></app-circular-button>
       }
       @if (showRight) {
       <app-circular-button icon="pi pi-arrow-right" size="medium" severity="secondary"
-        [isActive]="isDirectionActive('right')" (buttonClick)="onDirectionClick('right')"
+        [isActive]="isDirectionActive('right')"
+        (mousedown)="onPress('right')" (mouseup)="onRelease('right')" (mouseleave)="onRelease('right')"
+        (touchstart)="onPress('right', $event)" (touchend)="onRelease('right', $event)"
         class="d-pad-btn right-btn no-center-right"></app-circular-button>
       }
 
       <!-- Down Button -->
       @if (showDown) {
       <app-circular-button icon="pi pi-arrow-down" size="medium" severity="secondary"
-        [isActive]="isDirectionActive('down')" (buttonClick)="onDirectionClick('down')"
+        [isActive]="isDirectionActive('down')"
+        (mousedown)="onPress('down')" (mouseup)="onRelease('down')" (mouseleave)="onRelease('down')"
+        (touchstart)="onPress('down', $event)" (touchend)="onRelease('down', $event)"
         class="d-pad-btn down-btn"></app-circular-button>
       }
     </div>

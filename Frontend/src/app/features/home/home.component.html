@@ -48,7 +48,7 @@
       </div>
     </a>
 
-    <a class="feature-card feature-card-highlight" id="feature-live-feed">
+    <a [routerLink]="routes.LIVE_FEED" class="feature-card" id="feature-live-feed">
       <div class="feature-icon-wrapper">
         <i class="pi pi-camera feature-icon"></i>
         <span class="live-badge">LIVE</span>
@@ -65,9 +65,9 @@
   <section class="status-section fade-in delay-5">
     <div class="status-bar">
       <div class="status-item">
-        <div class="status-dot" [ngClass]="(connectionState$ | async) || 'disconnected'"></div>
+        <div class="status-dot" [ngClass]="(robotConnectionState$ | async) || 'disconnected'"></div>
         <span class="status-label">Robot</span>
-        <span class="status-value">{{ (connectionState$ | async) | titlecase }}</span>
+        <span class="status-value">{{ (robotConnectionState$ | async) | titlecase }}</span>
       </div>
       <div class="status-separator"></div>
       <div class="status-item">
@@ -78,9 +78,17 @@
       </div>
       <div class="status-separator"></div>
       <div class="status-item">
-        <div class="status-dot connected"></div>
+        <div class="status-dot" [ngClass]="(connectionState$ | async) || 'disconnected'"></div>
         <span class="status-label">Gateway</span>
-        <span class="status-value">Online</span>
+        <span class="status-value">
+          @if ((connectionState$ | async) === 'connected') {
+            Online
+          } @else if ((connectionState$ | async) === 'connecting' || (connectionState$ | async) === 'reconnecting') {
+            Connecting
+          } @else {
+            Offline
+          }
+        </span>
       </div>
     </div>
   </section>

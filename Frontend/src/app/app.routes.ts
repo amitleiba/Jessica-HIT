@@ -30,6 +30,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: RouteSegments.LIVE_FEED,
+    loadComponent: () =>
+      import("./features/live-feed/live-feed.component").then((m) => m.LiveFeedComponent),
+    canActivate: [authGuard],
+  },
+  {
     path: "recorder/replay/:recordingId",
     loadComponent: () =>
       import("./features/recorder/replay-session/replay-session.component").then(
