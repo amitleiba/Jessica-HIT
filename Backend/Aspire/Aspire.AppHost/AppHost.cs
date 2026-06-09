@@ -25,8 +25,7 @@ var authDb = postgresAuth.AddDatabase("AuthDb", databaseName: "jessica_auth");
 
 // PostgreSQL for RecordingManager — recordings and events
 var postgresRecording = builder.AddPostgres("postgres-recording", password: postgresPassword)
-    .WithDataVolume("jessica-hit-recording-pgdata")
-    .WithPgAdmin();
+    .WithDataVolume("jessica-hit-recording-pgdata");
 
 var recordingDb = postgresRecording.AddDatabase("RecordingDb", databaseName: "jessica_recordings");
 
