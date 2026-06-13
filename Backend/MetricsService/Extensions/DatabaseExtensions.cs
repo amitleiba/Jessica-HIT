@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql;
 using MetricsService.Infrastructure.Persistence;
 
 namespace MetricsService.Extensions;
@@ -26,8 +29,7 @@ public static class DatabaseExtensions
     }
 
     /// <summary>
-    /// Applies pending EF Core migrations on startup.
-    /// Falls back to EnsureCreated in development.
+    /// Ensures that the database and its tables are created.
     /// </summary>
     public static async Task InitializeDatabaseAsync(this WebApplication app)
     {
@@ -37,17 +39,27 @@ public static class DatabaseExtensions
 
         try
         {
-            logger.LogInformation("Applying MetricsService database migrations...");
-            await context.Database.MigrateAsync().ConfigureAwait(false);
-            logger.LogInformation("MetricsService database migrations applied successfully");
+            logger.LogInformation("Ensuring MetricsService database tables are created...");
+            var creator = (IRelationalDatabaseCreator)context.Database.GetService<IDatabaseCreator>();
+
+            if (!await creator.ExistsAsync().ConfigureAwait(false))
+            {
+                await creator.CreateAsync().ConfigureAwait(false);
+            }
+
+            try
+            {
+                await creator.CreateTablesAsync().ConfigureAwait(false);
+                logger.LogInformation("MetricsService database tables created successfully");
+            }
+            catch (PostgresException ex) when (ex.SqlState == "42P07") // duplicate_table
+            {
+                logger.LogInformation("MetricsService database tables already exist — skipping creation");
+            }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "MetricsService database migration failed — falling back to EnsureCreated");
-
-            await context.Database.EnsureCreatedAsync().ConfigureAwait(false);
-            logger.LogWarning(
-                "Database created via EnsureCreated — run 'dotnet ef migrations add InitialCreate' for proper migrations");
+            logger.LogError(ex, "MetricsService database creation failed");
         }
     }
 }

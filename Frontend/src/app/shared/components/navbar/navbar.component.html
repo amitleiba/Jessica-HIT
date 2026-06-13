@@ -35,6 +35,12 @@
       <p-button label="Live Feed" icon="pi pi-camera" styleClass="p-button-sm p-button-outlined"
         severity="primary"></p-button>
     </a>
+    @if ((isOperator$ | async) || (isAdmin$ | async)) {
+    <a [routerLink]="routes.METRICS" class="nav-link">
+      <p-button label="Metrics" icon="pi pi-chart-line" styleClass="p-button-sm p-button-outlined"
+        severity="primary"></p-button>
+    </a>
+    }
     @if (isAdmin$ | async) {
     <a [routerLink]="routes.USER_MANAGEMENT" class="nav-link">
       <p-button label="Users" icon="pi pi-users" styleClass="p-button-sm p-button-outlined"

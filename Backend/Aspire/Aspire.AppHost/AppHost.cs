@@ -25,9 +25,17 @@ var authDb = postgresAuth.AddDatabase("AuthDb", databaseName: "jessica_auth");
 
 // PostgreSQL for RecordingManager — recordings and events
 var postgresRecording = builder.AddPostgres("postgres-recording", password: postgresPassword)
-    .WithDataVolume("jessica-hit-recording-pgdata");
+    .WithDataVolume("jessica-hit-recording-pgdata")
+    .WithPgAdmin();
 
 var recordingDb = postgresRecording.AddDatabase("RecordingDb", databaseName: "jessica_recordings");
+
+// PostgreSQL for MetricsService — sensor metrics
+var postgresMetrics = builder.AddPostgres("postgres-metrics", password: postgresPassword)
+    .WithDataVolume("jessica-hit-metrics-pgdata")
+    .WithPgAdmin();
+
+var metricsDb = postgresMetrics.AddDatabase("MetricsDb", databaseName: "jessica_metrics");
 
 // ============================================
 // SERVICES
@@ -52,12 +60,20 @@ var recordingManager = builder.AddProject<Projects.RecordingManager>("recordingm
     .WithReference(recordingDb)
     .WaitFor(recordingDb);
 
-// Gateway (routes to JessicaManager + AuthService + RecordingManager via YARP)
+// MetricsService (sensor data persistence and history queries)
+var metricsService = builder.AddProject<Projects.MetricsService>("metricsservice")
+    .WithReference(metricsDb)
+    .WithReference(jessicaManager)
+    .WaitFor(metricsDb);
+
+// Gateway (routes to JessicaManager + AuthService + RecordingManager + MetricsService via YARP)
 var gateway = builder.AddProject<Projects.Gateway>("gateway")
     .WithReference(jessicaManager)
     .WithReference(authService)
     .WithReference(recordingManager)
+    .WithReference(metricsService)
     .WaitFor(authService)
-    .WaitFor(recordingManager);
+    .WaitFor(recordingManager)
+    .WaitFor(metricsService);
 
 await builder.Build().RunAsync().ConfigureAwait(false);

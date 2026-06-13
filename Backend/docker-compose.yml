@@ -32,12 +32,15 @@ services:
       ReverseProxy__Clusters__auth-service-cluster__Destinations__destination1__Address: "http://authservice:8080"
       ReverseProxy__Clusters__jessica-manager-cluster__Destinations__destination1__Address: "http://jessicamanager:8080"
       ReverseProxy__Clusters__recording-manager-cluster__Destinations__destination1__Address: "http://recordingmanager:8080"
+      ReverseProxy__Clusters__metrics-service-cluster__Destinations__destination1__Address: "http://metricsservice:8080"
     depends_on:
       authservice:
         condition: service_started
       jessicamanager:
         condition: service_started
       recordingmanager:
+        condition: service_started
+      metricsservice:
         condition: service_started
     networks:
       - jessica-network
@@ -200,10 +203,54 @@ services:
       timeout: 5s
       retries: 5
 
+  # ============================================
+  # METRICS SERVICE — Persistence and analysis of sensor data
+  # ============================================
+  metricsservice:
+    image: ${DOCKER_REGISTRY-}metricsservice
+    build:
+      context: .
+      dockerfile: MetricsService/Dockerfile
+    ports:
+      - "5080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__MetricsDb: "Host=postgres-metrics;Port=5432;Database=jessica_metrics;Username=metrics_user;Password=metrics_password"
+    depends_on:
+      postgres-metrics:
+        condition: service_healthy
+    networks:
+      - jessica-network
+
+  # ============================================
+  # POSTGRES — MetricsService database
+  # ============================================
+  postgres-metrics:
+    image: postgres:16-alpine
+    container_name: postgres-metrics
+    environment:
+      POSTGRES_DB: jessica_metrics
+      POSTGRES_USER: metrics_user
+      POSTGRES_PASSWORD: metrics_password
+    volumes:
+      - postgres-metrics-data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    networks:
+      - jessica-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U metrics_user -d jessica_metrics" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   # kafka-data:  # Commented out - Kafka not in use
   postgres-auth-data:
   postgres-recording-data:
+  postgres-metrics-data:
 
 
 networks:
