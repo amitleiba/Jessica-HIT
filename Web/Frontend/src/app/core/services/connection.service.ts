@@ -18,7 +18,7 @@ export class ConnectionService {
    * Asks the backend to force-reconnect to the ESP32 Gateway WebSocket and robot.
    */
   triggerRefresh(): Observable<RefreshResult> {
-    const url = `${this.configService.getApiUrl()}/api/connection/refresh`;
+    const url = `${this.configService.getApiUrl()}/api/jessica/connection/refresh`;
     return this.http.post<RefreshResult>(url, {});
   }
 }

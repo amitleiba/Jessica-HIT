@@ -70,7 +70,7 @@ export class ConfigService {
    * On 200 OK the caller is responsible for calling confirmEsp32GatewayIp().
    */
   updateGatewayUrlOnServer(url: string): Observable<{ success: boolean; url: string }> {
-    const apiUrl = `${this.getApiUrl()}/api/connection/gateway-ip`;
+    const apiUrl = `${this.getApiUrl()}/api/jessica/connection/gateway-ip`;
     return this.http.put<{ success: boolean; url: string }>(apiUrl, { url });
   }
 
