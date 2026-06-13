@@ -1,5 +1,8 @@
+using System.Text;
 using MetricsService.Extensions;
 using MetricsService.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +12,6 @@ builder.AddServiceDefaults();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
-
-var logger = LoggerFactory.Create(config => config.AddConsole()).CreateLogger("MetricsService.Startup");
 
 // ── Database Setup ──
 builder.Services.AddMetricsDatabase(builder.Configuration);
@@ -25,10 +26,36 @@ builder.Services.AddHttpClient("JessicaManager", (sp, client) =>
     }
 
     client.BaseAddress = new Uri(baseUrl);
-    logger.LogInformation("JessicaManager HTTP Client configured at base URL: {BaseUrl}", baseUrl);
 });
 
 builder.Services.AddHostedService<MetricsCollectorWorker>();
+
+// ── JWT Bearer Authentication ──
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var secretKey = jwtSection["SecretKey"] ?? throw new InvalidOperationException("Jwt:SecretKey is missing from configuration");
+var issuer    = jwtSection["Issuer"]    ?? throw new InvalidOperationException("Jwt:Issuer is missing from configuration");
+var audience  = jwtSection["Audience"]  ?? throw new InvalidOperationException("Jwt:Audience is missing from configuration");
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer           = true,
+            ValidIssuer              = issuer,
+            ValidateAudience         = true,
+            ValidAudience            = audience,
+            ValidateLifetime         = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+            NameClaimType            = "preferred_username",
+            RoleClaimType            = "role",
+            ClockSkew                = TimeSpan.FromMinutes(2)
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 // ── Controllers and API docs ──
 builder.Services.AddControllers();
@@ -40,8 +67,11 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Obtain logger from DI (honors configured log filters/enrichers)
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+
 // ── Database Initialization ──
-await app.InitializeDatabaseAsync().ConfigureAwait(false);
+await app.InitializeDatabaseAsync();
 
 if (app.Environment.IsDevelopment())
 {
@@ -52,12 +82,13 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapDefaultEndpoints();
 
 logger.LogInformation("MetricsService started successfully");
 
-await app.RunAsync().ConfigureAwait(false);
+await app.RunAsync();
 
 public partial class Program;

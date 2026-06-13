@@ -80,11 +80,16 @@ public class UsersController(
     {
         _logger.LogInformation("Admin deleting user ID: {UserId}", id);
 
-        // Prevent admin from deleting themselves
+        // Prevent admin from deleting themselves — fail closed if claim is missing/invalid
         var currentUserIdClaim = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)
             ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
 
-        if (currentUserIdClaim != null && Guid.TryParse(currentUserIdClaim.Value, out var currentUserId) && currentUserId == id)
+        if (currentUserIdClaim == null || !Guid.TryParse(currentUserIdClaim.Value, out var currentUserId))
+        {
+            return Forbid();
+        }
+
+        if (currentUserId == id)
         {
             return BadRequest(new { message = "You cannot delete your own admin account." });
         }
@@ -119,11 +124,16 @@ public class UsersController(
             return BadRequest(new { message = $"Invalid role: {request.Role}. Allowed roles are: {string.Join(", ", RoleType.All)}" });
         }
 
-        // Prevent admin from changing their own role
+        // Prevent admin from changing their own role — fail closed if claim is missing/invalid
         var currentUserIdClaim = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)
             ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
 
-        if (currentUserIdClaim != null && Guid.TryParse(currentUserIdClaim.Value, out var currentUserId) && currentUserId == id)
+        if (currentUserIdClaim == null || !Guid.TryParse(currentUserIdClaim.Value, out var currentUserId))
+        {
+            return Forbid();
+        }
+
+        if (currentUserId == id)
         {
             return BadRequest(new { message = "You cannot change your own admin role." });
         }

@@ -37,23 +37,17 @@ public static class DatabaseExtensions
 
         try
         {
-            if (app.Environment.IsDevelopment())
-            {
-                logger.LogInformation("Applying MetricsService database migrations...");
-                await context.Database.MigrateAsync().ConfigureAwait(false);
-                logger.LogInformation("MetricsService database migrations applied successfully");
-            }
+            logger.LogInformation("Applying MetricsService database migrations...");
+            await context.Database.MigrateAsync().ConfigureAwait(false);
+            logger.LogInformation("MetricsService database migrations applied successfully");
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "MetricsService database migration failed — falling back to EnsureCreated");
 
-            if (app.Environment.IsDevelopment())
-            {
-                await context.Database.EnsureCreatedAsync().ConfigureAwait(false);
-                logger.LogWarning(
-                    "Database created via EnsureCreated — run 'dotnet ef migrations add InitialCreate' for proper migrations");
-            }
+            await context.Database.EnsureCreatedAsync().ConfigureAwait(false);
+            logger.LogWarning(
+                "Database created via EnsureCreated — run 'dotnet ef migrations add InitialCreate' for proper migrations");
         }
     }
 }

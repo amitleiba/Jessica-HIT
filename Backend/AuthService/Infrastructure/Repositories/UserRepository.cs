@@ -185,10 +185,8 @@ public class UserRepository(
             throw new ArgumentException($"Role '{roleName}' does not exist.", nameof(roleName));
         }
 
-        // Remove existing roles
-        _db.UserRoles.RemoveRange(user.UserRoles);
-
-        // Add the new role
+        // Remove existing roles via change tracking — Clear() on the loaded collection
+        // marks the relationships for deletion; no need for an additional RemoveRange.
         user.UserRoles.Clear();
         user.UserRoles.Add(new UserRoleEntity
         {

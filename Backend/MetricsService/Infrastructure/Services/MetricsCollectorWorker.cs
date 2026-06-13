@@ -41,7 +41,7 @@ public sealed class MetricsCollectorWorker(
                 using var request = new HttpRequestMessage(HttpMethod.Get, "/api/car/status");
                 request.Headers.TryAddWithoutValidation("X-User-Id", "internal-status-relay");
 
-                var response = await client.SendAsync(request, stoppingToken).ConfigureAwait(false);
+                using var response = await client.SendAsync(request, stoppingToken).ConfigureAwait(false);
 
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
@@ -75,8 +75,7 @@ public sealed class MetricsCollectorWorker(
                     _lastSavedTimestampUtc = await GetLatestSavedTimestampAsync(stoppingToken).ConfigureAwait(false);
                     if (_lastSavedTimestampUtc.HasValue && status.ReceivedAtUtc <= _lastSavedTimestampUtc.Value)
                     {
-                        // Update in-memory tracker and skip
-                        _lastSavedTimestampUtc = status.ReceivedAtUtc;
+                        // Sample is stale relative to DB; skip without moving the watermark backwards
                         continue;
                     }
                 }

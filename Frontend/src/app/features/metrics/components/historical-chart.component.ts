@@ -89,11 +89,11 @@ export class HistoricalChartComponent implements OnChanges {
 
     // Calculate screen points
     this.points = parsedData.map(d => {
-      const timePercent = timeRange <= 0 ? 0.5 : (d.timestamp.getTime() - startTime) / timeRange;
+      const timePercent = (d.timestamp.getTime() - startTime) / timeRange;
       const x = this.padding.left + timePercent * graphWidth;
 
       const clampedValue = Math.max(currentMin, Math.min(currentMax, d.value));
-      const valuePercent = valueRange <= 0 ? 0.5 : (clampedValue - currentMin) / valueRange;
+      const valuePercent = (clampedValue - currentMin) / valueRange;
       const y = this.padding.top + (1 - valuePercent) * graphHeight;
 
       return {

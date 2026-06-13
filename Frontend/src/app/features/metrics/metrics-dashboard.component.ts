@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { Subject, Subscription, timer } from 'rxjs';
+import { Subject, Subscription, timer, forkJoin } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { MetricsService, MetricEntry, MetricsStats } from '../../core/services/metrics.service';
 import { HistoricalChartComponent } from './components/historical-chart.component';
@@ -53,29 +53,22 @@ export class MetricsDashboardComponent implements OnInit, OnDestroy {
     if (this.isLoading) return;
     this.isLoading = true;
 
-    // Fetch history and stats together
-    this.metricsService.getHistory(this.selectedRange)
+    // Fetch history and stats together; only clear the loading flag when both complete
+    forkJoin([
+      this.metricsService.getHistory(this.selectedRange),
+      this.metricsService.getStats(this.selectedRange)
+    ])
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (history) => {
+        next: ([history, stats]) => {
           this.history = history;
           this.formatChartData();
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Failed to load metrics history', err);
-          this.isLoading = false;
-        }
-      });
-
-    this.metricsService.getStats(this.selectedRange)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (stats) => {
           this.stats = stats;
+          this.isLoading = false;
         },
         error: (err) => {
-          console.error('Failed to load metrics stats', err);
+          console.error('Failed to load metrics', err);
+          this.isLoading = false;
         }
       });
   }
@@ -93,27 +86,24 @@ export class MetricsDashboardComponent implements OnInit, OnDestroy {
 
   private setupRefreshCycle(): void {
     this.refreshSubscription?.unsubscribe();
-    
+
     if (!this.autoRefresh) return;
 
-    // Refresh every 3 seconds
+    // Refresh every 3 seconds — use forkJoin inside switchMap so both requests
+    // are cancelled automatically when a new tick fires or the subscription stops.
     this.refreshSubscription = timer(3000, 3000)
       .pipe(
-        switchMap(() => {
-          // Fetch updates silently in background (don't set isLoading = true to prevent flickering)
-          return this.metricsService.getHistory(this.selectedRange);
-        }),
+        switchMap(() => forkJoin([
+          this.metricsService.getHistory(this.selectedRange),
+          this.metricsService.getStats(this.selectedRange)
+        ])),
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: (history) => {
+        next: ([history, stats]) => {
           this.history = history;
           this.formatChartData();
-          
-          // Also update statistics
-          this.metricsService.getStats(this.selectedRange)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(stats => this.stats = stats);
+          this.stats = stats;
         },
         error: (err) => {
           console.warn('Auto-refresh failed, retrying in next cycle', err);

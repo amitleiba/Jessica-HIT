@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MetricsService.Infrastructure.Persistence;
@@ -6,6 +7,7 @@ using MetricsService.Domain.Entities;
 namespace MetricsService.API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/metrics")]
 public sealed class MetricsController(
     ILogger<MetricsController> logger,
@@ -104,8 +106,9 @@ public sealed class MetricsController(
             var minDist = metrics.Min(m => m.Distance);
             var avgDist = metrics.Average(m => m.Distance);
             
-            // Assume safety value > 1 (e.g. 2 = hazard) or any warning (safety > 0) constitutes an incident
-            var safetyIncidents = metrics.Count(m => m.Safety == 2); 
+            // Safety == 2 represents a critical hazard event; count only those as incidents
+            const int SafetyCriticalValue = 2;
+            var safetyIncidents = metrics.Count(m => m.Safety == SafetyCriticalValue);
 
             // Calculate mode distribution counts
             var modeDist = metrics
