@@ -38,6 +38,9 @@ export const RouteSegments = {
 
   /** User management page segment */
   USER_MANAGEMENT: 'users',
+
+  /** Metrics dashboard segment */
+  METRICS: 'metrics',
 } as const;
 
 /**
@@ -74,6 +77,9 @@ export const AppRoutes = {
 
   /** User management page - admin dashboard */
   USER_MANAGEMENT: `/${RouteSegments.USER_MANAGEMENT}`,
+
+  /** Metrics dashboard - historical graphs and stats */
+  METRICS: `/${RouteSegments.METRICS}`,
 } as const;
 
 /**

@@ -62,6 +62,13 @@ export const routes: Routes = [
     data: { expectedRoles: ["Admin"] },
   },
   {
+    path: RouteSegments.METRICS,
+    loadComponent: () =>
+      import("./features/metrics/metrics-dashboard.component").then((m) => m.MetricsDashboardComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { expectedRoles: ["Operator", "Admin"] },
+  },
+  {
     path: RouteSegments.LOGIN,
     loadComponent: () =>
       import("./features/auth/auth-screen.component").then((m) => m.AuthScreenComponent),
