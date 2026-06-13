@@ -41,4 +41,24 @@ public interface IUserService
     /// Used by both AuthenticationService and TokenService to construct responses.
     /// </summary>
     List<ClaimDto> BuildClaimDtos(UserEntity user, List<string> roles);
+
+    /// <summary>
+    /// Gets all users, including their roles.
+    /// </summary>
+    Task<List<UserEntity>> GetAllUsersAsync();
+
+    /// <summary>
+    /// Admin-driven creation of a user with a specific role.
+    /// </summary>
+    Task<RegisterResponse> CreateUserWithRoleAsync(CreateUserRequest request);
+
+    /// <summary>
+    /// Deletes a user account completely (hard delete).
+    /// </summary>
+    Task<bool> DeleteUserAsync(Guid userId);
+
+    /// <summary>
+    /// Updates a user's role.
+    /// </summary>
+    Task<bool> UpdateUserRoleAsync(Guid userId, string roleName);
 }

@@ -29,8 +29,22 @@ export const selectIsLoggingIn = createSelector(
   (isLoading, isAuthenticated) => isLoading && !isAuthenticated
 );
 
-// Add more custom/derived selectors here as needed
-// Examples:
-// - selectCanAccessDashboard (combines user role + permissions)
-// - selectAuthStatus (composite selector for guards)
-// - selectTokenExpiry (calculates expiration from token)
+export const selectUserRoles = createSelector(
+  authFeature.selectUser,
+  (user) => user?.roles ?? []
+);
+
+export const selectIsAdmin = createSelector(
+  selectUserRoles,
+  (roles) => roles.includes('Admin')
+);
+
+export const selectIsOperator = createSelector(
+  selectUserRoles,
+  (roles) => roles.includes('Operator') || roles.includes('Admin')
+);
+
+export const selectIsViewer = createSelector(
+  selectUserRoles,
+  (roles) => roles.includes('Viewer')
+);

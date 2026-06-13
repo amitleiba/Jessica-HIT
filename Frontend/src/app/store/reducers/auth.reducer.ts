@@ -53,7 +53,10 @@ export const authReducer = createReducer(
   }),
 
   on(AuthActions.logout, () => {
-    return initialAuthState;
+    return {
+      ...initialAuthState,
+      isInitialized: true,
+    };
   }),
 
   // Register flow

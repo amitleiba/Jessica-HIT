@@ -25,8 +25,7 @@ var authDb = postgresAuth.AddDatabase("AuthDb", databaseName: "jessica_auth");
 
 // PostgreSQL for RecordingManager — recordings and events
 var postgresRecording = builder.AddPostgres("postgres-recording", password: postgresPassword)
-    .WithDataVolume("jessica-hit-recording-pgdata")
-    .WithPgAdmin();
+    .WithDataVolume("jessica-hit-recording-pgdata");
 
 var recordingDb = postgresRecording.AddDatabase("RecordingDb", databaseName: "jessica_recordings");
 
@@ -35,7 +34,7 @@ var recordingDb = postgresRecording.AddDatabase("RecordingDb", databaseName: "je
 // ============================================
 
 // External Jessica robot WS endpoint (override per environment).
-var jessicaWsUrl = builder.AddParameter("jessica-ws-url", "ws://192.168.1.215:81", secret: false);
+var jessicaWsUrl = builder.AddParameter("jessica-ws-url", "ws://127.0.0.1:8765", secret: false);
 
 // JessicaManager service
 var jessicaManager = builder.AddProject<Projects.JessicaManager>("jessicamanager")

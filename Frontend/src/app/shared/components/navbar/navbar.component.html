@@ -21,6 +21,7 @@
       <div class="status-dot" [ngClass]="(robotConnectionState$ | async) || 'disconnected'"></div>
       <span class="text-sm hidden sm:inline">{{ (robotConnectionState$ | async) | titlecase }}</span>
     </div>
+    @if (isOperator$ | async) {
     <a [routerLink]="routes.MANUAL_CONTROLLER" class="nav-link">
       <p-button label="Manual Control" icon="pi pi-sliders-h" styleClass="p-button-sm p-button-outlined"
         severity="primary"></p-button>
@@ -29,6 +30,17 @@
       <p-button label="Recordings" icon="pi pi-video" styleClass="p-button-sm p-button-outlined"
         severity="primary"></p-button>
     </a>
+    }
+    <a [routerLink]="routes.LIVE_FEED" class="nav-link">
+      <p-button label="Live Feed" icon="pi pi-camera" styleClass="p-button-sm p-button-outlined"
+        severity="primary"></p-button>
+    </a>
+    @if (isAdmin$ | async) {
+    <a [routerLink]="routes.USER_MANAGEMENT" class="nav-link">
+      <p-button label="Users" icon="pi pi-users" styleClass="p-button-sm p-button-outlined"
+        severity="primary"></p-button>
+    </a>
+    }
     <span class="user-greeting text-sm">
       Hello, <strong>{{ (user$ | async)?.name }}</strong>
     </span>

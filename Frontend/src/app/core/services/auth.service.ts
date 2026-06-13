@@ -186,6 +186,38 @@ export class AuthService {
   }
 
   // ============================================
+  // User Management Admin Methods
+  // ============================================
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/api/Auth/users`).pipe(
+      timeout(AuthService.requestTimeoutMs),
+      catchError((error) => throwError(() => this.handleError(error)))
+    );
+  }
+
+  createUser(request: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/api/Auth/users`, request).pipe(
+      timeout(AuthService.requestTimeoutMs),
+      catchError((error) => throwError(() => this.handleError(error)))
+    );
+  }
+
+  deleteUser(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/api/Auth/users/${id}`).pipe(
+      timeout(AuthService.requestTimeoutMs),
+      catchError((error) => throwError(() => this.handleError(error)))
+    );
+  }
+
+  updateUserRole(userId: string, role: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/api/Auth/users/${userId}/role`, { role }).pipe(
+      timeout(AuthService.requestTimeoutMs),
+      catchError((error) => throwError(() => this.handleError(error)))
+    );
+  }
+
+  // ============================================
   // Private Helper Methods
   // ============================================
 
@@ -261,10 +293,15 @@ export class AuthService {
     // Final fallback to username from UserInfoResponse
     const displayName = nameClaim?.value || userInfo.username || 'Unknown User';
 
+    const roles = userInfo.claims
+      .filter((c) => c.type === 'role')
+      .map((c) => c.value);
+
     return {
       id: idClaim?.value || 'unknown',
       email: emailClaim?.value || userInfo.username || 'unknown',
-      name: displayName
+      name: displayName,
+      roles
     };
   }
 

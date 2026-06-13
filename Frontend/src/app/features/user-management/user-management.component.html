@@ -1,0 +1,137 @@
+<div class="user-management-container">
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <div class="management-panel fade-in">
+    <div class="panel-header flex justify-content-between align-items-center mb-4">
+      <h1 class="panel-title flex align-items-center gap-2">
+        <i class="pi pi-users text-primary"></i>
+        <span>User Management</span>
+      </h1>
+      <p-button label="Add User" icon="pi pi-user-plus" styleClass="p-button-sm p-button-raised" 
+                (onClick)="openAddDialog()" severity="primary"></p-button>
+    </div>
+
+    <div class="table-card card-glass overflow-hidden">
+      <p-table [value]="users" [loading]="loading" [rowHover]="true" 
+               responsiveLayout="scroll" styleClass="p-datatable-striped p-datatable-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Role</th>
+            <th style="width: 8rem; text-align: center;">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+          <tr>
+            <td>
+              <span class="font-semibold">{{ user.username }}</span>
+            </td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.firstName }} {{ user.lastName }}</td>
+            <td>
+              <p-tag [severity]="user.isActive ? 'success' : 'secondary'" 
+                     [value]="user.isActive ? 'Active' : 'Inactive'"></p-tag>
+            </td>
+            <td>
+              @if (user.id === currentUserId) {
+                <p-tag [severity]="getRoleSeverity(user.role)" [value]="user.role"></p-tag>
+              } @else {
+                <p-dropdown [options]="roles" [(ngModel)]="user.role"
+                            optionLabel="label" optionValue="value"
+                            styleClass="role-dropdown-sm"
+                            [disabled]="updatingUserRoles[user.id]"
+                            (onChange)="onRoleChange(user, $event.value)">
+                  <ng-template pTemplate="selectedItem">
+                    <p-tag [severity]="getRoleSeverity(user.role)" [value]="user.role"></p-tag>
+                  </ng-template>
+                  <ng-template let-option pTemplate="item">
+                    <p-tag [severity]="getRoleSeverity(option.value)" [value]="option.label"></p-tag>
+                  </ng-template>
+                </p-dropdown>
+              }
+            </td>
+            <td style="text-align: center;">
+              <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true"
+                        title="Delete User" (onClick)="deleteUser(user.id, user.username)"
+                        [disabled]="user.id === currentUserId"></p-button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center py-4">No users found.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<!-- Add User Dialog -->
+<p-dialog header="Add New User" [(visible)]="displayAddDialog" [modal]="true" 
+          [style]="{ width: '450px' }" [draggable]="false" [resizable]="false"
+          styleClass="user-dialog-glass">
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3 mt-2">
+    <div class="field flex flex-column gap-1">
+      <label for="username" class="text-sm font-semibold">Username</label>
+      <input pInputText id="username" formControlName="username" placeholder="Enter username" class="p-inputtext-sm" />
+      @if (userForm.get('username')?.invalid && userForm.get('username')?.touched) {
+        <small class="text-danger text-xs">Username must be at least 3 characters.</small>
+      }
+    </div>
+
+    <div class="field flex flex-column gap-1">
+      <label for="email" class="text-sm font-semibold">Email Address</label>
+      <input pInputText id="email" formControlName="email" placeholder="email@example.com" class="p-inputtext-sm" />
+      @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
+        <small class="text-danger text-xs">Please enter a valid email address.</small>
+      }
+    </div>
+
+    <div class="flex gap-2">
+      <div class="field flex flex-column gap-1 flex-1">
+        <label for="firstName" class="text-sm font-semibold">First Name</label>
+        <input pInputText id="firstName" formControlName="firstName" placeholder="First Name" class="p-inputtext-sm" />
+        @if (userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched) {
+          <small class="text-danger text-xs">Required.</small>
+        }
+      </div>
+      <div class="field flex flex-column gap-1 flex-1">
+        <label for="lastName" class="text-sm font-semibold">Last Name</label>
+        <input pInputText id="lastName" formControlName="lastName" placeholder="Last Name" class="p-inputtext-sm" />
+        @if (userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched) {
+          <small class="text-danger text-xs">Required.</small>
+        }
+      </div>
+    </div>
+
+    <div class="field flex flex-column gap-1">
+      <label for="password" class="text-sm font-semibold">Password</label>
+      <input pInputText type="password" id="password" formControlName="password" placeholder="••••••••" class="p-inputtext-sm" autocomplete="new-password" />
+      @if (userForm.get('password')?.invalid && userForm.get('password')?.touched) {
+        <small class="text-danger text-xs">Password must be at least 8 characters.</small>
+      }
+    </div>
+
+    <div class="field flex flex-column gap-1">
+      <label for="role" class="text-sm font-semibold">Assigned Role</label>
+      <p-dropdown id="role" [options]="roles" formControlName="role" 
+                  optionLabel="label" optionValue="value" styleClass="w-full dropdown-sm"></p-dropdown>
+    </div>
+
+    <div class="flex justify-content-end gap-2 mt-3">
+      <p-button label="Cancel" icon="pi pi-times" [text]="true" severity="secondary" 
+                (onClick)="closeAddDialog()" type="button"></p-button>
+      <p-button label="Create User" icon="pi pi-check" [loading]="submitting" 
+                [disabled]="userForm.invalid" type="submit" severity="primary"></p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- Confirmation Dialog -->
+<p-confirmDialog></p-confirmDialog>

@@ -23,6 +23,7 @@ public static class AuthenticationExtensions
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
+                options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -62,6 +63,8 @@ public static class AuthenticationExtensions
                 };
             });
 
+        services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
+
         logger.LogInformation("JWT Bearer authentication configured successfully");
 
         return services;
@@ -79,8 +82,23 @@ public static class AuthenticationExtensions
                 policy.RequireAuthenticatedUser();
                 policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
             });
+
+            options.AddPolicy("operator", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole("Operator", "Admin");
+                policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+            });
         });
 
         return services;
+    }
+}
+
+public class CustomUserIdProvider : Microsoft.AspNetCore.SignalR.IUserIdProvider
+{
+    public string? GetUserId(Microsoft.AspNetCore.SignalR.HubConnectionContext connection)
+    {
+        return connection.User.FindFirst("sub")?.Value;
     }
 }

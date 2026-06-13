@@ -1,0 +1,72 @@
+<div class="telemetry-chart-card">
+  <div class="chart-header">
+    <span class="chart-label">{{ label }}</span>
+    <span class="chart-current-value" [style.color]="color">
+      {{ value !== null && value !== undefined ? (value | number:'1.0-2') + ' ' + unit : 'N/A' }}
+    </span>
+  </div>
+
+  <div class="svg-container">
+    <svg [attr.viewBox]="'0 0 ' + width + ' ' + height" width="100%" height="100%" preserveAspectRatio="none">
+      <defs>
+        <!-- Dynamic gradient for chart line area fill -->
+        <linearGradient [id]="gradientId" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" [attr.stop-color]="color" stop-opacity="0.3" />
+          <stop offset="100%" [attr.stop-color]="color" stop-opacity="0.0" />
+        </linearGradient>
+      </defs>
+
+      <!-- Grid lines representing reference thresholds -->
+      @for (level of gridLevels; track $index) {
+        <line 
+          x1="0" 
+          [attr.y1]="height * level" 
+          [attr.x2]="width" 
+          [attr.y2]="height * level" 
+          class="grid-line" 
+        />
+      }
+
+      <!-- Shaded Area Under Line -->
+      @if (areaPath) {
+        <path [attr.d]="areaPath" [attr.fill]="'url(#' + gradientId + ')'" />
+      }
+
+      <!-- Main Colored Stroke Line -->
+      @if (linePath) {
+        <path 
+          [attr.d]="linePath" 
+          fill="none" 
+          [attr.stroke]="color" 
+          stroke-width="2.5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          class="stroke-line"
+        />
+      }
+
+      <!-- Glowing Active Point Dot -->
+      @if (history.length > 0) {
+        <circle 
+          [attr.cx]="lastX" 
+          [attr.cy]="lastY" 
+          r="6" 
+          [attr.fill]="color" 
+          class="pulse-dot" 
+        />
+        <circle 
+          [attr.cx]="lastX" 
+          [attr.cy]="lastY" 
+          r="3" 
+          fill="#ffffff" 
+        />
+      }
+    </svg>
+
+    <!-- Overlay scale indicators -->
+    <div class="axis-labels">
+      <span class="max-label">{{ max }}{{ unit }}</span>
+      <span class="min-label">{{ min }}{{ unit }}</span>
+    </div>
+  </div>
+</div>

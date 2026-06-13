@@ -1,7 +1,9 @@
 using AuthService.Domain.Entities;
 using AuthService.Domain.Enums;
 using AuthService.Infrastructure.Persistence;
+using AuthService.Infrastructure.Adapters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AuthService.Extensions;
 
@@ -62,7 +64,7 @@ public static class DatabaseExtensions
     }
 
     /// <summary>
-    /// Seeds default roles (Admin, User, Operator) if they don't exist yet.
+    /// Seeds default roles (Admin, User, Operator, Viewer) if they don't exist yet.
     /// </summary>
     private static async Task SeedRolesAsync(AuthDbContext context, ILogger logger)
     {
@@ -85,4 +87,5 @@ public static class DatabaseExtensions
             logger.LogDebug("All default roles already exist — skipping seed");
         }
     }
+
 }
