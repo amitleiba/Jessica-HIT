@@ -60,8 +60,9 @@ export class TelemetryChartComponent implements OnChanges {
     
     this.history.push(val);
     
-    if (this.history.length > this.effectiveCapacity) {
-      this.history.shift();
+    const cap = this.effectiveCapacity;
+    if (this.history.length > cap) {
+      this.history = this.history.slice(-cap);
     }
     
     this.calculatePaths();
