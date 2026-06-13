@@ -21,6 +21,7 @@
     <ProjectReference Include="..\..\JessicaManager\JessicaManager.csproj" />
     <ProjectReference Include="..\..\AuthService\AuthService.csproj" />
     <ProjectReference Include="..\..\RecordingManager\RecordingManager.csproj" />
+    <ProjectReference Include="..\..\MetricsService\MetricsService.csproj" />
   </ItemGroup>
 
 </Project>

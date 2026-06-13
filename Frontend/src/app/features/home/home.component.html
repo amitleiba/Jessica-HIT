@@ -62,6 +62,17 @@
       </div>
     </a>
 
+    <a [routerLink]="routes.METRICS" class="feature-card" id="feature-metrics">
+      <div class="feature-icon-wrapper">
+        <i class="pi pi-chart-line feature-icon"></i>
+      </div>
+      <h3 class="feature-title">Analytics</h3>
+      <p class="feature-desc">Persistently logged sensor data and metrics charts for historical analysis</p>
+      <div class="feature-arrow">
+        <i class="pi pi-arrow-right"></i>
+      </div>
+    </a>
+
     @if (isAdmin$ | async) {
     <a [routerLink]="routes.USER_MANAGEMENT" class="feature-card" id="feature-user-management">
       <div class="feature-icon-wrapper">
