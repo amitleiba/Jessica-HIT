@@ -22,7 +22,7 @@
             <th>Email</th>
             <th>Name</th>
             <th>Status</th>
-            <th>Roles</th>
+            <th>Role</th>
             <th style="width: 8rem; text-align: center;">Actions</th>
           </tr>
         </ng-template>
@@ -38,15 +38,27 @@
                      [value]="user.isActive ? 'Active' : 'Inactive'"></p-tag>
             </td>
             <td>
-              <div class="flex flex-wrap gap-1">
-                @for (role of user.roles; track role) {
-                  <p-tag [severity]="getRoleSeverity(role)" [value]="role"></p-tag>
-                }
-              </div>
+              @if (user.id === currentUserId) {
+                <p-tag [severity]="getRoleSeverity(user.role)" [value]="user.role"></p-tag>
+              } @else {
+                <p-dropdown [options]="roles" [(ngModel)]="user.role"
+                            optionLabel="label" optionValue="value"
+                            styleClass="role-dropdown-sm"
+                            [disabled]="updatingUserRoles[user.id]"
+                            (onChange)="onRoleChange(user, $event.value)">
+                  <ng-template pTemplate="selectedItem">
+                    <p-tag [severity]="getRoleSeverity(user.role)" [value]="user.role"></p-tag>
+                  </ng-template>
+                  <ng-template let-option pTemplate="item">
+                    <p-tag [severity]="getRoleSeverity(option.value)" [value]="option.label"></p-tag>
+                  </ng-template>
+                </p-dropdown>
+              }
             </td>
             <td style="text-align: center;">
               <p-button icon="pi pi-trash" severity="danger" [text]="true" [rounded]="true"
-                        title="Delete User" (onClick)="deleteUser(user.id, user.username)"></p-button>
+                        title="Delete User" (onClick)="deleteUser(user.id, user.username)"
+                        [disabled]="user.id === currentUserId"></p-button>
             </td>
           </tr>
         </ng-template>

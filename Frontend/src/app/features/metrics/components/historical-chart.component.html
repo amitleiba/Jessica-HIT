@@ -1,0 +1,120 @@
+<div class="chart-wrapper">
+  <div class="svg-container" (mousemove)="onMouseMove($event)" (mouseleave)="onMouseLeave()">
+    <svg #chartSvg [attr.viewBox]="'0 0 ' + width + ' ' + height" class="historical-chart-svg" preserveAspectRatio="xMidYMid meet">
+      <!-- Gradient definition for Area Fill -->
+      <defs>
+        <linearGradient [id]="'areaGradient-' + label" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" [attr.stop-color]="color" stop-opacity="0.35" />
+          <stop offset="100%" [attr.stop-color]="color" stop-opacity="0.00" />
+        </linearGradient>
+      </defs>
+
+      <!-- Horizontal Grid Lines -->
+      @for (line of gridLines; track $index) {
+        <g class="grid-group">
+          <line
+            [attr.x1]="padding.left"
+            [attr.y1]="line.y"
+            [attr.x2]="width - padding.right"
+            [attr.y2]="line.y"
+            class="grid-line"
+          />
+          <text
+            [attr.x]="padding.left - 10"
+            [attr.y]="line.y + 4"
+            class="y-axis-label"
+            text-anchor="end"
+          >
+            {{ line.value }}{{ unit }}
+          </text>
+        </g>
+      }
+
+      <!-- Empty State / No Data -->
+      @if (points.length === 0) {
+        <text
+          [attr.x]="width / 2"
+          [attr.y]="height / 2"
+          class="empty-chart-text"
+          text-anchor="middle"
+        >
+          No data available for the selected range.
+        </text>
+      }
+
+      <!-- Chart Paths -->
+      @if (points.length > 0) {
+        <!-- Area path (gradient) -->
+        @if (areaPath) {
+          <path [attr.d]="areaPath" [attr.fill]="'url(#areaGradient-' + label + ')'" />
+        }
+        
+        <!-- Main Line path -->
+        <path
+          [attr.d]="linePath"
+          [attr.stroke]="color"
+          stroke-width="2.5"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="chart-line"
+        />
+
+        <!-- X Axis labels (Start and End times) -->
+        <text
+          [attr.x]="padding.left"
+          [attr.y]="height - 8"
+          class="x-axis-label"
+          text-anchor="start"
+        >
+          {{ formattedMinTime }}
+        </text>
+        <text
+          [attr.x]="width - padding.right"
+          [attr.y]="height - 8"
+          class="x-axis-label"
+          text-anchor="end"
+        >
+          {{ formattedMaxTime }}
+        </text>
+
+        <!-- Hover Indicator vertical line and active point dot -->
+        @if (isHovered && hoveredPoint) {
+          <line
+            [attr.x1]="hoverX"
+            [attr.y1]="padding.top"
+            [attr.x2]="hoverX"
+            [attr.y2]="height - padding.bottom"
+            stroke="rgba(255, 255, 255, 0.2)"
+            stroke-dasharray="3,3"
+            stroke-width="1.5"
+          />
+          <circle
+            [attr.cx]="hoveredPoint.x"
+            [attr.cy]="hoveredPoint.y"
+            r="6"
+            [attr.fill]="color"
+            stroke="#ffffff"
+            stroke-width="2"
+            class="active-point-glow"
+          />
+        }
+      }
+    </svg>
+
+    <!-- Glassmorphic Tooltip Overlay -->
+    @if (isHovered && hoveredPoint) {
+      <div 
+        class="chart-tooltip" 
+        [style.left.px]="tooltipLeft" 
+        [style.top.px]="tooltipTop"
+      >
+        <div class="tooltip-time">{{ hoveredPoint.rawTimeStr }}</div>
+        <div class="tooltip-value" [style.color]="color">
+          {{ hoveredPoint.value.toFixed(1) }}{{ unit }}
+        </div>
+        <div class="tooltip-label">{{ label }}</div>
+      </div>
+    }
+  </div>
+</div>

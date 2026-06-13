@@ -210,6 +210,13 @@ export class AuthService {
     );
   }
 
+  updateUserRole(userId: string, role: string): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/api/Auth/users/${userId}/role`, { role }).pipe(
+      timeout(AuthService.requestTimeoutMs),
+      catchError((error) => throwError(() => this.handleError(error)))
+    );
+  }
+
   // ============================================
   // Private Helper Methods
   // ============================================

@@ -59,4 +59,9 @@ public interface IUserRepository
     /// Deletes a user by ID. Returns true if deleted, false if not found.
     /// </summary>
     Task<bool> DeleteAsync(Guid id);
+
+    /// <summary>
+    /// Updates a user's role. Returns true if successful.
+    /// </summary>
+    Task<bool> UpdateUserRoleAsync(Guid userId, string roleName);
 }

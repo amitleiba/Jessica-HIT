@@ -159,4 +159,45 @@ public class UserRepository(
         _logger.LogInformation("User deleted successfully: {Username} (ID: {UserId})", user.Username, id);
         return true;
     }
+
+    public async Task<bool> UpdateUserRoleAsync(Guid userId, string roleName)
+    {
+        _logger.LogInformation("Updating user role: {UserId} to {Role}", userId, roleName);
+
+        var user = await _db.Users
+            .Include(u => u.UserRoles)
+            .FirstOrDefaultAsync(u => u.Id == userId)
+            .ConfigureAwait(false);
+
+        if (user == null)
+        {
+            _logger.LogWarning("User not found: {UserId}", userId);
+            return false;
+        }
+
+        var role = await _db.Roles
+            .FirstOrDefaultAsync(r => r.Name == roleName)
+            .ConfigureAwait(false);
+
+        if (role == null)
+        {
+            _logger.LogWarning("Specified role '{RoleName}' not found — aborting role update", roleName);
+            throw new ArgumentException($"Role '{roleName}' does not exist.", nameof(roleName));
+        }
+
+        // Remove existing roles
+        _db.UserRoles.RemoveRange(user.UserRoles);
+
+        // Add the new role
+        user.UserRoles.Clear();
+        user.UserRoles.Add(new UserRoleEntity
+        {
+            UserId = user.Id,
+            RoleId = role.Id
+        });
+
+        await _db.SaveChangesAsync().ConfigureAwait(false);
+        _logger.LogInformation("User role updated successfully for User {UserId} to {Role}", userId, roleName);
+        return true;
+    }
 }

@@ -98,4 +98,43 @@ public class UsersController(
 
         return NotFound(new { message = "User not found" });
     }
+
+    /// <summary>
+    /// Admin updates a user's role.
+    /// Accessible only to Admins.
+    /// </summary>
+    [HttpPut("{id}/role")]
+    public async Task<IActionResult> UpdateUserRole(Guid id, [FromBody] UpdateUserRoleRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        _logger.LogInformation("Admin changing role of user ID: {UserId} to {Role}", id, request.Role);
+
+        // Validate that the role exists
+        if (!RoleType.All.Contains(request.Role))
+        {
+            return BadRequest(new { message = $"Invalid role: {request.Role}. Allowed roles are: {string.Join(", ", RoleType.All)}" });
+        }
+
+        // Prevent admin from changing their own role
+        var currentUserIdClaim = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)
+            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+        if (currentUserIdClaim != null && Guid.TryParse(currentUserIdClaim.Value, out var currentUserId) && currentUserId == id)
+        {
+            return BadRequest(new { message = "You cannot change your own admin role." });
+        }
+
+        var updated = await _userService.UpdateUserRoleAsync(id, request.Role).ConfigureAwait(false);
+
+        if (updated)
+        {
+            return Ok(new { message = "User role updated successfully" });
+        }
+
+        return NotFound(new { message = "User not found" });
+    }
 }

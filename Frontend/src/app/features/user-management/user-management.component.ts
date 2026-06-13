@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from "@angular/core";
+import { Component, OnInit, inject, OnDestroy } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { TableModule } from "primeng/table";
 import { DialogModule } from "primeng/dialog";
 import { ButtonModule } from "primeng/button";
@@ -11,6 +11,9 @@ import { AuthService } from "../../core/services/auth.service";
 import { AlertService } from "../../core/services/alert.service";
 import { ConfirmationService } from "primeng/api";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
+import { Store } from "@ngrx/store";
+import { authFeature } from "../../store/reducers/auth.reducer";
+import { Subscription } from "rxjs";
 
 interface RoleOption {
   label: string;
@@ -23,6 +26,7 @@ interface RoleOption {
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     TableModule,
     DialogModule,
     ButtonModule,
@@ -35,14 +39,22 @@ interface RoleOption {
   templateUrl: "./user-management.component.html",
   styleUrl: "./user-management.component.scss"
 })
-export class UserManagementComponent implements OnInit {
+export class UserManagementComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
   private readonly alertService = inject(AlertService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly store = inject(Store);
 
   users: any[] = [];
   loading = true;
+
+  // Current logged-in user
+  currentUserId: string | null = null;
+  private userSub?: Subscription;
+
+  // Role update tracking
+  updatingUserRoles: { [userId: string]: boolean } = {};
 
   // Dialog state
   displayAddDialog = false;
@@ -58,6 +70,13 @@ export class UserManagementComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.loadUsers();
+    this.userSub = this.store.select(authFeature.selectUser).subscribe(user => {
+      this.currentUserId = user?.id ?? null;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.userSub?.unsubscribe();
   }
 
   initForm(): void {
@@ -75,7 +94,12 @@ export class UserManagementComponent implements OnInit {
     this.loading = true;
     this.authService.getUsers().subscribe({
       next: (users) => {
-        this.users = users;
+        // Extract primary role for dropdown binding
+        this.users = users.map(u => ({
+          ...u,
+          role: u.roles?.[0] || "Viewer",
+          _originalRole: u.roles?.[0] || "Viewer"
+        }));
         this.loading = false;
       },
       error: (err) => {
@@ -114,6 +138,44 @@ export class UserManagementComponent implements OnInit {
         console.error("Failed to create user", err);
         this.alertService.danger(err || "Failed to create user.", "Creation Failed");
         this.submitting = false;
+      }
+    });
+  }
+
+  onRoleChange(user: any, newRole: string): void {
+    const originalRole = user._originalRole;
+
+    if (newRole === originalRole) {
+      return;
+    }
+
+    this.confirmationService.confirm({
+      message: `Change "${user.username}" role from "${originalRole}" to "${newRole}"?`,
+      header: "Confirm Role Change",
+      icon: "pi pi-user-edit",
+      accept: () => {
+        this.updatingUserRoles[user.id] = true;
+        this.authService.updateUserRole(user.id, newRole).subscribe({
+          next: (res) => {
+            this.alertService.success(
+              res.message || `Role updated to "${newRole}" successfully`,
+              "Role Updated"
+            );
+            this.updatingUserRoles[user.id] = false;
+            this.loadUsers();
+          },
+          error: (err) => {
+            console.error("Failed to update role", err);
+            this.alertService.danger(err || "Failed to update user role.", "Update Failed");
+            // Revert the dropdown value
+            user.role = originalRole;
+            this.updatingUserRoles[user.id] = false;
+          }
+        });
+      },
+      reject: () => {
+        // Revert the dropdown value
+        user.role = originalRole;
       }
     });
   }

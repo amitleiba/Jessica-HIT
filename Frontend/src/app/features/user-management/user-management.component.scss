@@ -155,6 +155,55 @@
       }
     }
   }
+
+  /* Inline role dropdown in users table */
+  .role-dropdown-sm {
+    min-width: 8rem;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    &:focus,
+    &.p-focus {
+      border-color: var(--primary-color) !important;
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+    }
+
+    .p-dropdown-label {
+      padding: 0.35rem 0.5rem !important;
+    }
+  }
+
+  .role-dropdown-sm + .p-dropdown-panel,
+  .p-dropdown-panel {
+    background: #16213e !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+
+    .p-dropdown-items {
+      color: var(--text-color) !important;
+      background: #16213e !important;
+
+      .p-dropdown-item {
+        color: var(--text-color) !important;
+        padding: 0.5rem 0.75rem !important;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        &.p-highlight {
+          background: var(--primary-color) !important;
+        }
+      }
+    }
+  }
 }
 
 /* Animations */

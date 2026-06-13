@@ -56,4 +56,9 @@ public interface IUserService
     /// Deletes a user account completely (hard delete).
     /// </summary>
     Task<bool> DeleteUserAsync(Guid userId);
+
+    /// <summary>
+    /// Updates a user's role.
+    /// </summary>
+    Task<bool> UpdateUserRoleAsync(Guid userId, string roleName);
 }

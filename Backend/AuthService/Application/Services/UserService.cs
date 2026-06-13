@@ -232,4 +232,10 @@ public class UserService(
         _logger.LogInformation("Attempting to delete user ID: {UserId}", userId);
         return await _userRepo.DeleteAsync(userId).ConfigureAwait(false);
     }
+
+    public async Task<bool> UpdateUserRoleAsync(Guid userId, string roleName)
+    {
+        _logger.LogInformation("Updating user role: {UserId} to {Role}", userId, roleName);
+        return await _userRepo.UpdateUserRoleAsync(userId, roleName).ConfigureAwait(false);
+    }
 }
