@@ -9,6 +9,8 @@ import { DropdownModule } from "primeng/dropdown";
 import { TagModule } from "primeng/tag";
 import { AuthService } from "../../core/services/auth.service";
 import { AlertService } from "../../core/services/alert.service";
+import { ConfirmationService } from "primeng/api";
+import { ConfirmDialogModule } from "primeng/confirmdialog";
 
 interface RoleOption {
   label: string;
@@ -26,8 +28,10 @@ interface RoleOption {
     ButtonModule,
     InputTextModule,
     DropdownModule,
-    TagModule
+    TagModule,
+    ConfirmDialogModule
   ],
+  providers: [ConfirmationService],
   templateUrl: "./user-management.component.html",
   styleUrl: "./user-management.component.scss"
 })
@@ -35,6 +39,7 @@ export class UserManagementComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
   private readonly alertService = inject(AlertService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   users: any[] = [];
   loading = true;
@@ -114,18 +119,23 @@ export class UserManagementComponent implements OnInit {
   }
 
   deleteUser(userId: string, username: string): void {
-    if (confirm(`Are you sure you want to delete user "${username}"? This action cannot be undone.`)) {
-      this.authService.deleteUser(userId).subscribe({
-        next: (res) => {
-          this.alertService.success(res.message || "User deleted successfully", "Deleted");
-          this.loadUsers();
-        },
-        error: (err) => {
-          console.error("Failed to delete user", err);
-          this.alertService.danger(err || "Failed to delete user.", "Delete Failed");
-        }
-      });
-    }
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete user "${username}"? This action cannot be undone.`,
+      header: 'Confirm Delete',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.authService.deleteUser(userId).subscribe({
+          next: (res) => {
+            this.alertService.success(res.message || "User deleted successfully", "Deleted");
+            this.loadUsers();
+          },
+          error: (err) => {
+            console.error("Failed to delete user", err);
+            this.alertService.danger(err || "Failed to delete user.", "Delete Failed");
+          }
+        });
+      }
+    });
   }
 
   getRoleSeverity(role: string): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {

@@ -123,18 +123,17 @@ public class UserRepository(
             .FirstOrDefaultAsync(r => r.Name == roleName)
             .ConfigureAwait(false);
 
-        if (role != null)
+        if (role == null)
         {
-            user.UserRoles.Add(new UserRoleEntity
-            {
-                UserId = user.Id,
-                RoleId = role.Id
-            });
+            _logger.LogWarning("Specified role '{RoleName}' not found — aborting user creation", roleName);
+            throw new ArgumentException($"Role '{roleName}' does not exist.", nameof(roleName));
         }
-        else
+
+        user.UserRoles.Add(new UserRoleEntity
         {
-            _logger.LogWarning("Specified role '{RoleName}' not found — user created without roles", roleName);
-        }
+            UserId = user.Id,
+            RoleId = role.Id
+        });
 
         _db.Users.Add(user);
         await _db.SaveChangesAsync().ConfigureAwait(false);

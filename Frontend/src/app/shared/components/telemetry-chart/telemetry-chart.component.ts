@@ -21,6 +21,9 @@ export class TelemetryChartComponent implements OnChanges {
   linePath: string = '';
   areaPath: string = '';
   
+  // Unique ID for the area fill gradient to prevent collisions between instances
+  readonly gradientId = 'chart-gradient-' + Math.random().toString(36).substring(2, 9);
+  
   // SVG viewbox dimension constants
   readonly width = 300;
   readonly height = 90;
@@ -28,9 +31,25 @@ export class TelemetryChartComponent implements OnChanges {
   // Percentages for rendering grid lines
   readonly gridLevels = [0.25, 0.5, 0.75];
 
+  private get effectiveCapacity(): number {
+    return Math.max(2, Math.floor(this.capacity || 0));
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['value']) {
       this.addValueToHistory(this.value);
+      return;
+    }
+
+    if (changes['capacity']) {
+      const cap = this.effectiveCapacity;
+      if (this.history.length > cap) {
+        this.history = this.history.slice(-cap);
+      }
+    }
+
+    if (changes['min'] || changes['max'] || changes['capacity']) {
+      this.calculatePaths();
     }
   }
 
@@ -41,7 +60,7 @@ export class TelemetryChartComponent implements OnChanges {
     
     this.history.push(val);
     
-    if (this.history.length > this.capacity) {
+    if (this.history.length > this.effectiveCapacity) {
       this.history.shift();
     }
     
@@ -58,7 +77,7 @@ export class TelemetryChartComponent implements OnChanges {
 
     const points = this.history.map((v, i) => {
       // Draw from left to right, filling up the space
-      const x = (i / (this.capacity - 1)) * this.width;
+      const x = (i / (this.effectiveCapacity - 1)) * this.width;
       
       const clamped = Math.max(this.min, Math.min(this.max, v));
       const range = this.max - this.min;
@@ -78,7 +97,7 @@ export class TelemetryChartComponent implements OnChanges {
 
   get lastX(): number {
     if (this.history.length === 0) return 0;
-    return ((this.history.length - 1) / (this.capacity - 1)) * this.width;
+    return ((this.history.length - 1) / (this.effectiveCapacity - 1)) * this.width;
   }
 
   get lastY(): number {

@@ -10,7 +10,7 @@
     <svg [attr.viewBox]="'0 0 ' + width + ' ' + height" width="100%" height="100%" preserveAspectRatio="none">
       <defs>
         <!-- Dynamic gradient for chart line area fill -->
-        <linearGradient [id]="'gradient-' + label.replace(' ', '-')" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient [id]="gradientId" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" [attr.stop-color]="color" stop-opacity="0.3" />
           <stop offset="100%" [attr.stop-color]="color" stop-opacity="0.0" />
         </linearGradient>
@@ -29,7 +29,7 @@
 
       <!-- Shaded Area Under Line -->
       @if (areaPath) {
-        <path [attr.d]="areaPath" [attr.fill]="'url(#gradient-' + label.replace(' ', '-') + ')'" />
+        <path [attr.d]="areaPath" [attr.fill]="'url(#' + gradientId + ')'" />
       }
 
       <!-- Main Colored Stroke Line -->

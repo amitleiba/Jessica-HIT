@@ -63,6 +63,8 @@ public static class AuthenticationExtensions
                 };
             });
 
+        services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, CustomUserIdProvider>();
+
         logger.LogInformation("JWT Bearer authentication configured successfully");
 
         return services;
@@ -90,5 +92,13 @@ public static class AuthenticationExtensions
         });
 
         return services;
+    }
+}
+
+public class CustomUserIdProvider : Microsoft.AspNetCore.SignalR.IUserIdProvider
+{
+    public string? GetUserId(Microsoft.AspNetCore.SignalR.HubConnectionContext connection)
+    {
+        return connection.User.FindFirst("sub")?.Value;
     }
 }

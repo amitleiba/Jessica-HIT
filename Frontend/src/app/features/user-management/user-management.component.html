@@ -100,7 +100,7 @@
 
     <div class="field flex flex-column gap-1">
       <label for="password" class="text-sm font-semibold">Password</label>
-      <input pInputText type="password" id="password" formControlName="password" placeholder="••••••••" class="p-inputtext-sm" />
+      <input pInputText type="password" id="password" formControlName="password" placeholder="••••••••" class="p-inputtext-sm" autocomplete="new-password" />
       @if (userForm.get('password')?.invalid && userForm.get('password')?.touched) {
         <small class="text-danger text-xs">Password must be at least 8 characters.</small>
       }
@@ -120,3 +120,6 @@
     </div>
   </form>
 </p-dialog>
+
+<!-- Confirmation Dialog -->
+<p-confirmDialog></p-confirmDialog>

@@ -27,6 +27,11 @@ export const roleGuard: CanActivateFn = (route, state) => {
         return false;
       }
 
+      // If no roles specified, allow any authenticated user
+      if (expectedRoles.length === 0) {
+        return true;
+      }
+
       const userRoles = authState.user?.roles || [];
       const hasRole = expectedRoles.some(role => userRoles.includes(role));
 
