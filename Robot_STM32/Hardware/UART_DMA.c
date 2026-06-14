@@ -8,7 +8,7 @@
  * =========================================================================== */
 volatile char    rx_buffer[UART_RX_BUFFER_SIZE];
 volatile uint8_t new_command_ready = 0;
-volatile uint8_t robot_mode       = 0;  // 0 = Manual, 1 = Auto
+volatile uint8_t robot_mode       = 0;  // 0 = Idle, 1 = Moving
 
 /* ===========================================================================
  * UART + DMA Initialization
@@ -165,15 +165,7 @@ void UART_ProcessCommand(SafetyState_t current_safety)
     if (strncmp(cmd_buf, "$S", 2) == 0)
     {
         Motor_SetSpeed(0, 0);
-    }
-    /* --- Parse: Auto/Manual Mode ($A,mode) ----------------------------- */
-    else if (strncmp(cmd_buf, "$A,", 3) == 0)
-    {
-        int mode_val = 0;
-        if (sscanf(cmd_buf, "$A,%d", &mode_val) == 1)
-        {
-            robot_mode = (uint8_t)mode_val;
-        }
+        robot_mode = 0;
     }
     /* --- Parse: Move Command ($M,left,right) --------------------------- */
     else if (strncmp(cmd_buf, "$M,", 3) == 0)
@@ -196,6 +188,7 @@ void UART_ProcessCommand(SafetyState_t current_safety)
             }
 
             Motor_SetSpeed(leftSpeed, rightSpeed);
+            robot_mode = (leftSpeed != 0 || rightSpeed != 0) ? 1 : 0;
         }
     }
 
@@ -215,7 +208,7 @@ void UART_ProcessCommand(SafetyState_t current_safety)
  *        to avoid pulling in the full printf float support.
  * @param distance      Current ultrasonic distance in cm
  * @param safety_state  Current safety state (0=CLEAR, 1=OBSTACLE)
- * @param mode          Current robot mode (0=Manual, 1=Auto)
+ * @param mode          Current robot mode (0=Idle, 1=Moving)
  * @param battery_v     Battery voltage in volts (float)
  */
 void UART_SendTelemetry(uint16_t distance, uint8_t safety_state,
@@ -246,28 +239,28 @@ void UART_SendTelemetry(uint16_t distance, uint8_t safety_state,
 }
 
 /* ===========================================================================
- * Solar Panel ADC (ADC1, Channel 2, PA2)
+ * Solar Panel ADC (ADC1, Channel 8, PB0)
  * =========================================================================== */
 
 /**
- * @brief Initialize ADC1 on PA2 (Channel 2) for single software-triggered
+ * @brief Initialize ADC1 on PB0 (Channel 8) for single software-triggered
  *        conversion.  Uses independent mode, single-channel, right-aligned
  *        12-bit output.  Performs the mandatory ADC self-calibration after
  *        power-on.
  */
 void Battery_ADC_Init(void)
 {
-    /* 1. Enable clocks for GPIOA and ADC1 --------------------------------- */
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_ADC1, ENABLE);
+    /* 1. Enable clocks for GPIOB and ADC1 --------------------------------- */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_ADC1, ENABLE);
 
     /* ADC clock prescaler: PCLK2 / 6 = 12 MHz (must be <= 14 MHz) */
     RCC_ADCCLKConfig(RCC_PCLK2_Div6);
 
-    /* 2. Configure PA2 as Analog Input ------------------------------------ */
+    /* 2. Configure PB0 as Analog Input ------------------------------------ */
     GPIO_InitTypeDef GPIO_InitStructure;
-    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_2;
+    GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
 
     /* 3. Configure ADC1 --------------------------------------------------- */
     ADC_InitTypeDef ADC_InitStructure;
@@ -279,8 +272,8 @@ void Battery_ADC_Init(void)
     ADC_InitStructure.ADC_NbrOfChannel       = 1;
     ADC_Init(ADC1, &ADC_InitStructure);
 
-    /* Configure Channel 2 (PA2), 239.5-cycle sample time for stability */
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_239Cycles5);
+    /* Configure Channel 8 (PB0), 239.5-cycle sample time for stability */
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 1, ADC_SampleTime_239Cycles5);
 
     /* 4. Enable ADC1 ------------------------------------------------------ */
     ADC_Cmd(ADC1, ENABLE);
@@ -294,11 +287,11 @@ void Battery_ADC_Init(void)
 }
 
 /**
- * @brief Trigger a single software ADC conversion on Channel 2, block until
- *        End-Of-Conversion, and return the true solar panel voltage in volts.
- *        Assumes Vref+ = 3.3 V, 12-bit resolution (0–4095), and an external
- *        1:3 resistive voltage divider on the panel output (multiply by 3).
- * @return Solar panel voltage in volts (float).  Range 0.0 – 9.9 V.
+ * @brief Trigger a single software ADC conversion, block until
+ *        End-Of-Conversion, and return the solar panel voltage in volts.
+ *        Assumes Vref+ = 3.3 V, 12-bit resolution (0–4095).
+ *        No external voltage divider — direct ADC pin voltage.
+ * @return Solar panel voltage in volts (float).  Range 0.0 – 3.3 V.
  */
 float Battery_Read_Voltage(void)
 {
@@ -309,13 +302,10 @@ float Battery_Read_Voltage(void)
     while (ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
 
     /* Read the 12-bit result */
-    uint16_t raw = ADC_GetConversionValue(ADC1);
+    uint16_t solar_raw = ADC_GetConversionValue(ADC1);
 
-    /* Convert to pin voltage: Vpin = raw * 3.3 / 4095 */
-    float voltage = (float)raw * 3.3f / 4095.0f;
+    /* Convert to solar panel voltage: solar_volts = (solar_raw / 4095) * 3.3 */
+    float solar_volts = ((float)solar_raw / 4095.0f) * 3.3f;
 
-    /* Account for 1:3 voltage divider: Vpanel = Vpin * 3 */
-    voltage *= 3.0f;
-
-    return voltage;
+    return solar_volts;
 }

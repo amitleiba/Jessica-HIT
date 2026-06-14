@@ -16,7 +16,7 @@ extern volatile uint8_t new_command_ready;
 // Raw DMA receive buffer populated by DMA1_Channel5
 extern volatile char rx_buffer[UART_RX_BUFFER_SIZE];
 
-// Robot operating mode: 0 = Manual, 1 = Auto
+// Robot operating mode: 0 = Idle, 1 = Moving
 extern volatile uint8_t robot_mode;
 
 /* ---------------------------------------------------------------------------
@@ -34,7 +34,6 @@ void UART_DMA_Init(void);
  * @brief Process a received UART command from the main loop.
  *        Text protocol:
  *          $S             -> Emergency Stop (Motor_SetSpeed(0,0))
- *          $A,mode        -> Set robot_mode (0=Manual, 1=Auto)
  *          $M,left,right  -> Move command with wall-trap safety logic
  *        Must be called unconditionally every loop iteration.
  * @param current_safety Current safety state from Safety_Task_Update()
@@ -46,7 +45,7 @@ void UART_ProcessCommand(SafetyState_t current_safety);
  *        Format: "$STATUS,distance,safety_state,mode,battery_v\n"
  * @param distance      Current ultrasonic distance in cm
  * @param safety_state  Current safety state (0=CLEAR, 1=OBSTACLE)
- * @param mode          Current robot mode (0=Manual, 1=Auto)
+ * @param mode          Current robot mode (0=Idle, 1=Moving)
  * @param battery_v     Battery voltage in volts (float)
  */
 void UART_SendTelemetry(uint16_t distance, uint8_t safety_state,
@@ -57,16 +56,16 @@ void UART_SendTelemetry(uint16_t distance, uint8_t safety_state,
  * --------------------------------------------------------------------------- */
 
 /**
- * @brief Initialize ADC1 on PA4 (Channel 4) for single-conversion battery
+ * @brief Initialize ADC1 on PB0 (Channel 8) for single-conversion battery
  *        voltage measurement.  3.3 V reference, 12-bit resolution.
  */
 void Battery_ADC_Init(void);
 
 /**
- * @brief Trigger a software ADC conversion on ADC1 Channel 2, wait for EOC,
- *        and return the true solar panel voltage in volts.
- *        Accounts for a 1:3 external voltage divider (multiply by 3).
- * @return Solar panel voltage in volts (0.0 – 9.9 V)
+ * @brief Trigger a software ADC conversion, wait for EOC,
+ *        and return the solar panel voltage in volts.
+ *        No external voltage divider — direct ADC pin voltage.
+ * @return Solar panel voltage in volts (0.0 – 3.3 V)
  */
 float Battery_Read_Voltage(void);
 

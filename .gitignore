@@ -89,3 +89,6 @@ Web/scratch/
 Robot_STM32/Listings/
 Robot_STM32/Objects/
 Robot_STM32/*.uvguix.*
+
+CLAUDE.md
+agent_teams_summary.md

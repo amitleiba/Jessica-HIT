@@ -137,7 +137,7 @@ export class MetricsDashboardComponent implements OnInit, OnDestroy {
     const mode = parseInt(modeStr, 10);
     switch (mode) {
       case 0: return 'Idle';
-      case 1: return 'Manual';
+      case 1: return 'Moving';
       case 2: return 'Autonomous';
       case 3: return 'Charging';
       default: return 'Unknown';
