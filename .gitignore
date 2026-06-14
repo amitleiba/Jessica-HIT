@@ -80,7 +80,6 @@ gateway-log.txt
 
 # Claude Code internal files
 .claude/
-agent_teams_summary.md
 
 # Scratch / temp files
 test.html

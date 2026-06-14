@@ -47,6 +47,30 @@
         <i class="pi pi-refresh" [class.pi-spin]="isLoading"></i>
       </button>
 
+      <div class="export-group flex gap-2">
+        <button
+          type="button"
+          class="export-csv-btn"
+          (click)="exportCsv()"
+          [disabled]="!history.length"
+          title="Download all telemetry data as CSV"
+        >
+          <i class="pi pi-file-excel"></i>
+          <span>CSV</span>
+        </button>
+
+        <button
+          type="button"
+          class="export-pdf-btn"
+          (click)="exportPdf()"
+          [disabled]="!history.length || isExportingPdf"
+          title="Download report as PDF"
+        >
+          <i class="pi pi-file-pdf" [class.pi-spin]="isExportingPdf"></i>
+          <span>PDF</span>
+        </button>
+      </div>
+
       <button
         type="button"
         class="clear-db-btn"

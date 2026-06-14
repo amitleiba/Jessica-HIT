@@ -7,6 +7,7 @@ import { ConfirmationService } from 'primeng/api';
 import { Subject, Subscription, timer, forkJoin } from 'rxjs';
 import { switchMap, takeUntil } from 'rxjs/operators';
 import { MetricsService, MetricEntry, MetricsStats } from '../../core/services/metrics.service';
+import { ReportService } from '../../core/services/report.service';
 import { HistoricalChartComponent } from './components/historical-chart.component';
 
 @Component({
@@ -19,11 +20,13 @@ import { HistoricalChartComponent } from './components/historical-chart.componen
 })
 export class MetricsDashboardComponent implements OnInit, OnDestroy {
   private readonly metricsService = inject(MetricsService);
+  private readonly reportService = inject(ReportService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly destroy$ = new Subject<void>();
   private refreshSubscription?: Subscription;
 
   isClearing = false;
+  isExportingPdf = false;
 
   // State variables
   selectedRange: number = 60; // default to 1 hour (60 minutes)
@@ -179,6 +182,23 @@ export class MetricsDashboardComponent implements OnInit, OnDestroy {
       case 2: return 'safety-hazard';
       default: return 'safety-unknown';
     }
+  }
+
+  exportCsv(): void {
+    this.reportService.exportCsv(this.history, this.getRangeLabel());
+  }
+
+  exportPdf(): void {
+    this.isExportingPdf = true;
+    try {
+      this.reportService.exportPdf(this.history, this.stats, this.getRangeLabel());
+    } finally {
+      this.isExportingPdf = false;
+    }
+  }
+
+  private getRangeLabel(): string {
+    return this.timeRanges.find(r => r.value === this.selectedRange)?.label ?? `${this.selectedRange}min`;
   }
 
   clearDatabase(): void {

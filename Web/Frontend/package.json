@@ -23,6 +23,8 @@
     "@ngrx/store": "^18.0.0",
     "@ngrx/store-devtools": "^18.0.0",
     "@primeng/themes": "^21.0.2",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^18.0.2",
