@@ -1,0 +1,493 @@
+// ─────────────────────────────────────────────
+//  Home Page — Styles
+//  Premium dashboard landing with animated
+//  gradients and glassmorphism effects.
+// ─────────────────────────────────────────────
+
+:host {
+  display: block;
+  width: 100%;
+  min-height: calc(100dvh - 64px);
+}
+
+// ─── Animated Background ─────────────────────
+.home-container {
+  position: relative;
+  width: 100%;
+  min-height: calc(100dvh - 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-glow-1 {
+  width: 500px;
+  height: 500px;
+  background: var(--primary-color);
+  top: -100px;
+  right: -100px;
+  animation: float 8s ease-in-out infinite;
+}
+
+.bg-glow-2 {
+  width: 400px;
+  height: 400px;
+  background: #9c27b0;
+  bottom: -80px;
+  left: -80px;
+  animation: float 10s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -30px); }
+}
+
+// ─── Entrance Animations ─────────────────────
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.7s ease forwards;
+}
+
+.delay-1 { animation-delay: 0.15s; }
+.delay-2 { animation-delay: 0.3s; }
+.delay-3 { animation-delay: 0.45s; }
+.delay-4 { animation-delay: 0.6s; }
+.delay-5 { animation-delay: 0.8s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ─── Hero Section ────────────────────────────
+.hero-section {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.logo-wrapper {
+  margin-bottom: 1.2rem;
+}
+
+.hero-logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+
+  &:hover {
+    transform: scale(1.05) rotate(-2deg);
+    box-shadow: 0 12px 48px rgba(76, 175, 80, 0.3);
+  }
+}
+
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-color);
+  margin: 0 0 0.3rem;
+
+  .title-gradient {
+    background: linear-gradient(135deg, var(--primary-color), #9c27b0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-color-secondary, #888);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 1rem;
+}
+
+.hero-divider {
+  width: 60px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary-color), #9c27b0);
+  margin-bottom: 1rem;
+}
+
+.hero-description {
+  max-width: 520px;
+  font-size: 1.05rem;
+  color: var(--text-color-secondary, #999);
+  line-height: 1.7;
+  margin: 0;
+}
+
+// ─── Feature Cards ───────────────────────────
+.features-section {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 2.5rem;
+}
+
+.feature-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border, rgba(255, 255, 255, 0.08));
+  text-decoration: none;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.06), rgba(156, 39, 176, 0.06));
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-color);
+
+    &::before {
+      opacity: 1;
+    }
+
+    .feature-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .feature-icon-wrapper {
+      background: linear-gradient(135deg, var(--primary-color), #9c27b0);
+
+      .feature-icon {
+        color: #fff;
+      }
+    }
+  }
+}
+
+.feature-card-highlight {
+  cursor: default;
+}
+
+.feature-icon-wrapper {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(76, 175, 80, 0.1);
+  margin-bottom: 1rem;
+  transition: all 0.35s ease;
+
+  .feature-icon {
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    transition: color 0.35s ease;
+  }
+}
+
+.live-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #e53935;
+  color: #fff;
+  animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.feature-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  color: var(--text-color);
+}
+
+.feature-desc {
+  font-size: 0.875rem;
+  color: var(--text-color-secondary, #888);
+  line-height: 1.55;
+  margin: 0;
+  flex: 1;
+}
+
+.feature-arrow {
+  margin-top: 1rem;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: all 0.35s ease;
+  color: var(--primary-color);
+
+  .pi {
+    font-size: 0.9rem;
+  }
+}
+
+// ─── Status Bar ──────────────────────────────
+.status-section {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 2rem;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 0.9rem 1.5rem;
+  border-radius: 12px;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border, rgba(255, 255, 255, 0.08));
+  flex-wrap: wrap;
+}
+
+// Groups the three status indicators together so the Refresh
+// button is pushed to the right via justify-content: space-between.
+.status-items {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background-color 0.3s ease;
+
+  &.connected {
+    background-color: #4caf50;
+    box-shadow: 0 0 8px #4caf50;
+  }
+
+  &.disconnected, &.error {
+    background-color: #e53935;
+  }
+
+  &.connecting, &.reconnecting {
+    background-color: #ffc107;
+    animation: pulse-dot 1.5s infinite;
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.status-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-color-secondary, #888);
+}
+
+.status-value {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.status-separator {
+  width: 1px;
+  height: 20px;
+  background: var(--surface-border, rgba(255, 255, 255, 0.1));
+}
+
+// ─── Refresh Button ───────────────────────────
+.refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--surface-border, rgba(255, 255, 255, 0.12));
+  background: transparent;
+  color: var(--text-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  .pi {
+    font-size: 0.9rem;
+    transition: transform 0.25s ease;
+  }
+
+  &:not(:disabled):hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: rgba(76, 175, 80, 0.06);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.12);
+
+    .pi-refresh {
+      transform: rotate(-30deg);
+    }
+  }
+
+  &:not(:disabled):active {
+    transform: scale(0.97);
+  }
+
+  &.refreshing {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: rgba(76, 175, 80, 0.06);
+    cursor: default;
+
+    .pi-sync {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &:disabled:not(.refreshing) {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ─── Footer ──────────────────────────────────
+.home-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+  padding-top: 1rem;
+
+  p {
+    font-size: 0.8rem;
+    color: var(--text-color-secondary, #666);
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+}
+
+// ─── Responsive ──────────────────────────────
+@media (max-width: 768px) {
+  .home-container {
+    padding: 1.5rem 1rem 1rem;
+  }
+
+  .hero-logo {
+    width: 90px;
+    height: 90px;
+    border-radius: 18px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .features-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .status-bar {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .status-items {
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .refresh-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .status-separator {
+    width: 60%;
+    height: 1px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .features-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

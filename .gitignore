@@ -76,3 +76,19 @@ ehthumbs.db
 # Log files
 *.log
 logs/
+gateway-log.txt
+
+# Claude Code internal files
+.claude/
+
+# Scratch / temp files
+test.html
+Web/scratch/
+
+# Keil MDK-ARM (Robot_STM32) build artifacts and user-specific files
+Robot_STM32/Listings/
+Robot_STM32/Objects/
+Robot_STM32/*.uvguix.*
+
+**/CLAUDE.md
+agent_teams_summary.md

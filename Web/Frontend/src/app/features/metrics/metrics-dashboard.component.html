@@ -1,0 +1,238 @@
+<div class="metrics-container p-4">
+  <!-- Animated Background -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Header Section -->
+  <header class="dashboard-header flex flex-column md:flex-row justify-content-between align-items-start md:align-items-center mb-4 gap-3">
+    <div>
+      <h1 class="page-title"><i class="pi pi-chart-line mr-2 title-icon"></i>Telemetry Analytics</h1>
+      <p class="page-subtitle text-sm opacity-60">Analyze historical sensor data and operational metrics for Jessica</p>
+    </div>
+    
+    <!-- Controls (Time Range + Auto Refresh) -->
+    <div class="controls-panel flex align-items-center gap-3">
+      <div class="range-selector flex">
+        @for (range of timeRanges; track range.value) {
+          <button 
+            type="button" 
+            class="range-btn" 
+            [class.active]="selectedRange === range.value"
+            (click)="onRangeChange(range.value)"
+          >
+            {{ range.label }}
+          </button>
+        }
+      </div>
+
+      <button 
+        type="button" 
+        class="refresh-toggle-btn flex align-items-center gap-2"
+        [class.active]="autoRefresh"
+        (click)="toggleAutoRefresh()"
+        title="Toggle Realtime Auto Refresh"
+      >
+        <i class="pi pi-sync" [class.spin-icon]="autoRefresh"></i>
+        <span>Live</span>
+      </button>
+
+      <button
+        type="button"
+        class="manual-refresh-btn"
+        (click)="loadData()"
+        [disabled]="isLoading"
+        title="Force Refresh Data"
+      >
+        <i class="pi pi-refresh" [class.pi-spin]="isLoading"></i>
+      </button>
+
+      <div class="export-group flex gap-2">
+        <button
+          type="button"
+          class="export-csv-btn"
+          (click)="exportCsv()"
+          [disabled]="!history.length"
+          title="Download all telemetry data as CSV"
+        >
+          <i class="pi pi-file-excel"></i>
+          <span>CSV</span>
+        </button>
+
+        <button
+          type="button"
+          class="export-pdf-btn"
+          (click)="exportPdf()"
+          [disabled]="!history.length || isExportingPdf"
+          title="Download report as PDF"
+        >
+          <i class="pi pi-file-pdf" [class.pi-spin]="isExportingPdf"></i>
+          <span>PDF</span>
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="clear-db-btn"
+        (click)="clearDatabase()"
+        [disabled]="isClearing"
+        title="Clear all metrics from the database"
+      >
+        <i class="pi pi-trash" [class.pi-spin]="isClearing"></i>
+        <span>Reset DB</span>
+      </button>
+    </div>
+  </header>
+
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- Statistics Grid -->
+  <section class="grid mb-4">
+    <!-- Avg Solar Voltage -->
+    <div class="col-12 sm:col-6 lg:col-3">
+      <div class="stat-card">
+        <div class="stat-icon-wrapper voltage-theme">
+          <i class="pi pi-bolt"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Avg Solar Voltage</span>
+          <h2 class="stat-value font-bold">
+            {{ stats?.averageSolarVoltage || 0 }}<span class="stat-unit">V</span>
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Max Distance -->
+    <div class="col-12 sm:col-6 lg:col-3">
+      <div class="stat-card">
+        <div class="stat-icon-wrapper distance-theme">
+          <i class="pi pi-arrows-h"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Max Obstacle Distance</span>
+          <h2 class="stat-value font-bold">
+            {{ stats?.maxDistance || 0 }}<span class="stat-unit">cm</span>
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Safety Incidents -->
+    <div class="col-12 sm:col-6 lg:col-3">
+      <div class="stat-card">
+        <div class="stat-icon-wrapper safety-theme">
+          <i class="pi pi-exclamation-triangle"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Safety Hazards</span>
+          <h2 class="stat-value font-bold text-red-400">
+            {{ stats?.safetyIncidentCount || 0 }}
+          </h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Operation Modes distribution -->
+    <div class="col-12 sm:col-6 lg:col-3">
+      <div class="stat-card p-3">
+        <div class="w-full">
+          <span class="stat-label mb-2 block">Operating Modes</span>
+          <div class="mode-bar flex h-8px w-full border-round overflow-hidden bg-slate-800">
+            @for (modeKey of getModeKeys(); track modeKey) {
+              <div 
+                [style.width.%]="getModePercentage(modeKey)" 
+                [style.background-color]="getModeColor(modeKey)"
+                [title]="getModeName(modeKey) + ': ' + getModePercentage(modeKey) + '%'"
+              ></div>
+            }
+          </div>
+          <div class="mode-legend flex flex-wrap gap-2 mt-2">
+            @for (modeKey of getModeKeys(); track modeKey) {
+              <div class="legend-item flex align-items-center gap-1 text-xs opacity-80">
+                <span class="legend-dot" [style.background-color]="getModeColor(modeKey)"></span>
+                <span>{{ getModeName(modeKey) }} ({{ getModePercentage(modeKey) }}%)</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Charts Layout -->
+  <section class="grid mb-4">
+    <!-- Solar Panel Voltage Chart -->
+    <div class="col-12 lg:col-6">
+      <div class="chart-card">
+        <h3 class="chart-title mb-3"><i class="pi pi-bolt mr-2 text-blue-400"></i>Solar Panel Voltage</h3>
+        <app-historical-chart 
+          [data]="voltageChartData" 
+          label="Solar Voltage" 
+          color="#3b82f6" 
+          [min]="0" 
+          [max]="5" 
+          unit="V"
+        ></app-historical-chart>
+      </div>
+    </div>
+
+    <!-- Obstacle Distance Chart -->
+    <div class="col-12 lg:col-6">
+      <div class="chart-card">
+        <h3 class="chart-title mb-3"><i class="pi pi-arrows-h mr-2 text-emerald-400"></i>Obstacle Distance</h3>
+        <app-historical-chart 
+          [data]="distanceChartData" 
+          label="Obstacle Distance" 
+          color="#10b981" 
+          [min]="0" 
+          [max]="1000" 
+          unit="cm"
+        ></app-historical-chart>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Logs Table -->
+  <section class="logs-section">
+    <div class="card p-4">
+      <h3 class="table-title mb-3"><i class="pi pi-list mr-2 text-purple-400"></i>Recent Telemetry Logs (Last 10)</h3>
+      <div class="table-responsive">
+        <table class="metrics-table w-full">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Solar Voltage</th>
+              <th>Obstacle Distance</th>
+              <th>Safety State</th>
+              <th>Current Mode</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of history.slice(-10).reverse(); track entry.timestamp) {
+              <tr>
+                <td class="font-mono text-sm">{{ entry.timestamp | date:'shortTime' }}</td>
+                <td class="text-blue-300 font-semibold">{{ entry.solarVoltage.toFixed(2) }} V</td>
+                <td class="text-emerald-300 font-semibold">{{ entry.distance }} cm</td>
+                <td>
+                  <span class="safety-badge" [ngClass]="getSafetyClass(entry.safety)">
+                    {{ getSafetyLabel(entry.safety) }}
+                  </span>
+                </td>
+                <td>
+                  <span class="mode-badge" [style.border-color]="getModeColor(entry.mode.toString())" [style.color]="getModeColor(entry.mode.toString())">
+                    {{ getModeName(entry.mode.toString()) }}
+                  </span>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="text-center py-4 opacity-50">No logs captured yet. Send drive commands to start generating metrics.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>

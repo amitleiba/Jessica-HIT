@@ -1,0 +1,146 @@
+<div class="home-container">
+  <!-- Animated Background -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="logo-wrapper fade-in">
+      <img src="assets/jessica-logo.png" alt="Jessica HIT Logo" class="hero-logo" />
+    </div>
+
+    <h1 class="hero-title fade-in delay-1">
+      <span class="title-gradient">Jessica</span> HIT
+    </h1>
+    <p class="hero-subtitle fade-in delay-2">
+      Intelligent Robotics Control Platform
+    </p>
+
+    <div class="hero-divider fade-in delay-2"></div>
+
+    <p class="hero-description fade-in delay-3">
+      Command, record, and replay robotic movements with real-time telemetry and live camera feedback.
+    </p>
+  </section>
+
+  <!-- Feature Cards -->
+  <section class="features-section fade-in delay-4">
+    @if (isOperator$ | async) {
+    <a [routerLink]="routes.MANUAL_CONTROLLER" class="feature-card" id="feature-manual-control">
+      <div class="feature-icon-wrapper">
+        <i class="pi pi-sliders-h feature-icon"></i>
+      </div>
+      <h3 class="feature-title">Manual Control</h3>
+      <p class="feature-desc">Drive the robot in real-time with directional controls and speed adjustment</p>
+      <div class="feature-arrow">
+        <i class="pi pi-arrow-right"></i>
+      </div>
+    </a>
+
+    <a [routerLink]="routes.RECORDER" class="feature-card" id="feature-recordings">
+      <div class="feature-icon-wrapper">
+        <i class="pi pi-video feature-icon"></i>
+      </div>
+      <h3 class="feature-title">Recordings</h3>
+      <p class="feature-desc">Record movement sessions and replay them with synchronized camera data</p>
+      <div class="feature-arrow">
+        <i class="pi pi-arrow-right"></i>
+      </div>
+    </a>
+    }
+
+    <a [routerLink]="routes.LIVE_FEED" class="feature-card" id="feature-live-feed">
+      <div class="feature-icon-wrapper">
+        <i class="pi pi-camera feature-icon"></i>
+        <span class="live-badge">LIVE</span>
+      </div>
+      <h3 class="feature-title">Camera Feed</h3>
+      <p class="feature-desc">Real-time ESP32-CAM video stream with low-latency MJPEG delivery</p>
+      <div class="feature-arrow">
+        <i class="pi pi-arrow-right"></i>
+      </div>
+    </a>
+
+    @if ((isOperator$ | async) || (isAdmin$ | async)) {
+    <a [routerLink]="routes.METRICS" class="feature-card" id="feature-metrics">
+      <div class="feature-icon-wrapper">
+        <i class="pi pi-chart-line feature-icon"></i>
+      </div>
+      <h3 class="feature-title">Analytics</h3>
+      <p class="feature-desc">Persistently logged sensor data and metrics charts for historical analysis</p>
+      <div class="feature-arrow">
+        <i class="pi pi-arrow-right"></i>
+      </div>
+    </a>
+    }
+
+    @if (isAdmin$ | async) {
+    <a [routerLink]="routes.USER_MANAGEMENT" class="feature-card" id="feature-user-management">
+      <div class="feature-icon-wrapper">
+        <i class="pi pi-users feature-icon"></i>
+      </div>
+      <h3 class="feature-title">User Management</h3>
+      <p class="feature-desc">Manage system users, add new operators or viewers, and delete accounts</p>
+      <div class="feature-arrow">
+        <i class="pi pi-arrow-right"></i>
+      </div>
+    </a>
+    }
+  </section>
+
+  <!-- System Status -->
+  <section class="status-section fade-in delay-5">
+    <div class="status-bar">
+      <div class="status-items">
+        <div class="status-item">
+          <div class="status-dot" [ngClass]="(robotConnectionState$ | async) || 'disconnected'"></div>
+          <span class="status-label">Robot</span>
+          <span class="status-value">{{ (robotConnectionState$ | async) | titlecase }}</span>
+        </div>
+        <div class="status-separator"></div>
+        <div class="status-item">
+          <div class="status-dot" [class.connected]="isAuthenticated$ | async"
+               [class.disconnected]="!(isAuthenticated$ | async)"></div>
+          <span class="status-label">Auth</span>
+          <span class="status-value">{{ (isAuthenticated$ | async) ? 'Authenticated' : 'Not Logged In' }}</span>
+        </div>
+        <div class="status-separator"></div>
+        <div class="status-item">
+          <div class="status-dot" [ngClass]="(connectionState$ | async) || 'disconnected'"></div>
+          <span class="status-label">Gateway</span>
+          <span class="status-value">
+            @if ((connectionState$ | async) === 'connected') {
+              Online
+            } @else if ((connectionState$ | async) === 'connecting' || (connectionState$ | async) === 'reconnecting') {
+              Connecting
+            } @else {
+              Offline
+            }
+          </span>
+        </div>
+      </div>
+
+      <!-- Refresh Button -->
+      @if (isAuthenticated$ | async) {
+        <button
+          class="refresh-btn"
+          id="refresh-connection-btn"
+          [class.refreshing]="isRefreshing"
+          [disabled]="(robotConnectionState$ | async) === 'connected' || isRefreshing"
+          (click)="onRefresh()"
+          [title]="(robotConnectionState$ | async) === 'connected' ? 'Already connected — no refresh needed' : 'Reconnect to ESP32 Gateway and robot'"
+        >
+          <i class="pi" [class.pi-refresh]="!isRefreshing" [class.pi-spin]="isRefreshing" [class.pi-sync]="isRefreshing"></i>
+          <span>{{ isRefreshing ? 'Reconnecting…' : 'Refresh' }}</span>
+        </button>
+      }
+    </div>
+  </section>
+
+
+  <!-- Footer -->
+  <footer class="home-footer fade-in delay-5">
+    <p>Jessica HIT &mdash; Robotics Control Platform &copy; {{ currentYear }}</p>
+  </footer>
+</div>
